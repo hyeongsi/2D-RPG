@@ -50,6 +50,54 @@ void MapEdittor::Run()
 	Render();
 }
 
+void MapEdittor::SetData(const POINT pos, const bool isLbutton)
+{
+    if (!(0 <= pos.x && ClientSize::width > pos.x))
+        return;
+    if (!(0 <= pos.y && ClientSize::height > pos.y))
+        return;
+
+    POINT mapPos;
+    mapPos.x = pos.x / TILE_SIZE;
+    mapPos.y = pos.y / TILE_SIZE;
+
+    if (isLbutton)
+    {
+        switch (selectState)
+        {
+        case MapEdittorSelectState::BACKGROUND:
+            mapData.backgroundData[mapPos.y][mapPos.x] = selectBitmap;
+            break;
+        case MapEdittorSelectState::OBJECT:
+            mapData.objectData[mapPos.y][mapPos.x] = selectBitmap;
+            break;
+        case MapEdittorSelectState::COLIDER:
+            mapData.coliderData[mapPos.y][mapPos.x] = 1;
+            break;
+        default:
+            break;
+        }
+    }
+    else
+    {
+        switch (selectState)
+        {
+        case MapEdittorSelectState::BACKGROUND:
+            mapData.backgroundData[mapPos.y][mapPos.x] = 0;
+            break;
+        case MapEdittorSelectState::OBJECT:
+            mapData.objectData[mapPos.y][mapPos.x] = 0;
+            break;
+        case MapEdittorSelectState::COLIDER:
+            mapData.coliderData[mapPos.y][mapPos.x] = false;
+            break;
+        default:
+            break;
+        }
+    }
+    
+}
+
 void MapEdittor::Render()
 {
     if (oldCreateBitmap != nullptr)
@@ -63,6 +111,26 @@ void MapEdittor::Render()
 	FillRect(memDC, &windowRect, (HBRUSH)GetStockObject(WHITE_BRUSH));      // 바탕 흰색으로 초기화
 
     POINT mousePoint;       // 마우스 위치를 저장할 변수
+
+    for ( int y = 0; y < MAP_MAX_Y; y++)
+    {
+        for (int x = 0; x < MAP_MAX_X; x++)
+        {
+            // 배경 이미지 출력
+            if (0 != mapData.backgroundData[y][x])
+            {
+                HBITMAP oldBitmap = (HBITMAP)SelectObject(backMemDC, hBitmap);
+                BitBlt(memDC, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, SRCCOPY);
+            }
+            // 오브젝트 이미지 출력
+            /*if (0 != mapData.objectData[y][x])
+            {
+                HBITMAP oldBitmap = (HBITMAP)SelectObject(backMemDC, hBitmap);
+                BitBlt(memDC, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, SRCCOPY);
+            }*/
+
+        }
+    }
 
     // 세로선
     for (int i = 0; i < g_clientSize.cx / TILE_SIZE; i++)

@@ -22,6 +22,8 @@ public:
 	void Init();
 	void Run();
 
+	void SetData(const POINT pos, const bool isLbutton);
+
 	void Render();
 };
 

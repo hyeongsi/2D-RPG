@@ -25,7 +25,7 @@ namespace BackGroundTextureName
 {
 	enum
 	{
-		grass
+		grass = 1
 	};
 }
 
@@ -33,7 +33,7 @@ namespace ObjectTextureName
 {
 	enum
 	{
-		grassBlock1,
+		grassBlock1 = 1,
 		grassBlock2,
 		grassBlock3,
 		grassBlock4

@@ -17,6 +17,8 @@ HWND g_hWnd;                                    // 전역 윈도우 핸들
 RECT g_clientRect{ 0,0, ClientSize::width,ClientSize::height }; // 클라이언트 크기
 SIZE g_clientSize;                              // 클라이언트 사이즈
 
+bool isClicked{ false };
+
 ULONGLONG tick = GetTickCount64();              // 딜레이
 
 GameManager gameManager;                        // 게임 매니저
@@ -155,6 +157,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
             InvalidateRect(hWnd, nullptr, true);    // 화면 초기화
         }
+        break;
+    case WM_LBUTTONDOWN:
+        isClicked = true;
+
+        break;
+    case WM_MOUSEMOVE:
+        if (GameState::MAPEDITTOR != gameManager.GetState())
+            return 0;
+        if (!isClicked)
+            return 0;
+
+        POINT mousePoint;
+        GetCursorPos(&mousePoint);              // 커서 위치를 가져오고
+        ScreenToClient(g_hWnd, &mousePoint);    // 클라이언트 영역 좌표로 변환 후
+        mapEdittor.SetData(mousePoint, true);   // 맵에 선택된 이미지 정보 저장
+        break;
+    case WM_LBUTTONUP:
+        isClicked = false;
         break;
     case WM_PAINT:
         {
