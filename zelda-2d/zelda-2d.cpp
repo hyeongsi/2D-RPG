@@ -14,10 +14,11 @@ HINSTANCE hInst;                                // 현재 인스턴스입니다.
 WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입니다.
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 HWND g_hWnd;                                    // 전역 윈도우 핸들
+HWND g_hMapEdittorDlg;                          // 전역 맵에디터 다이얼로그 핸들
 RECT g_clientRect{ 0,0, ClientSize::width,ClientSize::height }; // 클라이언트 크기
 SIZE g_clientSize;                              // 클라이언트 사이즈
 
-bool isClicked{ false };
+ClickLR clickLR{ ClickLR::NONE };
 
 ULONGLONG tick = GetTickCount64();              // 딜레이
 
@@ -28,6 +29,7 @@ MapEdittor mapEdittor;                          // 맵 에디터
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK    MapEdittorDlg(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
@@ -151,30 +153,56 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
                 gameManager.SetState(GameState::MAPEDITTOR);        // 맵 에디터 실행
                 mapEdittor.Init();
+                g_hMapEdittorDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, MapEdittorDlg);  // 다이얼로그 생성
+                
+                RECT dlgRect;
+                SIZE dlgSize;
+                GetWindowRect(g_hMapEdittorDlg, &dlgRect);
+                dlgSize.cx = dlgRect.right - dlgRect.left;
+                dlgSize.cy = dlgRect.bottom - dlgRect.top;
+                MoveWindow(g_hMapEdittorDlg, 500 + g_clientSize.cx, 200,
+                    dlgSize.cx, dlgSize.cy, true);   // 해당 지점에 클라이언트 크기만큼 설정 후 출력
+
+                ShowWindow(g_hMapEdittorDlg, SW_SHOW);
             }
-            else
-                gameManager.SetState(GameState::MAIN);              // 맵 에디터 상태면 취소
 
             InvalidateRect(hWnd, nullptr, true);    // 화면 초기화
         }
         break;
     case WM_LBUTTONDOWN:
-        isClicked = true;
-
+        clickLR = ClickLR::LEFT;
+        break;
+    case WM_RBUTTONDOWN:
+        clickLR = ClickLR::RIGHT;
         break;
     case WM_MOUSEMOVE:
         if (GameState::MAPEDITTOR != gameManager.GetState())
             return 0;
-        if (!isClicked)
-            return 0;
+        
+            POINT mousePoint;
+            GetCursorPos(&mousePoint);              // 커서 위치를 가져오고
+            ScreenToClient(g_hWnd, &mousePoint);    // 클라이언트 영역 좌표로 변환 후
 
-        POINT mousePoint;
-        GetCursorPos(&mousePoint);              // 커서 위치를 가져오고
-        ScreenToClient(g_hWnd, &mousePoint);    // 클라이언트 영역 좌표로 변환 후
-        mapEdittor.SetData(mousePoint, true);   // 맵에 선택된 이미지 정보 저장
+        switch (clickLR)
+        {
+        case ClickLR::NONE:
+            break;
+        case ClickLR::LEFT:
+            mapEdittor.SetData(mousePoint, true);   // 맵에 선택된 이미지 정보 저장
+            break;
+        case ClickLR::RIGHT:
+            mapEdittor.SetData(mousePoint, false);   // 맵에 선택된 이미지 정보 저장
+            break;
+        default:
+            break;
+        }
+
         break;
     case WM_LBUTTONUP:
-        isClicked = false;
+        clickLR = ClickLR::NONE;
+        break;
+    case WM_RBUTTONUP:
+        clickLR = ClickLR::NONE;
         break;
     case WM_PAINT:
         {
@@ -192,6 +220,32 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     }
     return 0;
 }
+
+INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    UNREFERENCED_PARAMETER(lParam);
+    switch (message)
+    {
+    case WM_INITDIALOG:
+        return (INT_PTR)TRUE;
+
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case IDC_bEXIT:
+            gameManager.SetState(GameState::MAIN);              // 상태값 변경
+            DestroyWindow(g_hMapEdittorDlg);                    // 다이얼로그 삭제
+
+            InvalidateRect(g_hWnd, nullptr, true);    // 화면 초기화
+            return (INT_PTR)TRUE;
+        default:
+            break;
+        }
+        break;
+    }
+    return (INT_PTR)FALSE;
+}
+
 
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {

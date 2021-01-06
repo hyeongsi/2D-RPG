@@ -46,3 +46,10 @@ enum class MapEdittorSelectState
 	OBJECT,
 	COLIDER
 };
+
+enum class ClickLR
+{
+	NONE,
+	LEFT,
+	RIGHT
+};
