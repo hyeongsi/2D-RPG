@@ -47,6 +47,12 @@ enum class MapEdittorSelectState
 	COLLIDER
 };
 
+enum class BitmapKind
+{
+	BACKGROUND,
+	OBJECT
+};
+
 enum class ClickLR
 {
 	NONE,

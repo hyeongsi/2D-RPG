@@ -6,6 +6,7 @@
 #include "zelda-2d.h"
 #include "GameManager.h"
 #include "MapEdittor.h"
+#include "ImageManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -24,6 +25,9 @@ ULONGLONG tick = GetTickCount64();              // 딜레이
 
 GameManager gameManager;                        // 게임 매니저
 MapEdittor mapEdittor;                          // 맵 에디터
+ImageManager imageManager;                      // 이미지 매니저
+
+void SetMapEdittorData();                       // 함수 선언
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -152,7 +156,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             if (GameState::MAPEDITTOR != gameManager.GetState())    // 맵 에디터 상태가 아니면
             {
                 gameManager.SetState(GameState::MAPEDITTOR);        // 맵 에디터 실행
+
+                imageManager.LoadMapEdittorBitmap();                // 맵 에디터에서 사용할 이미지 로드
+
                 mapEdittor.Init();
+                mapEdittor.LoadBitmapData(imageManager.GetBitmapData(BitmapKind::BACKGROUND), imageManager.GetBitmapData(BitmapKind::OBJECT));  // 맵에디터에 비트맵 정보 저장
                 g_hMapEdittorDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, MapEdittorDlg);  // 다이얼로그 생성
                 
                 RECT dlgRect;
@@ -171,32 +179,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     case WM_LBUTTONDOWN:
         clickLR = ClickLR::LEFT;
+        SetMapEdittorData();        // 맵에디터에 데이터 추가
         break;
     case WM_RBUTTONDOWN:
         clickLR = ClickLR::RIGHT;
+        SetMapEdittorData();        // 맵에디터에 데이터 추가
         break;
     case WM_MOUSEMOVE:
-        if (GameState::MAPEDITTOR != gameManager.GetState())
-            return 0;
-        
-            POINT mousePoint;
-            GetCursorPos(&mousePoint);              // 커서 위치를 가져오고
-            ScreenToClient(g_hWnd, &mousePoint);    // 클라이언트 영역 좌표로 변환 후
-
-        switch (clickLR) // 왼쪽 오른쪽 마우스 판단 후 맵 데이터 저장
-        {
-        case ClickLR::NONE:
-            break;
-        case ClickLR::LEFT:
-            mapEdittor.SetData(mousePoint, true);   // 맵에 선택된 이미지 정보 저장
-            break;
-        case ClickLR::RIGHT:
-            mapEdittor.SetData(mousePoint, false);   // 맵에 선택된 이미지 정보 저장
-            break;
-        default:
-            break;
-        }
-
+        SetMapEdittorData();        // 맵에디터에 데이터 추가
         break;
     case WM_LBUTTONUP:
         clickLR = ClickLR::NONE;
@@ -264,4 +254,28 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
         break;
     }
     return (INT_PTR)FALSE;
+}
+
+void SetMapEdittorData()
+{
+    if (GameState::MAPEDITTOR != gameManager.GetState())
+        return;
+
+    POINT mousePoint;
+    GetCursorPos(&mousePoint);              // 커서 위치를 가져오고
+    ScreenToClient(g_hWnd, &mousePoint);    // 클라이언트 영역 좌표로 변환 후
+
+    switch (clickLR) // 왼쪽 오른쪽 마우스 판단 후 맵 데이터 저장
+    {
+    case ClickLR::NONE:
+        break;
+    case ClickLR::LEFT:
+        mapEdittor.SetMapData(mousePoint, true);   // 맵에 선택된 이미지 정보 저장
+        break;
+    case ClickLR::RIGHT:
+        mapEdittor.SetMapData(mousePoint, false);   // 맵에 선택된 이미지 정보 저장
+        break;
+    default:
+        break;
+    }
 }

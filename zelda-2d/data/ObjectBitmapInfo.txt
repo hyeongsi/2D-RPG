@@ -1,0 +1,4 @@
+1		images/objects/grassBlock1.bmp
+2		images/objects/grassBlock2.bmp
+3		images/objects/grassBlock3.bmp
+4		images/objects/grassBlock4.bmp
