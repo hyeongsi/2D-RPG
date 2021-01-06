@@ -44,7 +44,7 @@ enum class MapEdittorSelectState
 {
 	BACKGROUND,
 	OBJECT,
-	COLIDER
+	COLLIDER
 };
 
 enum class ClickLR

@@ -41,7 +41,7 @@ void MapEdittor::Init()
     backMemDC = CreateCompatibleDC(hdc);
 
     selectBitmap = BackGroundTextureName::grass;
-    selectState = MapEdittorSelectState::BACKGROUND;
+    selectState = MapEdittorSelectState::COLLIDER;
     hBitmap = (HBITMAP)LoadImageA(hInst, "images/backgrounds/grass.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 }
 
@@ -71,8 +71,8 @@ void MapEdittor::SetData(const POINT pos, const bool isLbutton)
         case MapEdittorSelectState::OBJECT:
             mapData.objectData[mapPos.y][mapPos.x] = selectBitmap;
             break;
-        case MapEdittorSelectState::COLIDER:
-            mapData.coliderData[mapPos.y][mapPos.x] = 1;
+        case MapEdittorSelectState::COLLIDER:
+            mapData.coliderData[mapPos.y][mapPos.x] = true;
             break;
         default:
             break;
@@ -88,14 +88,13 @@ void MapEdittor::SetData(const POINT pos, const bool isLbutton)
         case MapEdittorSelectState::OBJECT:
             mapData.objectData[mapPos.y][mapPos.x] = 0;
             break;
-        case MapEdittorSelectState::COLIDER:
+        case MapEdittorSelectState::COLLIDER:
             mapData.coliderData[mapPos.y][mapPos.x] = false;
             break;
         default:
             break;
         }
     }
-    
 }
 
 void MapEdittor::Render()
@@ -128,6 +127,16 @@ void MapEdittor::Render()
                 HBITMAP oldBitmap = (HBITMAP)SelectObject(backMemDC, hBitmap);
                 BitBlt(memDC, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, SRCCOPY);
             }*/
+            // 콜라이더 출력
+            if (true == mapData.coliderData[y][x])
+            {
+                HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+                HBRUSH oldBrush = (HBRUSH)SelectObject(memDC, myBrush);
+                
+                Ellipse(memDC, x * TILE_SIZE, y * TILE_SIZE, x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE + TILE_SIZE);
+            
+                SelectObject(memDC, oldBrush);
+            }
 
         }
     }
@@ -146,12 +155,15 @@ void MapEdittor::Render()
         LineTo(memDC, g_clientSize.cx, i * TILE_SIZE);
     }
 
-    // 마우스 위치에 비트맵 출력
-    GetCursorPos(&mousePoint);              // 커서 위치를 가져오고
-    ScreenToClient(g_hWnd, &mousePoint);    // 클라이언트 영역 좌표로 변환 후
+    if (MapEdittorSelectState::COLLIDER != selectState)     // 콜라이더 상태가 아닐 경우 마우스 옆에 이미지 출력
+    {
+        GetCursorPos(&mousePoint);              // 커서 위치를 가져오고
+        ScreenToClient(g_hWnd, &mousePoint);    // 클라이언트 영역 좌표로 변환 후
 
-    HBITMAP oldBitmap = (HBITMAP)SelectObject(backMemDC, hBitmap);
+        HBITMAP oldBitmap = (HBITMAP)SelectObject(backMemDC, hBitmap);
 
-    BitBlt(memDC, mousePoint.x, mousePoint.y, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, SRCCOPY);
+        BitBlt(memDC, mousePoint.x, mousePoint.y, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, SRCCOPY);
+    }
+
     BitBlt(hdc, 0, 0, ClientSize::width, ClientSize::height, memDC, 0, 0, SRCCOPY);
 }

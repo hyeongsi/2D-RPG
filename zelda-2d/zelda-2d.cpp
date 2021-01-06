@@ -183,7 +183,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             GetCursorPos(&mousePoint);              // 커서 위치를 가져오고
             ScreenToClient(g_hWnd, &mousePoint);    // 클라이언트 영역 좌표로 변환 후
 
-        switch (clickLR)
+        switch (clickLR) // 왼쪽 오른쪽 마우스 판단 후 맵 데이터 저장
         {
         case ClickLR::NONE:
             break;
