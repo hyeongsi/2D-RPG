@@ -14,7 +14,11 @@ MapEdittor::MapEdittor()
 
 MapEdittor::~MapEdittor()
 {
- 
+    delete instance;
+    instance = nullptr;
+
+    delete mapData;
+    mapData = nullptr;
 }
 
 MapEdittor* MapEdittor::GetInstance()
@@ -35,6 +39,11 @@ void MapEdittor::ReleaseInstance()
 
 void MapEdittor::Init()
 {
+    if (mapData != nullptr)
+        delete mapData;
+
+    mapData = new WorldMap();
+
     selectBitmap = BackGroundTextureName::grass;
     selectState = MapEdittorSelectState::BACKGROUND;
 }
@@ -55,13 +64,13 @@ void MapEdittor::SetMapData(const POINT pos, const bool isLbutton)
         switch (selectState)
         {
         case MapEdittorSelectState::BACKGROUND:
-            mapData.backgroundData[mapPos.y][mapPos.x] = selectBitmap;
+            mapData->backgroundData[mapPos.y][mapPos.x] = selectBitmap;
             break;
         case MapEdittorSelectState::OBJECT:
-            mapData.objectData[mapPos.y][mapPos.x] = selectBitmap;
+            mapData->objectData[mapPos.y][mapPos.x] = selectBitmap;
             break;
         case MapEdittorSelectState::COLLIDER:
-            mapData.coliderData[mapPos.y][mapPos.x] = true;
+            mapData->coliderData[mapPos.y][mapPos.x] = true;
             break;
         default:
             break;
@@ -72,13 +81,13 @@ void MapEdittor::SetMapData(const POINT pos, const bool isLbutton)
         switch (selectState)
         {
         case MapEdittorSelectState::BACKGROUND:
-            mapData.backgroundData[mapPos.y][mapPos.x] = 0;
+            mapData->backgroundData[mapPos.y][mapPos.x] = 0;
             break;
         case MapEdittorSelectState::OBJECT:
-            mapData.objectData[mapPos.y][mapPos.x] = 0;
+            mapData->objectData[mapPos.y][mapPos.x] = 0;
             break;
         case MapEdittorSelectState::COLLIDER:
-            mapData.coliderData[mapPos.y][mapPos.x] = false;
+            mapData->coliderData[mapPos.y][mapPos.x] = false;
             break;
         default:
             break;
@@ -93,7 +102,7 @@ const MapEdittorSelectState MapEdittor::GetSelectState()
 
 const WorldMap MapEdittor::GetWorldMapData()
 {
-    return mapData;
+    return *mapData;
 }
 
 const int MapEdittor::GetSelectBitmapNumber()

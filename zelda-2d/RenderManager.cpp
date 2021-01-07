@@ -79,7 +79,7 @@ void RenderManager::SaveMemDcData(const HWND itemHwnd, POINT pos)
 
     DWORD buttonRect = SendMessage(itemHwnd, SBM_GETPOS, 0, 0);
 
-    BitBlt(memDC, pos.x, pos.y, 150, 50, itemDC, 0, 0, SRCCOPY);
+    BitBlt(memDC, pos.x, pos.y, BUTTON_SIZE.cx, BUTTON_SIZE.cy, itemDC, 0, 0, SRCCOPY);
     ReleaseDC(itemHwnd, itemDC);
 }
 
@@ -99,8 +99,8 @@ void RenderManager::Render()
 void RenderManager::MainFrameDataSetting()
 {
     SaveMemDcData(ImageManager::GetInstance()->GetMainFrameBitmap(), { 0,0 });
-    SaveMemDcData(g_hStartButton, { 500,100 });
-    SaveMemDcData(g_hMapEdittorButton, { 500,200 });
+    SaveMemDcData(g_hStartButton, START_BUTTON_POINT);
+    SaveMemDcData(g_hMapEdittorButton, MAPEDITTOR_BUTTON_POINT);
 }
 
 void RenderManager::MapEdittorDataSetting()

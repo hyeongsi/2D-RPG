@@ -12,7 +12,7 @@ private:
 	int selectBitmap;					// 선택한 비트맵의 번호
 	MapEdittorSelectState selectState;	// 배경, 오브젝트, 콜라이더 선택 상태	
 
-	WorldMap mapData;					// 맵 데이터
+	WorldMap* mapData{ nullptr };					// 맵 데이터
 private:
 	static MapEdittor* instance;
 

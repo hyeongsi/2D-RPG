@@ -13,7 +13,5 @@ public:
 
 	int GetData(MapEdittorSelectState state, POINT pos);
 	void SetData(MapEdittorSelectState state, POINT pos, int data);
-
-
 };
 
