@@ -2,6 +2,7 @@
 #include "RenderManager.h"
 #include "ImageManager.h"
 #include "MapEdittor.h"
+#pragma comment (lib, "Msimg32.lib")
 
 extern HWND g_hWnd;
 extern SIZE g_clientSize;
@@ -114,40 +115,33 @@ void RenderManager::DrawWorldMapData()
 {
     MapEdittor* mapEdittor = MapEdittor::GetInstance();
     WorldMap tempWorldMap = mapEdittor->GetWorldMapData();
-    MapEdittorSelectState selectState = mapEdittor->GetSelectState();
     int selectBitmapNumber = mapEdittor->GetSelectBitmapNumber();
 
-    if (MapEdittorSelectState::COLLIDER != selectState)
+    for (int y = 0; y < MAP_MAX_Y; y++)
     {
-        for (int y = 0; y < MAP_MAX_Y; y++)
+        for (int x = 0; x < MAP_MAX_X; x++)
         {
-            for (int x = 0; x < MAP_MAX_X; x++)
+            // 배경 출력
+            if (0 != tempWorldMap.GetData(MapEdittorSelectState::BACKGROUND, { x,y }))
             {
-                // 이미지 출력
-                if (0 != tempWorldMap.GetData(selectState, { x,y }))
-                {
-                    SelectObject(backMemDC, ImageManager::GetInstance()->GetBitmap(selectState, selectBitmapNumber));
-                    BitBlt(memDC, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, SRCCOPY);
-                }
+                SelectObject(backMemDC, ImageManager::GetInstance()->GetBitmap(MapEdittorSelectState::BACKGROUND, selectBitmapNumber));
+                BitBlt(memDC, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, SRCCOPY);
             }
-        }
-    }
-    else
-    {
-        for (int y = 0; y < MAP_MAX_Y; y++)
-        {
-            for (int x = 0; x < MAP_MAX_X; x++)
+            // 오브젝트 출력
+            if (0 != tempWorldMap.GetData(MapEdittorSelectState::OBJECT, { x,y }))
             {
-                // 콜라이더 출력
-                if (0 != tempWorldMap.GetData(selectState, { x,y }))
-                {
-                    HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
-                    HBRUSH oldBrush = (HBRUSH)SelectObject(memDC, myBrush);
+                SelectObject(backMemDC, ImageManager::GetInstance()->GetBitmap(MapEdittorSelectState::OBJECT, selectBitmapNumber));
+                TransparentBlt(memDC, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, TILE_SIZE, TILE_SIZE, RGB(215,123,186));
+            }
+            // 콜라이더 출력
+            if (0 != tempWorldMap.GetData(MapEdittorSelectState::COLLIDER, { x,y }))
+            {
+                HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+                HBRUSH oldBrush = (HBRUSH)SelectObject(memDC, myBrush);
 
-                    Ellipse(memDC, x * TILE_SIZE, y * TILE_SIZE, x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE + TILE_SIZE);
+                Ellipse(memDC, x * TILE_SIZE, y * TILE_SIZE, x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE + TILE_SIZE);
 
-                    SelectObject(memDC, oldBrush);
-                }
+                SelectObject(memDC, oldBrush);
             }
         }
     }

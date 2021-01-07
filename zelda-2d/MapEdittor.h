@@ -31,5 +31,6 @@ public:
 
 	const MapEdittorSelectState GetSelectState();
 	const WorldMap GetWorldMapData();
+	void SetWorldMapData(const WorldMap data);
 	const int GetSelectBitmapNumber();
 };

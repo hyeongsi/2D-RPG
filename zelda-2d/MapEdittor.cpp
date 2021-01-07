@@ -14,11 +14,11 @@ MapEdittor::MapEdittor()
 
 MapEdittor::~MapEdittor()
 {
-    delete instance;
-    instance = nullptr;
-
-    delete mapData;
-    mapData = nullptr;
+    if (nullptr != mapData)
+    {
+        delete mapData;
+        mapData = nullptr;
+    }
 }
 
 MapEdittor* MapEdittor::GetInstance()
@@ -103,6 +103,15 @@ const MapEdittorSelectState MapEdittor::GetSelectState()
 const WorldMap MapEdittor::GetWorldMapData()
 {
     return *mapData;
+}
+
+void MapEdittor::SetWorldMapData(const WorldMap data)
+{
+    if (mapData != nullptr)
+        delete mapData;
+
+    mapData = new WorldMap();
+    *mapData = data;
 }
 
 const int MapEdittor::GetSelectBitmapNumber()

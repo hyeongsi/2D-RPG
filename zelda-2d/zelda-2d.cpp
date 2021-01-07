@@ -8,6 +8,7 @@
 #include "mapEdittor.h"
 #include "imageManager.h"
 #include "renderManager.h"
+#include <commdlg.h>
 
 #define MAX_LOADSTRING 100
 
@@ -31,6 +32,7 @@ ImageManager* imageManager;                      // 이미지 매니저
 RenderManager* renderManager;                    // 랜더 매니저
 
 void SetMapEdittorData();                       // 함수 선언
+void LoadTextMapData(char* filePath);
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -259,6 +261,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    OPENFILENAME openFileName;
+    static char strFileTitle[MAX_PATH], strFileExtension[10], strFilePath[100];
+
     UNREFERENCED_PARAMETER(lParam);
     switch (message)
     {
@@ -268,6 +273,32 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {
+        case IDC_bSAVE:
+            
+            break;
+        case IDC_bLOAD:
+            ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
+            openFileName.lStructSize = sizeof(openFileName);
+            openFileName.hwndOwner = g_hWnd;
+            openFileName.lpstrTitle = "파일을 선택해 주세요";
+            openFileName.lpstrFileTitle = strFileTitle;
+            openFileName.lpstrFile = strFilePath;
+            openFileName.lpstrFilter = "임시 파일(*.*)";
+            openFileName.nMaxFile = MAX_PATH;
+            openFileName.nMaxFileTitle = MAX_PATH;        
+
+            if (GetOpenFileName(&openFileName) != 0)
+            {
+                switch (openFileName.nFilterIndex)
+                {
+                case 1:
+                    LoadTextMapData(strFilePath);
+                    break;
+                default:
+                    break;
+                }
+            }
+            break;
         case IDC_bEXIT:
             ShowWindow(g_hStartButton, SW_SHOW);                // 버튼 출력
             ShowWindow(g_hMapEdittorButton, SW_SHOW);           // 버튼 출력
@@ -327,4 +358,62 @@ void SetMapEdittorData()
     default:
         break;
     }
+}
+
+void LoadTextMapData(char* filePath)
+{
+    ifstream readFile;
+    int value[2];       // 처음 값 2개를 받을 변수
+    WorldMap mapData;   // 불러온 맵의 값 저장할 변수
+    MapEdittorSelectState selectState;
+    string str;
+;
+    readFile.open(filePath);
+    if (readFile.is_open())
+    {
+        try
+        {
+            for (int i = 0; i < 2; i++) // 맵의 크기, x,y값을 받고
+            {
+                readFile >> str;
+
+                value[i] = stoi(str);
+            }
+
+            for (int i = 0; i < 3; i++) // 배경, 오브젝트, 콜라이더 데이터를 받는다.
+            {
+                readFile >> str;    // background, objects, colider 구분할려고 문자열 넣은거 없애는 부분
+
+                switch (i)
+                {
+                case 0:
+                    selectState = MapEdittorSelectState::BACKGROUND;
+                    break;
+                case 1:
+                    selectState = MapEdittorSelectState::OBJECT;
+                    break;
+                case 2:
+                    selectState = MapEdittorSelectState::COLLIDER;
+                    break;
+                }
+
+                for (int y = 0; y < value[0]; y++)
+                {
+                    for (int x = 0; x < value[1]; x++)
+                    { 
+                        readFile >> str;
+                        mapData.SetData(selectState, { x,y }, stoi(str));
+                    }
+                }
+            }
+        }
+        catch (const std::exception&)
+        {
+            readFile.close();
+            return;
+        }
+    }
+    mapEdittor->SetWorldMapData(mapData);
+
+    readFile.close();
 }
