@@ -1,14 +1,34 @@
 ﻿#include "pch.h"
 #include "GameManager.h"
 
-void GameManager::Run()
-{
-
-}
+GameManager* GameManager::instance = nullptr;
 
 GameManager::GameManager()
 {
 	state = GameState::MAIN;
+}
+
+GameManager::~GameManager()
+{
+}
+
+GameManager* GameManager::GetInstance()
+{
+	if (nullptr == instance)
+		instance = new GameManager();
+
+	return instance;
+}
+
+void GameManager::ReleaseInstance()
+{
+	delete instance;
+	instance = nullptr;
+}
+
+void GameManager::Run()
+{
+
 }
 
 const GameState GameManager::GetState()

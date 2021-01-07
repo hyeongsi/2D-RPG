@@ -10,12 +10,27 @@ using namespace std;
 class ImageManager
 {
 private:
+	HBITMAP mainFrameBitmap;		// 메인화면 배경
+
 	map<int, HBITMAP> backgroundBitmapData;
 	map<int, HBITMAP> objectBitmapData;
+private:
+	static ImageManager* instance;
+
+	ImageManager();
+	~ImageManager();
+
 public:
-	void LoadBitmapPathData(const string str);
+	static ImageManager* GetInstance();
+	static void ReleaseInstance();
+
+public:
+	void LoadBitmapPathData(const MapEdittorSelectState state, const string str);
 	void LoadMapEdittorBitmap();
 
 public:
-	const map<int, HBITMAP> GetBitmapData(const BitmapKind kind);
+	const HBITMAP GetMainFrameBitmap();
+	
+	const HBITMAP GetBitmap(MapEdittorSelectState state, int selectNumber);
+	const map<int, HBITMAP> GetBitmapMapVar(const BitmapKind kind);
 };

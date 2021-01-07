@@ -5,8 +5,9 @@
 #include "framework.h"
 #include "zelda-2d.h"
 #include "GameManager.h"
-#include "MapEdittor.h"
-#include "ImageManager.h"
+#include "mapEdittor.h"
+#include "imageManager.h"
+#include "renderManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -19,13 +20,15 @@ HWND g_hMapEdittorDlg;                          // 전역 맵에디터 다이얼
 RECT g_clientRect{ 0,0, ClientSize::width,ClientSize::height }; // 클라이언트 크기
 SIZE g_clientSize;                              // 클라이언트 사이즈
 
+HWND g_hStartButton;                            // 시작 버튼
+HWND g_hMapEdittorButton;                       // 맵 에디터 버튼
+
 ClickLR clickLR{ ClickLR::NONE };
 
-ULONGLONG tick = GetTickCount64();              // 딜레이
-
-GameManager gameManager;                        // 게임 매니저
-MapEdittor mapEdittor;                          // 맵 에디터
-ImageManager imageManager;                      // 이미지 매니저
+GameManager* gameManager;                        // 게임 매니저
+MapEdittor* mapEdittor;                         // 맵 에디터
+ImageManager* imageManager;                      // 이미지 매니저
+RenderManager* renderManager;                    // 랜더 매니저
 
 void SetMapEdittorData();                       // 함수 선언
 
@@ -61,6 +64,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     MSG msg;
 
+    // 초기화
+    gameManager = GameManager::GetInstance();
+    mapEdittor = MapEdittor::GetInstance();  
+    imageManager = ImageManager::GetInstance();
+    renderManager = RenderManager::GetInstance();
+
     // 기본 메시지 루프입니다:
     while (true)
     {
@@ -75,10 +84,19 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
         }
 
-        if (GameState::MAPEDITTOR != gameManager.GetState())
-            gameManager.Run();
+        if (GameState::MAPEDITTOR != gameManager->GetState())
+        {
+            renderManager->RenderInitSetting();
+            gameManager->Run();
+            renderManager->MainFrameDataSetting();
+            renderManager->Render();
+        }
         else
-            mapEdittor.Run();
+        {
+            renderManager->RenderInitSetting();
+            renderManager->MapEdittorDataSetting();
+            renderManager->Render();
+        }
     }
 
     return (int) msg.wParam;
@@ -127,6 +145,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
+    static LPDRAWITEMSTRUCT lpdis;
+
     switch (message)
     {
     case WM_CREATE:
@@ -134,11 +154,47 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         g_clientSize.cx = g_clientRect.right - g_clientRect.left;
         g_clientSize.cy = g_clientRect.bottom - g_clientRect.top;
         MoveWindow(hWnd, 500, 200, g_clientSize.cx, g_clientSize.cy, true);   // 500,200 지점에 클라이언트 크기만큼 설정 후 출력
+        
+        g_hStartButton = CreateWindow("button", "Start", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON
+            , 500, 100, 150, 50, hWnd, (HMENU)ButtonKind::START, hInst, NULL);    // 메인화면의 시작 버튼 생성
+
+        g_hMapEdittorButton = CreateWindow("button", "MapEdittor", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON
+            , 500, 200, 150, 50, hWnd, (HMENU)ButtonKind::MAPEDITTOR, hInst, NULL);    // 메인 화면의 맵 에디터 버튼 생성
+        
         break;
     case WM_COMMAND:
         {
             switch (LOWORD(wParam))
             {
+            case ButtonKind::START:
+
+                break;
+            case ButtonKind::MAPEDITTOR:
+                if (GameState::MAPEDITTOR != gameManager->GetState())    // 맵 에디터 상태가 아니면
+                {
+                    ShowWindow(g_hStartButton, SW_HIDE);                // 버튼 숨기기
+                    ShowWindow(g_hMapEdittorButton, SW_HIDE);           // 버튼 숨기기
+
+                    gameManager->SetState(GameState::MAPEDITTOR);        // 맵 에디터 실행
+
+                    imageManager->LoadMapEdittorBitmap();                // 맵 에디터에서 사용할 이미지 로드
+
+                    mapEdittor->Init();
+                    g_hMapEdittorDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, MapEdittorDlg);  // 다이얼로그 생성
+
+                    RECT dlgRect;
+                    SIZE dlgSize;
+                    GetWindowRect(g_hMapEdittorDlg, &dlgRect);
+                    dlgSize.cx = dlgRect.right - dlgRect.left;
+                    dlgSize.cy = dlgRect.bottom - dlgRect.top;
+                    MoveWindow(g_hMapEdittorDlg, 500 + g_clientSize.cx, 200,
+                        dlgSize.cx, dlgSize.cy, true);   // 해당 지점에 클라이언트 크기만큼 설정 후 출력
+
+                    ShowWindow(g_hMapEdittorDlg, SW_SHOW);
+                }
+
+                InvalidateRect(hWnd, nullptr, true);    // 화면 초기화
+                break;
             case IDM_ABOUT:
                 DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
@@ -150,49 +206,37 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
-    case WM_KEYDOWN:
-        if (wParam == VK_F1)    // F1키 누르면 상태값 변경
+    case WM_LBUTTONDOWN:
+        if (GameState::MAPEDITTOR == gameManager->GetState())    // 맵 에디터 상태
         {
-            if (GameState::MAPEDITTOR != gameManager.GetState())    // 맵 에디터 상태가 아니면
-            {
-                gameManager.SetState(GameState::MAPEDITTOR);        // 맵 에디터 실행
-
-                imageManager.LoadMapEdittorBitmap();                // 맵 에디터에서 사용할 이미지 로드
-
-                mapEdittor.Init();
-                mapEdittor.LoadBitmapData(imageManager.GetBitmapData(BitmapKind::BACKGROUND), imageManager.GetBitmapData(BitmapKind::OBJECT));  // 맵에디터에 비트맵 정보 저장
-                g_hMapEdittorDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, MapEdittorDlg);  // 다이얼로그 생성
-                
-                RECT dlgRect;
-                SIZE dlgSize;
-                GetWindowRect(g_hMapEdittorDlg, &dlgRect);
-                dlgSize.cx = dlgRect.right - dlgRect.left;
-                dlgSize.cy = dlgRect.bottom - dlgRect.top;
-                MoveWindow(g_hMapEdittorDlg, 500 + g_clientSize.cx, 200,
-                    dlgSize.cx, dlgSize.cy, true);   // 해당 지점에 클라이언트 크기만큼 설정 후 출력
-
-                ShowWindow(g_hMapEdittorDlg, SW_SHOW);
-            }
-
-            InvalidateRect(hWnd, nullptr, true);    // 화면 초기화
+            clickLR = ClickLR::LEFT;    // 클릭 상태 설정
+            SetMapEdittorData();        // 맵에디터에 데이터 추가
         }
         break;
-    case WM_LBUTTONDOWN:
-        clickLR = ClickLR::LEFT;
-        SetMapEdittorData();        // 맵에디터에 데이터 추가
-        break;
     case WM_RBUTTONDOWN:
-        clickLR = ClickLR::RIGHT;
-        SetMapEdittorData();        // 맵에디터에 데이터 추가
+        if (GameState::MAPEDITTOR == gameManager->GetState())    // 맵 에디터 상태
+        {
+            clickLR = ClickLR::RIGHT;   // 클릭 상태 설정
+            SetMapEdittorData();        // 맵에디터에 데이터 추가
+        }
         break;
     case WM_MOUSEMOVE:
-        SetMapEdittorData();        // 맵에디터에 데이터 추가
+        if (GameState::MAPEDITTOR == gameManager->GetState())    // 맵 에디터 상태
+        {
+            SetMapEdittorData();        // 맵에디터에 데이터 추가
+        }
         break;
     case WM_LBUTTONUP:
-        clickLR = ClickLR::NONE;
+        if (GameState::MAPEDITTOR == gameManager->GetState())    // 맵 에디터 상태
+        {
+            clickLR = ClickLR::NONE;    // 클릭 상태 설정
+        } 
         break;
     case WM_RBUTTONUP:
-        clickLR = ClickLR::NONE;
+        if (GameState::MAPEDITTOR == gameManager->GetState())
+        {
+            clickLR = ClickLR::NONE;    // 클릭 상태 설정
+        }
         break;
     case WM_PAINT:
         {
@@ -203,6 +247,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DESTROY:
+        MapEdittor::ReleaseInstance();
+        ImageManager::ReleaseInstance();
         PostQuitMessage(0);
         break;
     default:
@@ -223,10 +269,13 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
         switch (LOWORD(wParam))
         {
         case IDC_bEXIT:
-            gameManager.SetState(GameState::MAIN);              // 상태값 변경
+            ShowWindow(g_hStartButton, SW_SHOW);                // 버튼 출력
+            ShowWindow(g_hMapEdittorButton, SW_SHOW);           // 버튼 출력
+
+            gameManager->SetState(GameState::MAIN);              // 상태값 변경
             DestroyWindow(g_hMapEdittorDlg);                    // 다이얼로그 삭제
 
-            InvalidateRect(g_hWnd, nullptr, true);    // 화면 초기화
+            InvalidateRect(g_hWnd, nullptr, true);              // 화면 초기화
             return (INT_PTR)TRUE;
         default:
             break;
@@ -258,7 +307,7 @@ INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 void SetMapEdittorData()
 {
-    if (GameState::MAPEDITTOR != gameManager.GetState())
+    if (GameState::MAPEDITTOR != gameManager->GetState())
         return;
 
     POINT mousePoint;
@@ -270,10 +319,10 @@ void SetMapEdittorData()
     case ClickLR::NONE:
         break;
     case ClickLR::LEFT:
-        mapEdittor.SetMapData(mousePoint, true);   // 맵에 선택된 이미지 정보 저장
+        mapEdittor->SetMapData(mousePoint, true);   // 맵에 선택된 이미지 정보 저장
         break;
     case ClickLR::RIGHT:
-        mapEdittor.SetMapData(mousePoint, false);   // 맵에 선택된 이미지 정보 저장
+        mapEdittor->SetMapData(mousePoint, false);   // 맵에 선택된 이미지 정보 저장
         break;
     default:
         break;

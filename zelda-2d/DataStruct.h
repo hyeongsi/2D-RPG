@@ -59,3 +59,12 @@ enum class ClickLR
 	LEFT,
 	RIGHT
 };
+
+namespace ButtonKind
+{
+	enum
+	{
+		START,
+		MAPEDITTOR
+	};
+}
