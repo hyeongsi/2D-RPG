@@ -30,7 +30,10 @@ public:
 	void SetMapData(const POINT pos, const bool isLbutton);
 
 	const MapEdittorSelectState GetSelectState();
+	void SetSelectState(const MapEdittorSelectState state);
+
 	const WorldMap GetWorldMapData();
 	void SetWorldMapData(const WorldMap data);
+
 	const int GetSelectBitmapNumber();
 };

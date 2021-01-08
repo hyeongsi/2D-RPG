@@ -178,11 +178,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     ShowWindow(g_hMapEdittorButton, SW_HIDE);           // 버튼 숨기기
 
                     gameManager->SetState(GameState::MAPEDITTOR);        // 맵 에디터 실행
-
                     imageManager->LoadMapEdittorBitmap();                // 맵 에디터에서 사용할 이미지 로드
-
                     mapEdittor->Init();
+
                     g_hMapEdittorDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, MapEdittorDlg);  // 다이얼로그 생성
+                    SendMessage(GetDlgItem(g_hMapEdittorDlg, IDC_rBACKGROUND), BM_SETCHECK, BST_CHECKED, 0);    // 선택상태 초기화
 
                     RECT dlgRect;
                     SIZE dlgSize;
@@ -269,12 +269,17 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
     {
     case WM_INITDIALOG:
         return (INT_PTR)TRUE;
-
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {
+        case IDC_rBACKGROUND:   
+            mapEdittor->SetSelectState(MapEdittorSelectState::BACKGROUND);  break;
+        case IDC_rOBJECT:
+            mapEdittor->SetSelectState(MapEdittorSelectState::OBJECT);      break;
+        case IDC_rCOLLIDER:
+            mapEdittor->SetSelectState(MapEdittorSelectState::COLLIDER);    break;
         case IDC_bSAVE:
-            
+
             break;
         case IDC_bLOAD:
             ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
@@ -315,7 +320,6 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
     }
     return (INT_PTR)FALSE;
 }
-
 
 INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -387,14 +391,11 @@ void LoadTextMapData(char* filePath)
                 switch (i)
                 {
                 case 0:
-                    selectState = MapEdittorSelectState::BACKGROUND;
-                    break;
+                    selectState = MapEdittorSelectState::BACKGROUND;     break;
                 case 1:
-                    selectState = MapEdittorSelectState::OBJECT;
-                    break;
+                    selectState = MapEdittorSelectState::OBJECT;         break;
                 case 2:
-                    selectState = MapEdittorSelectState::COLLIDER;
-                    break;
+                    selectState = MapEdittorSelectState::COLLIDER;      break;
                 }
 
                 for (int y = 0; y < value[0]; y++)

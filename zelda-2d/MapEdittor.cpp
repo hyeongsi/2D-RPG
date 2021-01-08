@@ -100,6 +100,11 @@ const MapEdittorSelectState MapEdittor::GetSelectState()
     return selectState;
 }
 
+void MapEdittor::SetSelectState(const MapEdittorSelectState state)
+{
+    selectState = state;
+}
+
 const WorldMap MapEdittor::GetWorldMapData()
 {
     return *mapData;
