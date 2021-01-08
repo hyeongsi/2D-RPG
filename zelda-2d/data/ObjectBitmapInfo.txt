@@ -1,4 +1,4 @@
-1		images/objects/grassBlock1.bmp
-2		images/objects/grassBlock2.bmp
-3		images/objects/grassBlock3.bmp
-4		images/objects/grassBlock4.bmp
+1		images/objects/grassBlock1.bmp		grassBlock1
+2		images/objects/grassBlock2.bmp		grassBlock2
+3		images/objects/grassBlock3.bmp		grassBlock3
+4		images/objects/grassBlock4.bmp		grassBlock4

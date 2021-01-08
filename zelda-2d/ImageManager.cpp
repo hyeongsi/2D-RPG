@@ -42,13 +42,18 @@ void ImageManager::LoadBitmapPathData(const MapEdittorSelectState state, const s
 			string path;
 			readFile >> path;
 
+			string name;
+			readFile >> name;
+
 			switch (state)
 			{
 			case MapEdittorSelectState::BACKGROUND:
 				backgroundBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+				backgroundStringData[stoi(number)] = name;
 				break;
 			default:
 				objectBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+				objectStringData[stoi(number)] = name;
 				break;
 			}
 		}
@@ -91,6 +96,19 @@ const map<int, HBITMAP> ImageManager::GetBitmapMapVar(const BitmapKind kind)
 		return objectBitmapData;
 	default:
 		return backgroundBitmapData;
+	}
+}
+
+const map<int, string> ImageManager::GetStringMapVar(const BitmapKind kind)
+{
+	switch (kind)
+	{
+	case BitmapKind::BACKGROUND:
+		return backgroundStringData;
+	case BitmapKind::OBJECT:
+		return objectStringData;
+	default:
+		return backgroundStringData;
 	}
 }
 
