@@ -124,13 +124,13 @@ void RenderManager::DrawWorldMapData()
             // 배경 출력
             if (0 != tempWorldMap.GetData(MapEdittorSelectState::BACKGROUND, { x,y }))
             {
-                SelectObject(backMemDC, ImageManager::GetInstance()->GetBitmap(MapEdittorSelectState::BACKGROUND, selectBitmapNumber));
+                SelectObject(backMemDC, ImageManager::GetInstance()->GetBitmapData(MapEdittorSelectState::BACKGROUND, selectBitmapNumber));
                 BitBlt(memDC, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, SRCCOPY);
             }
             // 오브젝트 출력
             if (0 != tempWorldMap.GetData(MapEdittorSelectState::OBJECT, { x,y }))
             {
-                SelectObject(backMemDC, ImageManager::GetInstance()->GetBitmap(MapEdittorSelectState::OBJECT, selectBitmapNumber));
+                SelectObject(backMemDC, ImageManager::GetInstance()->GetBitmapData(MapEdittorSelectState::OBJECT, selectBitmapNumber));
                 TransparentBlt(memDC, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, TILE_SIZE, TILE_SIZE, RGB(215,123,186));
             }
             // 콜라이더 출력
@@ -177,7 +177,7 @@ void RenderManager::DrawCursorFollowBitmap()
         GetCursorPos(&mousePoint);              // 커서 위치를 가져오고
         ScreenToClient(g_hWnd, &mousePoint);    // 클라이언트 영역 좌표로 변환 후
 
-        SelectObject(backMemDC, ImageManager::GetInstance()->GetBitmap(selectState, selectBitmapNumber));
+        SelectObject(backMemDC, ImageManager::GetInstance()->GetBitmapData(selectState, selectBitmapNumber));
 
         BitBlt(memDC, mousePoint.x, mousePoint.y, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, SRCCOPY);
     }

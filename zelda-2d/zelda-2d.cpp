@@ -26,20 +26,20 @@ HWND g_hMapEdittorButton;                       // 맵 에디터 버튼
 
 ClickLR clickLR{ ClickLR::NONE };
 
-GameManager* gameManager;                        // 게임 매니저
+GameManager* gameManager;                       // 게임 매니저
 MapEdittor* mapEdittor;                         // 맵 에디터
-ImageManager* imageManager;                      // 이미지 매니저
-RenderManager* renderManager;                    // 랜더 매니저
+ImageManager* imageManager;                     // 이미지 매니저
+RenderManager* renderManager;                   // 랜더 매니저
 
 void SetMapEdittorData();                       // 함수 선언
 void LoadTextMapData(char* filePath);
+void SetMapEdittorDlgData();                    // mapEdittorDlg 데이터 설정
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    MapEdittorDlg(HWND, UINT, WPARAM, LPARAM);
-INT_PTR CALLBACK    About(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -182,7 +182,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                     mapEdittor->Init();
 
                     g_hMapEdittorDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, MapEdittorDlg);  // 다이얼로그 생성
-                    SendMessage(GetDlgItem(g_hMapEdittorDlg, IDC_rBACKGROUND), BM_SETCHECK, BST_CHECKED, 0);    // 선택상태 초기화
+                    SetMapEdittorDlgData();
 
                     RECT dlgRect;
                     SIZE dlgSize;
@@ -196,9 +196,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 }
 
                 InvalidateRect(hWnd, nullptr, true);    // 화면 초기화
-                break;
-            case IDM_ABOUT:
-                DialogBox(hInst, MAKEINTRESOURCE(IDD_ABOUTBOX), hWnd, About);
                 break;
             case IDM_EXIT:
                 DestroyWindow(hWnd);
@@ -279,7 +276,6 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
         case IDC_rCOLLIDER:
             mapEdittor->SetSelectState(MapEdittorSelectState::COLLIDER);    break;
         case IDC_bSAVE:
-
             break;
         case IDC_bLOAD:
             ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
@@ -315,25 +311,6 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
             return (INT_PTR)TRUE;
         default:
             break;
-        }
-        break;
-    }
-    return (INT_PTR)FALSE;
-}
-
-INT_PTR CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
-{
-    UNREFERENCED_PARAMETER(lParam);
-    switch (message)
-    {
-    case WM_INITDIALOG:
-        return (INT_PTR)TRUE;
-
-    case WM_COMMAND:
-        if (LOWORD(wParam) == IDOK || LOWORD(wParam) == IDCANCEL)
-        {
-            EndDialog(hDlg, LOWORD(wParam));
-            return (INT_PTR)TRUE;
         }
         break;
     }
@@ -417,4 +394,30 @@ void LoadTextMapData(char* filePath)
     mapEdittor->SetWorldMapData(mapData);
 
     readFile.close();
+}
+
+void SetMapEdittorDlgData()
+{
+    SendMessage(GetDlgItem(g_hMapEdittorDlg, IDC_rBACKGROUND), BM_SETCHECK, BST_CHECKED, 0);    // 선택상태 초기화
+
+    HWND hwndBackGroundImageListBox = GetDlgItem(g_hMapEdittorDlg, IDC_lBACKGROUND);
+    int i = 1;
+    while (true)
+    {
+        string name = ImageManager::GetInstance()->GetStringData(MapEdittorSelectState::BACKGROUND, i++);
+        if (name.empty())
+            break;
+        SendMessage(hwndBackGroundImageListBox, LB_ADDSTRING, 0, (LPARAM)name.c_str());
+    }
+
+    HWND hwndObjectImageListBox = GetDlgItem(g_hMapEdittorDlg, IDC_lOBJECT);
+
+    i = 1;
+    while (true)
+    {
+        string name = ImageManager::GetInstance()->GetStringData(MapEdittorSelectState::OBJECT, i++);
+        if (name.empty())
+            break;
+        SendMessage(hwndObjectImageListBox, LB_ADDSTRING, 0, (LPARAM)name.c_str());
+    }
 }

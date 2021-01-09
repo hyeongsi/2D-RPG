@@ -73,42 +73,38 @@ const HBITMAP ImageManager::GetMainFrameBitmap()
 	return mainFrameBitmap;
 }
 
-const HBITMAP ImageManager::GetBitmap(MapEdittorSelectState state, int selectNumber)
+const HBITMAP ImageManager::GetBitmapData(MapEdittorSelectState state, int selectNumber)
 {
-	switch (state)
+	try
 	{
-	case MapEdittorSelectState::BACKGROUND:
-		return backgroundBitmapData[selectNumber];
-	case MapEdittorSelectState::OBJECT:
-		return objectBitmapData[selectNumber];
-	default:
-		break;
+		switch (state)
+		{
+		case MapEdittorSelectState::BACKGROUND:
+			return backgroundBitmapData[selectNumber];
+		case MapEdittorSelectState::OBJECT:
+			return objectBitmapData[selectNumber];
+		}
+	}
+	catch (const std::exception&)
+	{
+		return NULL;
 	}
 }
 
-const map<int, HBITMAP> ImageManager::GetBitmapMapVar(const BitmapKind kind)
+const string ImageManager::GetStringData(const MapEdittorSelectState state, const int selectNumber)
 {
-	switch (kind)
+	try
 	{
-	case BitmapKind::BACKGROUND:
-		return backgroundBitmapData;
-	case BitmapKind::OBJECT:
-		return objectBitmapData;
-	default:
-		return backgroundBitmapData;
+		switch (state)
+		{
+		case MapEdittorSelectState::BACKGROUND:
+			return backgroundStringData[selectNumber];
+		case MapEdittorSelectState::OBJECT:
+			return objectStringData[selectNumber];
+		}
+	}
+	catch (const std::exception&)
+	{
+		return NULL;
 	}
 }
-
-const map<int, string> ImageManager::GetStringMapVar(const BitmapKind kind)
-{
-	switch (kind)
-	{
-	case BitmapKind::BACKGROUND:
-		return backgroundStringData;
-	case BitmapKind::OBJECT:
-		return objectStringData;
-	default:
-		return backgroundStringData;
-	}
-}
-

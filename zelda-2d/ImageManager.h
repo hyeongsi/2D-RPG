@@ -34,7 +34,6 @@ public:
 public:
 	const HBITMAP GetMainFrameBitmap();
 	
-	const HBITMAP GetBitmap(MapEdittorSelectState state, int selectNumber);
-	const map<int, HBITMAP> GetBitmapMapVar(const BitmapKind kind);
-	const map<int, string> GetStringMapVar(const BitmapKind kind);
+	const HBITMAP GetBitmapData(const MapEdittorSelectState state, const int selectNumber);
+	const string GetStringData(const MapEdittorSelectState state, const int selectNumber);
 };
