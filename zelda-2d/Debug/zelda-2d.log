@@ -1,6 +1,2 @@
-﻿  ImageManager.cpp
-  zelda-2d.cpp
-  코드를 생성하고 있습니다...
-C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\ImageManager.cpp(92): warning C4715: 'ImageManager::GetBitmapData': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\ImageManager.cpp(110): warning C4715: 'ImageManager::GetStringData': 모든 제어 경로에서 값을 반환하지는 않습니다.
+﻿  zelda-2d.cpp
   zelda-2d.vcxproj -> C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\zelda-2d.exe

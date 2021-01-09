@@ -9,7 +9,7 @@ using namespace std;
 class MapEdittor
 {
 private:
-	int selectBitmap;					// 선택한 비트맵의 번호
+	int selectIndex;					// 선택한 비트맵 인덱스
 	MapEdittorSelectState selectState;	// 배경, 오브젝트, 콜라이더 선택 상태	
 
 	WorldMap* mapData{ nullptr };					// 맵 데이터
@@ -35,5 +35,6 @@ public:
 	const WorldMap GetWorldMapData();
 	void SetWorldMapData(const WorldMap data);
 
-	const int GetSelectBitmapNumber();
+	const int GetSelectIndex();
+	void SetSelectIndex(const int index);
 };

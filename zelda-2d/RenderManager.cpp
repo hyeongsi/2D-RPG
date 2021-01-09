@@ -115,7 +115,6 @@ void RenderManager::DrawWorldMapData()
 {
     MapEdittor* mapEdittor = MapEdittor::GetInstance();
     WorldMap tempWorldMap = mapEdittor->GetWorldMapData();
-    int selectBitmapNumber = mapEdittor->GetSelectBitmapNumber();
 
     for (int y = 0; y < MAP_MAX_Y; y++)
     {
@@ -124,13 +123,17 @@ void RenderManager::DrawWorldMapData()
             // 배경 출력
             if (0 != tempWorldMap.GetData(MapEdittorSelectState::BACKGROUND, { x,y }))
             {
-                SelectObject(backMemDC, ImageManager::GetInstance()->GetBitmapData(MapEdittorSelectState::BACKGROUND, selectBitmapNumber));
+                SelectObject(backMemDC, 
+                    ImageManager::GetInstance()->GetBitmapData(MapEdittorSelectState::BACKGROUND, 
+                        tempWorldMap.GetData(MapEdittorSelectState::BACKGROUND, { x,y })));
                 BitBlt(memDC, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, SRCCOPY);
             }
             // 오브젝트 출력
             if (0 != tempWorldMap.GetData(MapEdittorSelectState::OBJECT, { x,y }))
             {
-                SelectObject(backMemDC, ImageManager::GetInstance()->GetBitmapData(MapEdittorSelectState::OBJECT, selectBitmapNumber));
+                SelectObject(backMemDC,
+                    ImageManager::GetInstance()->GetBitmapData(MapEdittorSelectState::OBJECT,
+                        tempWorldMap.GetData(MapEdittorSelectState::OBJECT, { x,y })));
                 TransparentBlt(memDC, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, TILE_SIZE, TILE_SIZE, RGB(215,123,186));
             }
             // 콜라이더 출력
@@ -168,7 +171,7 @@ void RenderManager::DrawCursorFollowBitmap()
 {
     MapEdittor* mapEdittor = MapEdittor::GetInstance();
     MapEdittorSelectState selectState = mapEdittor->GetSelectState();
-    int selectBitmapNumber = mapEdittor->GetSelectBitmapNumber();
+    int selectBitmapNumber = mapEdittor->GetSelectIndex();
 
     POINT mousePoint;       // 마우스 위치를 저장할 변수
 

@@ -33,7 +33,9 @@ RenderManager* renderManager;                   // 랜더 매니저
 
 void SetMapEdittorData();                       // 함수 선언
 void LoadTextMapData(char* filePath);
-void SetMapEdittorDlgData();                    // mapEdittorDlg 데이터 설정
+void SetMapEdittorDlgData();                                // mapEdittorDlg 데이터 설정
+void GetSelectListBoxData(MapEdittorSelectState state);     // mapEdittorDlg 리스트박스 데이터 가져오기
+void SelectListBoxSetting(MapEdittorSelectState state);     // mapEdittorDlg 리스트박스, 버튼 선택 시 설정
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -269,13 +271,17 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
     case WM_COMMAND:
         switch (LOWORD(wParam))
         {
-        case IDC_rBACKGROUND:   
-            mapEdittor->SetSelectState(MapEdittorSelectState::BACKGROUND);  break;
+        case IDC_lBACKGROUND:
+        case IDC_rBACKGROUND:
+            SelectListBoxSetting(MapEdittorSelectState::BACKGROUND);
+            break;
+        case IDC_lOBJECT:
         case IDC_rOBJECT:
-            mapEdittor->SetSelectState(MapEdittorSelectState::OBJECT);      break;
+            SelectListBoxSetting(MapEdittorSelectState::OBJECT);
+            break;
         case IDC_rCOLLIDER:
             mapEdittor->SetSelectState(MapEdittorSelectState::COLLIDER);    break;
-        case IDC_bSAVE:
+        case IDC_bSAVE: 
             break;
         case IDC_bLOAD:
             ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
@@ -299,7 +305,7 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
                     break;
                 }
             }
-            break;
+            break;    
         case IDC_bEXIT:
             ShowWindow(g_hStartButton, SW_SHOW);                // 버튼 출력
             ShowWindow(g_hMapEdittorButton, SW_SHOW);           // 버튼 출력
@@ -398,7 +404,7 @@ void LoadTextMapData(char* filePath)
 
 void SetMapEdittorDlgData()
 {
-    SendMessage(GetDlgItem(g_hMapEdittorDlg, IDC_rBACKGROUND), BM_SETCHECK, BST_CHECKED, 0);    // 선택상태 초기화
+    SendMessage(GetDlgItem(g_hMapEdittorDlg, IDC_rBACKGROUND), BM_SETCHECK, BST_CHECKED, 0);    // 버튼 선택상태 초기화
 
     HWND hwndBackGroundImageListBox = GetDlgItem(g_hMapEdittorDlg, IDC_lBACKGROUND);
     int i = 1;
@@ -420,4 +426,52 @@ void SetMapEdittorDlgData()
             break;
         SendMessage(hwndObjectImageListBox, LB_ADDSTRING, 0, (LPARAM)name.c_str());
     }
+
+    SendMessage(GetDlgItem(g_hMapEdittorDlg, IDC_lBACKGROUND), LB_SETCURSEL, 0, 0);     // 리스트박스 선택 초기화
+    SendMessage(GetDlgItem(g_hMapEdittorDlg, IDC_lOBJECT), LB_SETCURSEL, 0, 0);         // 리스트박스 선택 초기화
+}
+
+void GetSelectListBoxData(MapEdittorSelectState state)
+{
+    HWND hwndList;
+
+    switch (state)
+    {
+    case MapEdittorSelectState::BACKGROUND:
+        hwndList = GetDlgItem(g_hMapEdittorDlg, IDC_lBACKGROUND);       break;
+    case MapEdittorSelectState::OBJECT:
+        hwndList = GetDlgItem(g_hMapEdittorDlg, IDC_lOBJECT);           break;
+    default :
+        return;
+    }
+
+    int selectListBoxItemIndex = (int)SendMessage(hwndList, LB_GETCURSEL, 0, 0);
+
+    selectListBoxItemIndex += 1;        // 이미지 인덱스 1부터 시작하기 때문에 +1 시켜줌
+    MapEdittor::GetInstance()->SetSelectIndex(selectListBoxItemIndex);
+}
+
+void SelectListBoxSetting(MapEdittorSelectState state)
+{
+    int unCheckButton;
+    int checkButton;
+
+    switch (state)
+    {
+    case MapEdittorSelectState::BACKGROUND:
+        unCheckButton = IDC_rOBJECT;
+        checkButton = IDC_rBACKGROUND;
+        break;
+    case MapEdittorSelectState::OBJECT:
+        unCheckButton = IDC_rBACKGROUND;
+        checkButton = IDC_rOBJECT; 
+        break;
+    default:
+        return;
+    }
+
+    SendMessage(GetDlgItem(g_hMapEdittorDlg, unCheckButton), BM_SETCHECK, BST_UNCHECKED, 0);        // 버튼 선택상태 초기화
+    SendMessage(GetDlgItem(g_hMapEdittorDlg, checkButton), BM_SETCHECK, BST_CHECKED, 0);            // 버튼 선택상태 초기화
+    mapEdittor->SetSelectState(state);
+    GetSelectListBoxData(state);
 }

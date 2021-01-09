@@ -44,7 +44,7 @@ void MapEdittor::Init()
 
     mapData = new WorldMap();
 
-    selectBitmap = BackGroundTextureName::grass;
+    selectIndex = BackGroundTextureName::grass;
     selectState = MapEdittorSelectState::BACKGROUND;
 }
 
@@ -64,10 +64,10 @@ void MapEdittor::SetMapData(const POINT pos, const bool isLbutton)
         switch (selectState)
         {
         case MapEdittorSelectState::BACKGROUND:
-            mapData->backgroundData[mapPos.y][mapPos.x] = selectBitmap;
+            mapData->backgroundData[mapPos.y][mapPos.x] = selectIndex;
             break;
         case MapEdittorSelectState::OBJECT:
-            mapData->objectData[mapPos.y][mapPos.x] = selectBitmap;
+            mapData->objectData[mapPos.y][mapPos.x] = selectIndex;
             break;
         case MapEdittorSelectState::COLLIDER:
             mapData->coliderData[mapPos.y][mapPos.x] = true;
@@ -119,7 +119,12 @@ void MapEdittor::SetWorldMapData(const WorldMap data)
     *mapData = data;
 }
 
-const int MapEdittor::GetSelectBitmapNumber()
+const int MapEdittor::GetSelectIndex()
 {
-    return selectBitmap;
+    return selectIndex;
+}
+
+void MapEdittor::SetSelectIndex(const int index)
+{
+    selectIndex = index;
 }
