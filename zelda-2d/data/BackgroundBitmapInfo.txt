@@ -1,1 +1,0 @@
-1	images/backgrounds/grass.bmp		grass

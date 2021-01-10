@@ -64,8 +64,8 @@ void ImageManager::LoadBitmapPathData(const MapEdittorSelectState state, const s
 
 void ImageManager::LoadMapEdittorBitmap()
 {
-	LoadBitmapPathData(MapEdittorSelectState::BACKGROUND, "data/BackgroundBitmapInfo.txt");
-	LoadBitmapPathData(MapEdittorSelectState::OBJECT, "data/ObjectBitmapInfo.txt");
+	LoadBitmapPathData(MapEdittorSelectState::BACKGROUND, "data/bitmapifo/BackgroundBitmapInfo.txt");
+	LoadBitmapPathData(MapEdittorSelectState::OBJECT, "data/bitmapifo/ObjectBitmapInfo.txt");
 }
 
 const HBITMAP ImageManager::GetMainFrameBitmap()

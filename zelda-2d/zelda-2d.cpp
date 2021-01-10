@@ -32,7 +32,8 @@ ImageManager* imageManager;                     // 이미지 매니저
 RenderManager* renderManager;                   // 랜더 매니저
 
 void SetMapEdittorData();                       // 함수 선언
-void LoadTextMapData(char* filePath);
+void LoadTextMapData(char* filePath);           // 맵 정보 로드
+void SaveTextMapData(char* filePath);           // 맵 정보 저장
 void SetMapEdittorDlgData();                                // mapEdittorDlg 데이터 설정
 void GetSelectListBoxData(MapEdittorSelectState state);     // mapEdittorDlg 리스트박스 데이터 가져오기
 void SelectListBoxSetting(MapEdittorSelectState state);     // mapEdittorDlg 리스트박스, 버튼 선택 시 설정
@@ -282,19 +283,40 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
         case IDC_rCOLLIDER:
             mapEdittor->SetSelectState(MapEdittorSelectState::COLLIDER);    break;
         case IDC_bSAVE: 
+            ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
+            openFileName.lStructSize = sizeof(openFileName);
+            openFileName.hwndOwner = g_hWnd;
+            openFileName.lpstrTitle = "저장";
+            openFileName.lpstrFileTitle = strFileTitle;
+            openFileName.lpstrFile = strFilePath;
+            openFileName.lpstrFilter = "맵 데이터(*.txt)\0*.txt\0";
+            openFileName.nMaxFile = MAX_PATH;
+            openFileName.nMaxFileTitle = MAX_PATH;
+
+            if (GetSaveFileName(&openFileName) != 0)    // 인덱스가 1부터 시작하기 때문에 지정
+            {
+                switch (openFileName.nFilterIndex)
+                {
+                case 1:
+                    SaveTextMapData(strFilePath);
+                    break;
+                default:
+                    break;
+                }
+            }
             break;
         case IDC_bLOAD:
             ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
             openFileName.lStructSize = sizeof(openFileName);
             openFileName.hwndOwner = g_hWnd;
-            openFileName.lpstrTitle = "파일을 선택해 주세요";
+            openFileName.lpstrTitle = "로드";
             openFileName.lpstrFileTitle = strFileTitle;
             openFileName.lpstrFile = strFilePath;
-            openFileName.lpstrFilter = "임시 파일(*.*)";
+            openFileName.lpstrFilter = "맵 데이터(*.txt)\0*.txt\0";
             openFileName.nMaxFile = MAX_PATH;
             openFileName.nMaxFileTitle = MAX_PATH;        
 
-            if (GetOpenFileName(&openFileName) != 0)
+            if (GetOpenFileName(&openFileName) != 0)    // 인덱스가 1부터 시작하기 때문에 지정
             {
                 switch (openFileName.nFilterIndex)
                 {
@@ -354,7 +376,7 @@ void LoadTextMapData(char* filePath)
     WorldMap mapData;   // 불러온 맵의 값 저장할 변수
     MapEdittorSelectState selectState;
     string str;
-;
+
     readFile.open(filePath);
     if (readFile.is_open())
     {
@@ -400,6 +422,62 @@ void LoadTextMapData(char* filePath)
     mapEdittor->SetWorldMapData(mapData);
 
     readFile.close();
+}
+
+void SaveTextMapData(char* filePath)
+{
+    ofstream writeFile;
+    int value[2] = { MAP_MAX_Y , MAP_MAX_X };   // 상단 맵 크기 저장할 변수
+    WorldMap mapData = mapEdittor->GetWorldMapData();   // 저장할 맵 에디터의 맵 데이터
+    MapEdittorSelectState selectState;
+    string str;
+    
+    writeFile.open(filePath);
+    if (writeFile.is_open())
+    {
+        try
+        {
+            for (int i = 0; i < 2; i++) // 맵의 크기, x,y값 저장
+            {
+                writeFile << value[i]<<' ';
+            }
+
+            writeFile << '\n';
+
+            for (int i = 0; i < 3; i++) // 배경, 오브젝트, 콜라이더 데이터를 받는다.
+            {
+                switch (i)
+                {
+                case 0:
+                    selectState = MapEdittorSelectState::BACKGROUND;
+                    str = "background";                         break;
+                case 1:
+                    selectState = MapEdittorSelectState::OBJECT;
+                    str = "objects";                            break;
+                case 2:
+                    selectState = MapEdittorSelectState::COLLIDER;
+                    str = "collider";                           break;
+                }
+                writeFile << str<<'\n';    // background, objects, colider 구분 문자열
+
+                for (int y = 0; y < MAP_MAX_Y; y++)
+                {
+                    for (int x = 0; x < MAP_MAX_X; x++)
+                    {
+                        writeFile << mapData.GetData(selectState, { x,y }) << ' ';
+                    }
+                    writeFile << '\n';
+                }
+            }
+        }
+        catch (const std::exception&)
+        {
+            writeFile.close();
+            return;
+        }
+    }
+
+    writeFile.close();
 }
 
 void SetMapEdittorDlgData()
