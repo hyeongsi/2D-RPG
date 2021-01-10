@@ -29,7 +29,17 @@ namespace BackGroundTextureName
 {
 	enum
 	{
-		grass = 1
+		grass = 1,
+		grass_water1,
+		grass_water2,
+		grass_water3,
+		grass_water4,
+		grass_water5,
+		grass_water6,
+		grass_water7,
+		grass_water8,
+		grass_water9,
+		castle_tile
 	};
 }
 
@@ -40,7 +50,10 @@ namespace ObjectTextureName
 		grassBlock1 = 1,
 		grassBlock2,
 		grassBlock3,
-		grassBlock4
+		grassBlock4,
+		wood_house,
+		castle_door_close,
+		castle_pillar
 	};
 }
 

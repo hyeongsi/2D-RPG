@@ -486,7 +486,7 @@ void SetMapEdittorDlgData()
 
     HWND hwndBackGroundImageListBox = GetDlgItem(g_hMapEdittorDlg, IDC_lBACKGROUND);
     int i = 1;
-    while (true)
+    while (true)    // 리스트 박스 배경 문자열 추가 코드
     {
         string name = ImageManager::GetInstance()->GetStringData(MapEdittorSelectState::BACKGROUND, i++);
         if (name.empty())
@@ -497,7 +497,7 @@ void SetMapEdittorDlgData()
     HWND hwndObjectImageListBox = GetDlgItem(g_hMapEdittorDlg, IDC_lOBJECT);
 
     i = 1;
-    while (true)
+    while (true)    // 리스트 박스 오브젝트 문자열 추가 코드
     {
         string name = ImageManager::GetInstance()->GetStringData(MapEdittorSelectState::OBJECT, i++);
         if (name.empty())

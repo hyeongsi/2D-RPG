@@ -116,27 +116,47 @@ void RenderManager::DrawWorldMapData()
     MapEdittor* mapEdittor = MapEdittor::GetInstance();
     WorldMap tempWorldMap = mapEdittor->GetWorldMapData();
 
+    // 배경 출력
     for (int y = 0; y < MAP_MAX_Y; y++)
     {
         for (int x = 0; x < MAP_MAX_X; x++)
         {
-            // 배경 출력
             if (0 != tempWorldMap.GetData(MapEdittorSelectState::BACKGROUND, { x,y }))
             {
-                SelectObject(backMemDC, 
-                    ImageManager::GetInstance()->GetBitmapData(MapEdittorSelectState::BACKGROUND, 
-                        tempWorldMap.GetData(MapEdittorSelectState::BACKGROUND, { x,y })));
-                BitBlt(memDC, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, SRCCOPY);
+                HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(MapEdittorSelectState::BACKGROUND,
+                    tempWorldMap.GetData(MapEdittorSelectState::BACKGROUND, { x,y }));
+
+                BITMAP bit;
+                SelectObject(backMemDC, bitmap);
+                GetObject(bitmap, sizeof(bit), &bit);
+                BitBlt(memDC, x * TILE_SIZE, y * TILE_SIZE, bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, SRCCOPY);
             }
-            // 오브젝트 출력
+        }
+    }
+
+    // 오브젝트 출력
+    for (int y = 0; y < MAP_MAX_Y; y++)
+    {
+        for (int x = 0; x < MAP_MAX_X; x++)
+        {
             if (0 != tempWorldMap.GetData(MapEdittorSelectState::OBJECT, { x,y }))
             {
-                SelectObject(backMemDC,
-                    ImageManager::GetInstance()->GetBitmapData(MapEdittorSelectState::OBJECT,
-                        tempWorldMap.GetData(MapEdittorSelectState::OBJECT, { x,y })));
-                TransparentBlt(memDC, x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, TILE_SIZE, TILE_SIZE, RGB(215,123,186));
+                HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(MapEdittorSelectState::OBJECT,
+                    tempWorldMap.GetData(MapEdittorSelectState::OBJECT, { x,y }));
+
+                BITMAP bit;
+                SelectObject(backMemDC, bitmap);
+                GetObject(bitmap, sizeof(bit), &bit);
+                TransparentBlt(memDC, x * TILE_SIZE, y * TILE_SIZE, bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, bit.bmWidth, bit.bmHeight, RGB(215, 123, 186));
             }
-            // 콜라이더 출력
+        }
+    }
+
+    // 콜라이더 출력
+    for (int y = 0; y < MAP_MAX_Y; y++)
+    {
+        for (int x = 0; x < MAP_MAX_X; x++)
+        {
             if (0 != tempWorldMap.GetData(MapEdittorSelectState::COLLIDER, { x,y }))
             {
                 HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
@@ -180,8 +200,10 @@ void RenderManager::DrawCursorFollowBitmap()
         GetCursorPos(&mousePoint);              // 커서 위치를 가져오고
         ScreenToClient(g_hWnd, &mousePoint);    // 클라이언트 영역 좌표로 변환 후
 
-        SelectObject(backMemDC, ImageManager::GetInstance()->GetBitmapData(selectState, selectBitmapNumber));
-
-        BitBlt(memDC, mousePoint.x, mousePoint.y, TILE_SIZE, TILE_SIZE, backMemDC, 0, 0, SRCCOPY);
+        HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(selectState, selectBitmapNumber);
+        SelectObject(backMemDC, bitmap);
+        BITMAP bit;
+        GetObject(bitmap, sizeof(bit), &bit);
+        BitBlt(memDC, mousePoint.x, mousePoint.y, bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, SRCCOPY);
     }
 }

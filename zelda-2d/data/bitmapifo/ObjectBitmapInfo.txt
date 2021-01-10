@@ -2,3 +2,6 @@
 2		images/objects/grassBlock2.bmp		grassBlock2
 3		images/objects/grassBlock3.bmp		grassBlock3
 4		images/objects/grassBlock4.bmp		grassBlock4
+5		images/objects/wood_house.bmp		wood_house
+6		images/objects/castle_door_close.bmp		castle_door_close
+7		images/objects/castle_pillar.bmp		castle_pillar

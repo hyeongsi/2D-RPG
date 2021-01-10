@@ -21,7 +21,6 @@
 #define IDC_rBACKGROUND                 1009
 #define IDC_lOBJECT                     1011
 #define IDC_lBACKGROUND                 1013
-#define IDC_SCROLLBAR1                  1015
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
