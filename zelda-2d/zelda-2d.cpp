@@ -37,6 +37,8 @@ void SaveTextMapData(char* filePath);           // 맵 정보 저장
 void SetMapEdittorDlgData();                                // mapEdittorDlg 데이터 설정
 void GetSelectListBoxData(MapEdittorSelectState state);     // mapEdittorDlg 리스트박스 데이터 가져오기
 void SelectListBoxSetting(MapEdittorSelectState state);     // mapEdittorDlg 리스트박스, 버튼 선택 시 설정
+void ShowMainFrameButton();
+void HideMainFrameButton();
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -89,18 +91,26 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             }
         }
 
-        if (GameState::MAPEDITTOR != gameManager->GetState())
+        switch (gameManager->GetState())
         {
+        case GameState::MAIN:
             renderManager->RenderInitSetting();
-            gameManager->Run();
             renderManager->MainFrameDataSetting();
             renderManager->Render();
-        }
-        else
-        {
+            break;
+        case GameState::MAPEDITTOR:
             renderManager->RenderInitSetting();
             renderManager->MapEdittorDataSetting();
             renderManager->Render();
+            break;
+        case GameState::INGAME:
+            gameManager->Run();
+            renderManager->RenderInitSetting();
+            // renderManager data setting code;
+            renderManager->Render();
+            break;
+        default:
+            break;
         }
     }
 
@@ -172,31 +182,27 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             switch (LOWORD(wParam))
             {
             case ButtonKind::START:
-
+                HideMainFrameButton();                               // 버튼 숨기기
                 break;
             case ButtonKind::MAPEDITTOR:
-                if (GameState::MAPEDITTOR != gameManager->GetState())    // 맵 에디터 상태가 아니면
-                {
-                    ShowWindow(g_hStartButton, SW_HIDE);                // 버튼 숨기기
-                    ShowWindow(g_hMapEdittorButton, SW_HIDE);           // 버튼 숨기기
+                HideMainFrameButton();                               // 버튼 숨기기
 
-                    gameManager->SetState(GameState::MAPEDITTOR);        // 맵 에디터 실행
-                    imageManager->LoadMapEdittorBitmap();                // 맵 에디터에서 사용할 이미지 로드
-                    mapEdittor->Init();
+                gameManager->SetState(GameState::MAPEDITTOR);        // 맵 에디터 실행
+                imageManager->LoadMapEdittorBitmap();                // 맵 에디터에서 사용할 이미지 로드
+                mapEdittor->Init();
 
-                    g_hMapEdittorDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, MapEdittorDlg);  // 다이얼로그 생성
-                    SetMapEdittorDlgData();
+                g_hMapEdittorDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, MapEdittorDlg);  // 다이얼로그 생성
+                SetMapEdittorDlgData();
 
-                    RECT dlgRect;
-                    SIZE dlgSize;
-                    GetWindowRect(g_hMapEdittorDlg, &dlgRect);
-                    dlgSize.cx = dlgRect.right - dlgRect.left;
-                    dlgSize.cy = dlgRect.bottom - dlgRect.top;
-                    MoveWindow(g_hMapEdittorDlg, 500 + g_clientSize.cx, 200,
-                        dlgSize.cx, dlgSize.cy, true);   // 해당 지점에 클라이언트 크기만큼 설정 후 출력
+                RECT dlgRect;
+                SIZE dlgSize;
+                GetWindowRect(g_hMapEdittorDlg, &dlgRect);
+                dlgSize.cx = dlgRect.right - dlgRect.left;
+                dlgSize.cy = dlgRect.bottom - dlgRect.top;
+                MoveWindow(g_hMapEdittorDlg, 500 + g_clientSize.cx, 200,
+                    dlgSize.cx, dlgSize.cy, true);   // 해당 지점에 클라이언트 크기만큼 설정 후 출력
 
-                    ShowWindow(g_hMapEdittorDlg, SW_SHOW);
-                }
+                ShowWindow(g_hMapEdittorDlg, SW_SHOW);
 
                 InvalidateRect(hWnd, nullptr, true);    // 화면 초기화
                 break;
@@ -329,8 +335,7 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
             }
             break;    
         case IDC_bEXIT:
-            ShowWindow(g_hStartButton, SW_SHOW);                // 버튼 출력
-            ShowWindow(g_hMapEdittorButton, SW_SHOW);           // 버튼 출력
+            ShowMainFrameButton();
 
             gameManager->SetState(GameState::MAIN);              // 상태값 변경
             DestroyWindow(g_hMapEdittorDlg);                    // 다이얼로그 삭제
@@ -385,7 +390,6 @@ void LoadTextMapData(char* filePath)
             for (int i = 0; i < 2; i++) // 맵의 크기, x,y값을 받고
             {
                 readFile >> str;
-
                 value[i] = stoi(str);
             }
 
@@ -552,4 +556,16 @@ void SelectListBoxSetting(MapEdittorSelectState state)
     SendMessage(GetDlgItem(g_hMapEdittorDlg, checkButton), BM_SETCHECK, BST_CHECKED, 0);            // 버튼 선택상태 초기화
     mapEdittor->SetSelectState(state);
     GetSelectListBoxData(state);
+}
+
+void ShowMainFrameButton()
+{
+    ShowWindow(g_hStartButton, SW_SHOW);                // 버튼 출력
+    ShowWindow(g_hMapEdittorButton, SW_SHOW);           // 버튼 출력
+}
+
+void HideMainFrameButton()
+{
+    ShowWindow(g_hStartButton, SW_HIDE);                // 버튼 숨기기
+    ShowWindow(g_hMapEdittorButton, SW_HIDE);           // 버튼 숨기기
 }
