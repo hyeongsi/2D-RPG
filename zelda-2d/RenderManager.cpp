@@ -1,9 +1,5 @@
 ﻿#include "pch.h"
 #include "RenderManager.h"
-#include "ImageManager.h"
-#include "MapEdittor.h"
-#include "GameManager.h"
-#pragma comment (lib, "Msimg32.lib")
 
 extern HWND g_hWnd;
 extern SIZE g_clientSize;
@@ -120,12 +116,30 @@ void RenderManager::MapEdittorDataRender()
     Render();                   // 출력
 }
 
-void RenderManager::InGameDataRender()
+void RenderManager::InGameDataRender(Character character)
 {
     RenderInitSetting();        // 출력 전 초기화 작업
 
-    DrawWorldMapData(GameState::INGAME);
-    DrawCharUIData(UITextureName::Char_Info, {10,10});
+    DrawWorldMapData(GameState::INGAME);        // 맵 출력
+    character.GetPos();                                       //캐릭터 출력
+    //UI 출력
+    DrawCharUIData(UITextureName::Char_Info, { 10,10 });
+
+    // HP에 따라 출력되는 HP UI 설정 부분   /   ex)(0이면 빈하트 3개 출력) , (2이면 빈하트 2개, 꽉찬하트 1개 출력)
+    int hp[3] = { UITextureName::HP_Full, UITextureName::HP_Full , UITextureName::HP_Full };
+    int tempCharacterHp = character.GetHp();
+    for (int index = HP_UI_COUNT; index > 0; index--)               // 3,2,1 루프
+    {
+        for (int count = 0; count < (UITextureName::HP_Full - UITextureName::HP_Empty); count++)    // 2번 루프
+        {
+            if (tempCharacterHp < MAX_HP)
+            {
+                hp[index - 1] -= 1;
+                tempCharacterHp += 1;
+            }
+        }
+        DrawCharUIData(hp[index - 1], { 70 + (30 * (index - 1)),40 });     // 배열이 0부터 시작하여 i에 -1을 해줌
+    }
 
     Render();                   // 출력
 }

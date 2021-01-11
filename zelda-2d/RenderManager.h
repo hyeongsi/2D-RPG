@@ -1,5 +1,14 @@
 ﻿#pragma once
+
 #include "DataStruct.h"
+#include "ImageManager.h"
+#include "MapEdittor.h"
+#include "GameManager.h"
+#include "Character.h"
+
+#pragma comment (lib, "Msimg32.lib")
+
+constexpr int HP_UI_COUNT = 3;
 
 class RenderManager
 {
@@ -31,7 +40,7 @@ public:
 public:
 	void MainFrameDataRender();
 	void MapEdittorDataRender();
-	void InGameDataRender();
+	void InGameDataRender(Character character);
 
 public:
 	void DrawWorldMapData(const GameState gameState);

@@ -8,6 +8,7 @@
 #include "mapEdittor.h"
 #include "imageManager.h"
 #include "renderManager.h"
+#include "Character.h"
 #include <commdlg.h>
 
 #define MAX_LOADSTRING 100
@@ -30,6 +31,8 @@ GameManager* gameManager;                       // 게임 매니저
 MapEdittor* mapEdittor;                         // 맵 에디터
 ImageManager* imageManager;                     // 이미지 매니저
 RenderManager* renderManager;                   // 랜더 매니저
+
+Character* character;                            // 캐릭터 클래스
 
 void SetMapEdittorData();                       // 함수 선언
 void LoadTextMapData(const GameState state,const char* filePath);           // 맵 정보 로드
@@ -101,7 +104,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             break;
         case GameState::INGAME:
             gameManager->Run();
-            renderManager->InGameDataRender();
+            renderManager->InGameDataRender(gameManager->GetCharacter());
             break;
         default:
             break;
@@ -178,6 +181,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case ButtonKind::START:
                 HideMainFrameButton();                               // 버튼 숨기기
                 gameManager->SetState(GameState::INGAME);            // 인게임 실행
+                gameManager->SetCharacter(new Character());          // 캐릭터 생성
 
                 imageManager->LoadMapBitmapData();                      // 인게임에서 사용할 맵 관련 비트맵 로드
                 imageManager->LoadBitmapPathData(BitmapKind::UI, UI_BITMAP_PATH);   // 인게임에서 사용할 UI 비트맵 로드

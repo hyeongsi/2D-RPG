@@ -10,6 +10,8 @@ GameManager::GameManager()
 
 GameManager::~GameManager()
 {
+	delete character;
+	character = nullptr;
 }
 
 GameManager* GameManager::GetInstance()
@@ -49,4 +51,14 @@ void GameManager::SetWorldMapData(const WorldMap worldMap)
 const WorldMap GameManager::GetWorldMapData()
 {
 	return worldMap;
+}
+
+void GameManager::SetCharacter(Character* character)
+{
+	this->character = character;
+}
+
+const Character GameManager::GetCharacter()
+{
+	return *character;
 }

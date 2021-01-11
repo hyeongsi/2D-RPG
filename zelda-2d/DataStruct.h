@@ -70,7 +70,7 @@ namespace UITextureName
 		Char_Info = 1,
 		HP_Empty,
 		HP_Half,
-		HP_Full
+		HP_Full,
 	};
 }
 
