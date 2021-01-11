@@ -9,6 +9,10 @@ constexpr POINT START_BUTTON_POINT = { 370,430 };
 constexpr POINT MAPEDITTOR_BUTTON_POINT = { 370,480 };
 constexpr SIZE BUTTON_SIZE = { 100,30 };
 
+constexpr char BACKGROUND_BITMAP_PATH[] = { "data/bitmapifo/BackgroundBitmapInfo.txt" };
+constexpr char OBJECT_BITMAP_PATH[] = { "data/bitmapifo/ObjectBitmapInfo.txt" };
+constexpr char UI_BITMAP_PATH[] = { "data/bitmapifo/UIBitmapInfo.txt" };
+
 constexpr char STAGE1_PATH[] = { "data/mapinfo/TileMapInfo.txt" };
 
 namespace ClientSize

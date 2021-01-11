@@ -30,7 +30,7 @@ public:
 
 public:
 	void LoadBitmapPathData(const BitmapKind kind, const string str);
-	void LoadBitmapData();
+	void LoadMapBitmapData();
 
 public:
 	const HBITMAP GetMainFrameBitmap();

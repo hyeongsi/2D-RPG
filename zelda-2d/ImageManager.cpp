@@ -30,28 +30,29 @@ void ImageManager::ReleaseInstance()
 void ImageManager::LoadBitmapPathData(const BitmapKind kind, const string str)
 {
 	ifstream readFile;
+	string number;
+	string path;
+	string name;
 
 	readFile.open(str);
 	if (readFile.is_open())
 	{
 		while (!readFile.eof())
 		{
-			string number;
 			readFile >> number;
-
-			string path;
 			readFile >> path;
-
-			string name;
-			readFile >> name;
 
 			switch (kind)
 			{
 			case BitmapKind::BACKGROUND:
+				readFile >> name;
+
 				backgroundBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 				backgroundStringData[stoi(number)] = name;
 				break;
 			case BitmapKind::OBJECT:
+				readFile >> name;
+
 				objectBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 				objectStringData[stoi(number)] = name;
 				break;
@@ -65,10 +66,10 @@ void ImageManager::LoadBitmapPathData(const BitmapKind kind, const string str)
 	readFile.close();
 }
 
-void ImageManager::LoadBitmapData()
+void ImageManager::LoadMapBitmapData()
 {
-	LoadBitmapPathData(BitmapKind::BACKGROUND, "data/bitmapifo/BackgroundBitmapInfo.txt");
-	LoadBitmapPathData(BitmapKind::OBJECT, "data/bitmapifo/ObjectBitmapInfo.txt");
+	LoadBitmapPathData(BitmapKind::BACKGROUND, BACKGROUND_BITMAP_PATH);
+	LoadBitmapPathData(BitmapKind::OBJECT, OBJECT_BITMAP_PATH);
 }
 
 const HBITMAP ImageManager::GetMainFrameBitmap()
@@ -86,6 +87,8 @@ const HBITMAP ImageManager::GetBitmapData(const BitmapKind kind,const int select
 			return backgroundBitmapData[selectNumber];
 		case BitmapKind::OBJECT:
 			return objectBitmapData[selectNumber];
+		case BitmapKind::UI:
+			return uiBitmapData[selectNumber];
 		}
 	}
 	catch (const std::exception&)

@@ -35,6 +35,9 @@ public:
 
 public:
 	void DrawWorldMapData(const GameState gameState);
+
+	void DrawCharUIData(const int uiName, const POINT pos);
+
 	void DrawCheckPattern();
 	void DrawCursorFollowBitmap();
 };

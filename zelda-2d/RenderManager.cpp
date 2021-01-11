@@ -125,6 +125,7 @@ void RenderManager::InGameDataRender()
     RenderInitSetting();        // 출력 전 초기화 작업
 
     DrawWorldMapData(GameState::INGAME);
+    DrawCharUIData(UITextureName::Char_Info, {10,10});
 
     Render();                   // 출력
 }
@@ -208,6 +209,16 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
     default:
         return;
     }
+}
+
+void RenderManager::DrawCharUIData(const int uiName, const POINT pos)
+{
+    HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::UI, uiName);
+
+    BITMAP bit;
+    SelectObject(backMemDC, bitmap);
+    GetObject(bitmap, sizeof(bit), &bit);
+    TransparentBlt(memDC, pos.x, pos.y, bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, bit.bmWidth, bit.bmHeight, RGB(215, 123, 186));
 }
 
 void RenderManager::DrawCheckPattern()

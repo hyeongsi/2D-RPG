@@ -1,7 +1,4 @@
-1		images/objects/grassBlock1.bmp		grassBlock1
-2		images/objects/grassBlock2.bmp		grassBlock2
-3		images/objects/grassBlock3.bmp		grassBlock3
-4		images/objects/grassBlock4.bmp		grassBlock4
-5		images/objects/wood_house.bmp		wood_house
-6		images/objects/castle_door_close.bmp		castle_door_close
-7		images/objects/castle_pillar.bmp		castle_pillar
+1		images/UI/Char_Info.bmp
+2		images/UI/HP_Empty.bmp
+3		images/UI/HP_Half.bmp
+4		images/UI/HP_Full.bmp

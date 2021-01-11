@@ -179,7 +179,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 HideMainFrameButton();                               // 버튼 숨기기
                 gameManager->SetState(GameState::INGAME);            // 인게임 실행
 
-                imageManager->LoadBitmapData();                      // 인게임에서 사용할 이미지 로드
+                imageManager->LoadMapBitmapData();                      // 인게임에서 사용할 맵 관련 비트맵 로드
+                imageManager->LoadBitmapPathData(BitmapKind::UI, UI_BITMAP_PATH);   // 인게임에서 사용할 UI 비트맵 로드
                 LoadTextMapData(GameState::INGAME, STAGE1_PATH);     // 인게임에서 사용할 맵데이터 로드
 
                 InvalidateRect(hWnd, nullptr, true);    // 화면 초기화
@@ -188,7 +189,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 HideMainFrameButton();                               // 버튼 숨기기
 
                 gameManager->SetState(GameState::MAPEDITTOR);        // 맵 에디터 실행
-                imageManager->LoadBitmapData();                // 맵 에디터에서 사용할 이미지 로드
+                imageManager->LoadMapBitmapData();                // 맵 에디터에서 사용할 이미지 로드
                 mapEdittor->Init();
 
                 g_hMapEdittorDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, MapEdittorDlg);  // 다이얼로그 생성
