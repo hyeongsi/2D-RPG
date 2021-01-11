@@ -8,6 +8,7 @@ private:
 	HDC memDC{ nullptr };
 	HDC backMemDC{ nullptr };
 	HBITMAP oldCreateBitmap{ nullptr };
+
 private:
 	static RenderManager* instance;
 
@@ -28,11 +29,12 @@ public:
 	void Render();
 	
 public:
-	void MainFrameDataSetting();
-	void MapEdittorDataSetting();
+	void MainFrameDataRender();
+	void MapEdittorDataRender();
+	void InGameDataRender();
 
 public:
-	void DrawWorldMapData();
+	void DrawWorldMapData(const GameState gameState);
 	void DrawCheckPattern();
 	void DrawCursorFollowBitmap();
 };

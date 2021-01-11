@@ -1,10 +1,14 @@
 ﻿#pragma once
 #include "DataStruct.h"
+#include "WorldMap.h"
 
 class GameManager
 {
 private:
 	GameState state;
+
+	WorldMap worldMap;
+
 private:
 	static GameManager* instance;
 
@@ -20,5 +24,8 @@ public:
 public:
 	const GameState GetState();
 	void SetState(const GameState state);
+
+	void SetWorldMapData(const WorldMap worldMap);
+	const WorldMap GetWorldMapData();
 };
 

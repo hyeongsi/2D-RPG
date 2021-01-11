@@ -2,6 +2,7 @@
 #include "RenderManager.h"
 #include "ImageManager.h"
 #include "MapEdittor.h"
+#include "GameManager.h"
 #pragma comment (lib, "Msimg32.lib")
 
 extern HWND g_hWnd;
@@ -97,24 +98,56 @@ void RenderManager::Render()
     BitBlt(hdc, 0, 0, ClientSize::width, ClientSize::height, memDC, 0, 0, SRCCOPY);
 }
 
-void RenderManager::MainFrameDataSetting()
+void RenderManager::MainFrameDataRender()
 {
-    SaveMemDcData(ImageManager::GetInstance()->GetMainFrameBitmap(), { 0,0 });
+    RenderInitSetting();            // 출력 전 초기화 작업
+
+    SaveMemDcData(ImageManager::GetInstance()->GetMainFrameBitmap(), { 0,0 });      // 출력할 비트맵 세팅 작업
     SaveMemDcData(g_hStartButton, START_BUTTON_POINT);
     SaveMemDcData(g_hMapEdittorButton, MAPEDITTOR_BUTTON_POINT);
+
+    Render();                   // 출력
 }
 
-void RenderManager::MapEdittorDataSetting()
+void RenderManager::MapEdittorDataRender()
 {
-    DrawWorldMapData();
+    RenderInitSetting();        // 출력 전 초기화 작업
+
+    DrawWorldMapData(GameState::MAPEDITTOR);         // 출력할 비트맵 세팅 작업
     DrawCheckPattern();
     DrawCursorFollowBitmap();
+
+    Render();                   // 출력
 }
 
-void RenderManager::DrawWorldMapData()
+void RenderManager::InGameDataRender()
 {
-    MapEdittor* mapEdittor = MapEdittor::GetInstance();
-    WorldMap tempWorldMap = mapEdittor->GetWorldMapData();
+    RenderInitSetting();        // 출력 전 초기화 작업
+
+    DrawWorldMapData(GameState::INGAME);
+
+    Render();                   // 출력
+}
+
+void RenderManager::DrawWorldMapData(const GameState gameState)
+{
+    GameManager* gameManager = nullptr;
+    MapEdittor* mapEdittor = nullptr;
+    WorldMap tempWorldMap;
+
+    switch (gameState)
+    {
+    case GameState::INGAME:
+        gameManager = GameManager::GetInstance();
+        tempWorldMap = gameManager->GetWorldMapData();
+        break;
+    case GameState::MAPEDITTOR:
+        mapEdittor = MapEdittor::GetInstance();
+        tempWorldMap = mapEdittor->GetWorldMapData();
+        break;
+    default:
+        return;
+    }
 
     // 배경 출력
     for (int y = 0; y < MAP_MAX_Y; y++)
@@ -152,21 +185,28 @@ void RenderManager::DrawWorldMapData()
         }
     }
 
-    // 콜라이더 출력
-    for (int y = 0; y < MAP_MAX_Y; y++)
+    switch (gameState)
     {
-        for (int x = 0; x < MAP_MAX_X; x++)
+    case GameState::MAPEDITTOR:
+        // 콜라이더 출력
+        for (int y = 0; y < MAP_MAX_Y; y++)
         {
-            if (0 != tempWorldMap.GetData(MapEdittorSelectState::COLLIDER, { x,y }))
+            for (int x = 0; x < MAP_MAX_X; x++)
             {
-                HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
-                HBRUSH oldBrush = (HBRUSH)SelectObject(memDC, myBrush);
+                if (0 != tempWorldMap.GetData(MapEdittorSelectState::COLLIDER, { x,y }))
+                {
+                    HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+                    HBRUSH oldBrush = (HBRUSH)SelectObject(memDC, myBrush);
 
-                Ellipse(memDC, x * TILE_SIZE, y * TILE_SIZE, x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE + TILE_SIZE);
+                    Ellipse(memDC, x * TILE_SIZE, y * TILE_SIZE, x * TILE_SIZE + TILE_SIZE, y * TILE_SIZE + TILE_SIZE);
 
-                SelectObject(memDC, oldBrush);
+                    SelectObject(memDC, oldBrush);
+                }
             }
         }
+        break;
+    default:
+        return;
     }
 }
 

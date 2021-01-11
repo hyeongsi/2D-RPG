@@ -32,13 +32,13 @@ ImageManager* imageManager;                     // 이미지 매니저
 RenderManager* renderManager;                   // 랜더 매니저
 
 void SetMapEdittorData();                       // 함수 선언
-void LoadTextMapData(char* filePath);           // 맵 정보 로드
-void SaveTextMapData(char* filePath);           // 맵 정보 저장
+void LoadTextMapData(const GameState state,const char* filePath);           // 맵 정보 로드
+void SaveTextMapData(const char* filePath);           // 맵 정보 저장
 void SetMapEdittorDlgData();                                // mapEdittorDlg 데이터 설정
-void GetSelectListBoxData(MapEdittorSelectState state);     // mapEdittorDlg 리스트박스 데이터 가져오기
-void SelectListBoxSetting(MapEdittorSelectState state);     // mapEdittorDlg 리스트박스, 버튼 선택 시 설정
-void ShowMainFrameButton();
-void HideMainFrameButton();
+void GetSelectListBoxData(const MapEdittorSelectState state);     // mapEdittorDlg 리스트박스 데이터 가져오기
+void SelectListBoxSetting(const MapEdittorSelectState state);     // mapEdittorDlg 리스트박스, 버튼 선택 시 설정
+void ShowMainFrameButton();                                 // 버튼 출력
+void HideMainFrameButton();                                 // 버튼 숨기기
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -94,20 +94,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         switch (gameManager->GetState())
         {
         case GameState::MAIN:
-            renderManager->RenderInitSetting();
-            renderManager->MainFrameDataSetting();
-            renderManager->Render();
+            renderManager->MainFrameDataRender();
             break;
         case GameState::MAPEDITTOR:
-            renderManager->RenderInitSetting();
-            renderManager->MapEdittorDataSetting();
-            renderManager->Render();
+            renderManager->MapEdittorDataRender();
             break;
         case GameState::INGAME:
             gameManager->Run();
-            renderManager->RenderInitSetting();
-            // renderManager data setting code;
-            renderManager->Render();
+            renderManager->InGameDataRender();
             break;
         default:
             break;
@@ -183,12 +177,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
             case ButtonKind::START:
                 HideMainFrameButton();                               // 버튼 숨기기
+                gameManager->SetState(GameState::INGAME);            // 인게임 실행
+
+                imageManager->LoadBitmapData();                      // 인게임에서 사용할 이미지 로드
+                LoadTextMapData(GameState::INGAME, STAGE1_PATH);     // 인게임에서 사용할 맵데이터 로드
+
+                InvalidateRect(hWnd, nullptr, true);    // 화면 초기화
                 break;
             case ButtonKind::MAPEDITTOR:
                 HideMainFrameButton();                               // 버튼 숨기기
 
                 gameManager->SetState(GameState::MAPEDITTOR);        // 맵 에디터 실행
-                imageManager->LoadMapEdittorBitmap();                // 맵 에디터에서 사용할 이미지 로드
+                imageManager->LoadBitmapData();                // 맵 에디터에서 사용할 이미지 로드
                 mapEdittor->Init();
 
                 g_hMapEdittorDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, MapEdittorDlg);  // 다이얼로그 생성
@@ -255,8 +255,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DESTROY:
+        GameManager::ReleaseInstance();
         MapEdittor::ReleaseInstance();
         ImageManager::ReleaseInstance();
+        RenderManager::ReleaseInstance();
         PostQuitMessage(0);
         break;
     default:
@@ -327,7 +329,7 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
                 switch (openFileName.nFilterIndex)
                 {
                 case 1:
-                    LoadTextMapData(strFilePath);
+                    LoadTextMapData(GameState::MAPEDITTOR, strFilePath);
                     break;
                 default:
                     break;
@@ -374,7 +376,7 @@ void SetMapEdittorData()
     }
 }
 
-void LoadTextMapData(char* filePath)
+void LoadTextMapData(const GameState state,const char* filePath)
 {
     ifstream readFile;
     int value[2];       // 처음 값 2개를 받을 변수
@@ -423,12 +425,22 @@ void LoadTextMapData(char* filePath)
             return;
         }
     }
-    mapEdittor->SetWorldMapData(mapData);
+    switch (state)
+    {
+    case GameState::MAPEDITTOR:
+        mapEdittor->SetWorldMapData(mapData);
+        break;
+    case GameState::INGAME:
+        gameManager->SetWorldMapData(mapData);
+        break;
+    default:
+        break;
+    }
 
     readFile.close();
 }
 
-void SaveTextMapData(char* filePath)
+void SaveTextMapData(const char* filePath)
 {
     ofstream writeFile;
     int value[2] = { MAP_MAX_Y , MAP_MAX_X };   // 상단 맵 크기 저장할 변수
@@ -513,7 +525,7 @@ void SetMapEdittorDlgData()
     SendMessage(GetDlgItem(g_hMapEdittorDlg, IDC_lOBJECT), LB_SETCURSEL, 0, 0);         // 리스트박스 선택 초기화
 }
 
-void GetSelectListBoxData(MapEdittorSelectState state)
+void GetSelectListBoxData(const MapEdittorSelectState state)
 {
     HWND hwndList;
 
@@ -533,7 +545,7 @@ void GetSelectListBoxData(MapEdittorSelectState state)
     MapEdittor::GetInstance()->SetSelectIndex(selectListBoxItemIndex);
 }
 
-void SelectListBoxSetting(MapEdittorSelectState state)
+void SelectListBoxSetting(const MapEdittorSelectState state)
 {
     int unCheckButton;
     int checkButton;

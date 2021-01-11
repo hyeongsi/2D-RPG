@@ -40,3 +40,13 @@ void GameManager::SetState(const GameState state)
 {
 	this->state = state;
 }
+
+void GameManager::SetWorldMapData(const WorldMap worldMap)
+{
+	this->worldMap = worldMap;
+}
+
+const WorldMap GameManager::GetWorldMapData()
+{
+	return worldMap;
+}

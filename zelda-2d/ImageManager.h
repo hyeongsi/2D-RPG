@@ -29,7 +29,7 @@ public:
 
 public:
 	void LoadBitmapPathData(const MapEdittorSelectState state, const string str);
-	void LoadMapEdittorBitmap();
+	void LoadBitmapData();
 
 public:
 	const HBITMAP GetMainFrameBitmap();

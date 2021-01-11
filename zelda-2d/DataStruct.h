@@ -9,6 +9,8 @@ constexpr POINT START_BUTTON_POINT = { 370,430 };
 constexpr POINT MAPEDITTOR_BUTTON_POINT = { 370,480 };
 constexpr SIZE BUTTON_SIZE = { 100,30 };
 
+constexpr char STAGE1_PATH[] = { "data/mapinfo/TileMapInfo.txt" };
+
 namespace ClientSize
 {
 	enum
