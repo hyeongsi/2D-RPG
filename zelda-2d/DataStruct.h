@@ -59,6 +59,17 @@ namespace ObjectTextureName
 	};
 }
 
+namespace UITextureName
+{
+	enum
+	{
+		Char_Info = 1,
+		HP_Empty,
+		HP_Half,
+		HP_Full
+	};
+}
+
 enum class MapEdittorSelectState
 {
 	BACKGROUND,
@@ -69,7 +80,8 @@ enum class MapEdittorSelectState
 enum class BitmapKind
 {
 	BACKGROUND,
-	OBJECT
+	OBJECT,
+	UI
 };
 
 enum class ClickLR

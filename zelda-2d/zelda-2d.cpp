@@ -504,7 +504,7 @@ void SetMapEdittorDlgData()
     int i = 1;
     while (true)    // 리스트 박스 배경 문자열 추가 코드
     {
-        string name = ImageManager::GetInstance()->GetStringData(MapEdittorSelectState::BACKGROUND, i++);
+        string name = ImageManager::GetInstance()->GetStringData(BitmapKind::BACKGROUND, i++);
         if (name.empty())
             break;
         SendMessage(hwndBackGroundImageListBox, LB_ADDSTRING, 0, (LPARAM)name.c_str());
@@ -515,7 +515,7 @@ void SetMapEdittorDlgData()
     i = 1;
     while (true)    // 리스트 박스 오브젝트 문자열 추가 코드
     {
-        string name = ImageManager::GetInstance()->GetStringData(MapEdittorSelectState::OBJECT, i++);
+        string name = ImageManager::GetInstance()->GetStringData(BitmapKind::OBJECT, i++);
         if (name.empty())
             break;
         SendMessage(hwndObjectImageListBox, LB_ADDSTRING, 0, (LPARAM)name.c_str());

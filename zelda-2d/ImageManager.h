@@ -14,6 +14,7 @@ private:
 
 	map<int, HBITMAP> backgroundBitmapData;		// 비트맵 데이터
 	map<int, HBITMAP> objectBitmapData;			// 비트맵 데이터
+	map<int, HBITMAP> uiBitmapData;				// 비트맵 데이터
 
 	map<int, string> backgroundStringData;		// 문자열 데이터
 	map<int, string> objectStringData;			// 문자열 데이터
@@ -28,12 +29,12 @@ public:
 	static void ReleaseInstance();
 
 public:
-	void LoadBitmapPathData(const MapEdittorSelectState state, const string str);
+	void LoadBitmapPathData(const BitmapKind kind, const string str);
 	void LoadBitmapData();
 
 public:
 	const HBITMAP GetMainFrameBitmap();
 	
-	const HBITMAP GetBitmapData(const MapEdittorSelectState state, const int selectNumber);
-	const string GetStringData(const MapEdittorSelectState state, const int selectNumber);
+	const HBITMAP GetBitmapData(const BitmapKind kind, const int selectNumber);
+	const string GetStringData(const BitmapKind kind, const int selectNumber);
 };

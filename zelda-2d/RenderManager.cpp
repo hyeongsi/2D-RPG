@@ -156,7 +156,7 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
         {
             if (0 != tempWorldMap.GetData(MapEdittorSelectState::BACKGROUND, { x,y }))
             {
-                HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(MapEdittorSelectState::BACKGROUND,
+                HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::BACKGROUND,
                     tempWorldMap.GetData(MapEdittorSelectState::BACKGROUND, { x,y }));
 
                 BITMAP bit;
@@ -174,7 +174,7 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
         {
             if (0 != tempWorldMap.GetData(MapEdittorSelectState::OBJECT, { x,y }))
             {
-                HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(MapEdittorSelectState::OBJECT,
+                HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::OBJECT,
                     tempWorldMap.GetData(MapEdittorSelectState::OBJECT, { x,y }));
 
                 BITMAP bit;
@@ -231,19 +231,29 @@ void RenderManager::DrawCursorFollowBitmap()
 {
     MapEdittor* mapEdittor = MapEdittor::GetInstance();
     MapEdittorSelectState selectState = mapEdittor->GetSelectState();
+    BitmapKind kind;
+    switch (selectState)
+    {
+    case MapEdittorSelectState::BACKGROUND:
+        kind = BitmapKind::BACKGROUND;
+        break;
+    case MapEdittorSelectState::OBJECT:
+        kind = BitmapKind::OBJECT;
+        break;
+    default:
+        return;
+    }
+
     int selectBitmapNumber = mapEdittor->GetSelectIndex();
 
     POINT mousePoint;       // 마우스 위치를 저장할 변수
 
-    if (MapEdittorSelectState::COLLIDER != selectState)     // 콜라이더 상태가 아닐 경우 마우스 옆에 이미지 출력
-    {
-        GetCursorPos(&mousePoint);              // 커서 위치를 가져오고
-        ScreenToClient(g_hWnd, &mousePoint);    // 클라이언트 영역 좌표로 변환 후
+    GetCursorPos(&mousePoint);              // 커서 위치를 가져오고
+    ScreenToClient(g_hWnd, &mousePoint);    // 클라이언트 영역 좌표로 변환 후
 
-        HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(selectState, selectBitmapNumber);
-        SelectObject(backMemDC, bitmap);
-        BITMAP bit;
-        GetObject(bitmap, sizeof(bit), &bit);
-        BitBlt(memDC, mousePoint.x, mousePoint.y, bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, SRCCOPY);
-    }
+    HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(kind, selectBitmapNumber);
+    SelectObject(backMemDC, bitmap);
+    BITMAP bit;
+    GetObject(bitmap, sizeof(bit), &bit);
+    BitBlt(memDC, mousePoint.x, mousePoint.y, bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, SRCCOPY);
 }

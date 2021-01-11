@@ -27,7 +27,7 @@ void ImageManager::ReleaseInstance()
 	instance = nullptr;
 }
 
-void ImageManager::LoadBitmapPathData(const MapEdittorSelectState state, const string str)
+void ImageManager::LoadBitmapPathData(const BitmapKind kind, const string str)
 {
 	ifstream readFile;
 
@@ -45,15 +45,18 @@ void ImageManager::LoadBitmapPathData(const MapEdittorSelectState state, const s
 			string name;
 			readFile >> name;
 
-			switch (state)
+			switch (kind)
 			{
-			case MapEdittorSelectState::BACKGROUND:
+			case BitmapKind::BACKGROUND:
 				backgroundBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 				backgroundStringData[stoi(number)] = name;
 				break;
-			default:
+			case BitmapKind::OBJECT:
 				objectBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 				objectStringData[stoi(number)] = name;
+				break;
+			case BitmapKind::UI:
+				uiBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 				break;
 			}
 		}
@@ -64,8 +67,8 @@ void ImageManager::LoadBitmapPathData(const MapEdittorSelectState state, const s
 
 void ImageManager::LoadBitmapData()
 {
-	LoadBitmapPathData(MapEdittorSelectState::BACKGROUND, "data/bitmapifo/BackgroundBitmapInfo.txt");
-	LoadBitmapPathData(MapEdittorSelectState::OBJECT, "data/bitmapifo/ObjectBitmapInfo.txt");
+	LoadBitmapPathData(BitmapKind::BACKGROUND, "data/bitmapifo/BackgroundBitmapInfo.txt");
+	LoadBitmapPathData(BitmapKind::OBJECT, "data/bitmapifo/ObjectBitmapInfo.txt");
 }
 
 const HBITMAP ImageManager::GetMainFrameBitmap()
@@ -73,15 +76,15 @@ const HBITMAP ImageManager::GetMainFrameBitmap()
 	return mainFrameBitmap;
 }
 
-const HBITMAP ImageManager::GetBitmapData(MapEdittorSelectState state, int selectNumber)
+const HBITMAP ImageManager::GetBitmapData(const BitmapKind kind,const int selectNumber)
 {
 	try
 	{
-		switch (state)
+		switch (kind)
 		{
-		case MapEdittorSelectState::BACKGROUND:
+		case BitmapKind::BACKGROUND:
 			return backgroundBitmapData[selectNumber];
-		case MapEdittorSelectState::OBJECT:
+		case BitmapKind::OBJECT:
 			return objectBitmapData[selectNumber];
 		}
 	}
@@ -91,15 +94,15 @@ const HBITMAP ImageManager::GetBitmapData(MapEdittorSelectState state, int selec
 	}
 }
 
-const string ImageManager::GetStringData(const MapEdittorSelectState state, const int selectNumber)
+const string ImageManager::GetStringData(const BitmapKind kind, const int selectNumber)
 {
 	try
 	{
-		switch (state)
+		switch (kind)
 		{
-		case MapEdittorSelectState::BACKGROUND:
+		case BitmapKind::BACKGROUND:
 			return backgroundStringData[selectNumber];
-		case MapEdittorSelectState::OBJECT:
+		case BitmapKind::OBJECT:
 			return objectStringData[selectNumber];
 		}
 	}
