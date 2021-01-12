@@ -184,6 +184,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 gameManager->SetCharacter(new Character());          // 캐릭터 생성
 
                 imageManager->LoadMapBitmapData();                      // 인게임에서 사용할 맵 관련 비트맵 로드
+                imageManager->LoadAnimationBitmapData(CHARACTER_ANIMATION_PATH);    // 인게임에서 사용할 캐릭터 애니메이션 로드
                 imageManager->LoadBitmapPathData(BitmapKind::UI, UI_BITMAP_PATH);   // 인게임에서 사용할 UI 비트맵 로드
                 LoadTextMapData(GameState::INGAME, STAGE1_PATH);     // 인게임에서 사용할 맵데이터 로드
 

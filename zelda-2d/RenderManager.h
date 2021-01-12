@@ -49,5 +49,9 @@ public:
 
 	void DrawCheckPattern();
 	void DrawCursorFollowBitmap();
+
+public:
+	void DrawAnimation(const int uiName, const POINT pos);
+
 };
 

@@ -1,5 +1,5 @@
 4	
-images/character/char_front_walk.bmp		16 37
-images/character/char_right_walk.bmp		16 37
-images/character/char_back_walk.bmp		16 37
-images/character/char_left_walk.bmp		16 37
+images/character/char_front_walk.bmp		4	1	16 37
+images/character/char_right_walk.bmp		4	1	16 37
+images/character/char_back_walk.bmp		4	1	16 37
+images/character/char_left_walk.bmp		4	1	16 37

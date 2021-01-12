@@ -121,7 +121,9 @@ void RenderManager::InGameDataRender(Character character)
     RenderInitSetting();        // 출력 전 초기화 작업
 
     DrawWorldMapData(GameState::INGAME);        // 맵 출력
-    character.GetPos();                                       //캐릭터 출력
+
+    DrawAnimation(AnimationTextureName::CHARACTER_WALK, character.GetPos());         //캐릭터 출력
+                                     
     //UI 출력
     DrawCharUIData(UITextureName::Char_Info, { 10,10 });
 
@@ -281,4 +283,23 @@ void RenderManager::DrawCursorFollowBitmap()
     BITMAP bit;
     GetObject(bitmap, sizeof(bit), &bit);
     BitBlt(memDC, mousePoint.x, mousePoint.y, bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, SRCCOPY);
+}
+
+void RenderManager::DrawAnimation(const int uiName, const POINT pos)
+{
+    AnimationObject* animationObject = ImageManager::GetInstance()->GetAnimationData(uiName);
+
+    if (nullptr == animationObject)
+        return;
+
+    int index = animationObject->GetSelectBitmapIndex();
+    int count = animationObject->GetBitmapCount(index);
+
+    HBITMAP bitmap = animationObject->GetAnimationBitmap(index);
+    BITMAP bit;
+    SelectObject(backMemDC, bitmap);
+    GetObject(bitmap, sizeof(bit), &bit);
+    TransparentBlt(memDC, pos.x, pos.y, bit.bmWidth/count, bit.bmHeight, 
+        backMemDC, index * bit.bmWidth / count, 0, bit.bmWidth/count, 
+        bit.bmHeight, RGB(215, 123, 186));
 }

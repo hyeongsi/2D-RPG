@@ -15,6 +15,8 @@ constexpr char UI_BITMAP_PATH[] = { "data/bitmapifo/UIBitmapInfo.txt" };
 
 constexpr char STAGE1_PATH[] = { "data/mapinfo/TileMapInfo.txt" };
 
+constexpr char CHARACTER_ANIMATION_PATH[] = { "data/bitmapifo/AnimationBitmapInfo.txt" };
+
 namespace ClientSize
 {
 	enum
@@ -71,6 +73,14 @@ namespace UITextureName
 		HP_Empty,
 		HP_Half,
 		HP_Full,
+	};
+}
+
+namespace AnimationTextureName
+{
+	enum
+	{
+		CHARACTER_WALK,
 	};
 }
 

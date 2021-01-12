@@ -72,6 +72,49 @@ void ImageManager::LoadMapBitmapData()
 	LoadBitmapPathData(BitmapKind::OBJECT, OBJECT_BITMAP_PATH);
 }
 
+void ImageManager::LoadAnimationBitmapData(const string str)
+{
+	ifstream readFile;
+	string size;
+	string path;
+	string bitmapCount;
+	string delay;
+	string pos[2];
+
+	readFile.open(str);
+	if (readFile.is_open())
+	{
+		try
+		{
+			readFile >> size;
+			AnimationObject animationObject;
+			animationData.emplace_back(animationObject);
+			for (int i = 0; i < stoi(size); i++)
+			{
+				readFile >> path;
+				animationData.back().AddAnimationBitmap((HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION));
+
+				readFile >> bitmapCount;
+				animationData.back().AddBitmapCount(stoi(bitmapCount));
+
+				readFile >> delay;
+				animationData.back().AddDelay(stoi(delay));
+
+				readFile >> pos[0];
+				readFile >> pos[1];
+				animationData.back().AddNormalPos({ stoi(pos[0]),stoi(pos[1]) });
+			}
+		}
+		catch (const std::exception&)
+		{
+			readFile.close();
+			return;
+		}
+	}
+
+	readFile.close();
+}
+
 const HBITMAP ImageManager::GetMainFrameBitmap()
 {
 	return mainFrameBitmap;
@@ -113,4 +156,12 @@ const string ImageManager::GetStringData(const BitmapKind kind, const int select
 	{
 		return NULL;
 	}
+}
+
+AnimationObject* ImageManager::GetAnimationData(const int uiName)
+{
+	if (0 < animationData.size() && uiName < animationData.size())
+		return &animationData[uiName];
+	else
+		return nullptr;
 }
