@@ -1,6 +1,11 @@
 ﻿#include "pch.h"
 #include "AnimationObject.h"
 
+void AnimationObject::AddBitmap(HBITMAP hbitmap)
+{
+	bitmapData.emplace_back(hbitmap);
+}
+
 const HBITMAP AnimationObject::GetAnimationBitmap(const int index)
 {
 	if (index > static_cast<int>(bitmapData.size()) && 0 > index)

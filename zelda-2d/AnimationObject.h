@@ -11,6 +11,8 @@ private:
 	vector<POINT> normalPos;				
 
 public:
+	void AddBitmap(HBITMAP hbitmap);
+
 	const HBITMAP GetAnimationBitmap(const int index);
 	void SetBitmap(const int index, const HBITMAP hbitmap);
 
