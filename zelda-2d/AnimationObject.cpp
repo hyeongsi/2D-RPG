@@ -12,11 +12,6 @@ void AnimationObject::AddBitmapCount(const int count)
 	bitmapCount.emplace_back(count);
 }
 
-void AnimationObject::AddNormalPos(const POINT pos)
-{
-	normalPos.emplace_back(pos);
-}
-
 void AnimationObject::AddDelay(const int delay)
 {
 	this->delay.emplace_back(delay);
@@ -69,22 +64,6 @@ void AnimationObject::SetBitmap(const int index, const HBITMAP hbitmap)
 {
 	if (index < static_cast<int>(animationBitmapData.size()) && 0 <= index)
 		animationBitmapData[index] = hbitmap;
-}
-
-const POINT AnimationObject::GetNormalPos(const int index)
-{
-	if (index >= static_cast<int>(normalPos.size()) && 0 > index)
-		return { NULL, NULL };
-
-	return normalPos[index];
-}
-
-void AnimationObject::SetNormalPos(const int index, const POINT pos)
-{
-	if (index >= static_cast<int>(normalPos.size()) && 0 > index)
-		return;
-
-	normalPos[index] = pos;
 }
 
 void AnimationObject::NextSelectBitmapIndex()

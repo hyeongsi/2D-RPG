@@ -33,10 +33,36 @@ void GameManager::ReleaseInstance()
 
 void GameManager::Run()
 {
-	// 이동 제한 코드 작성
+	DPOINT prevPos = character->GetPos();	
 	character->Input(time->Update());
+	LimitMoveMent(prevPos);					// 맵 외곽 및 콜라이더 위치 이동 제한
 
+}
 
+void GameManager::LimitMoveMent(const DPOINT prevDPos)
+{
+	POINT pos = { character->GetPos().x,  character->GetPos().y };
+	if (0 > pos.x || ClientSize::width- LIMIT_MAP_X_CORRECTION < pos.x)
+	{
+		character->SetPos(prevDPos);
+		return;
+	}
+	if (0 > pos.y || ClientSize::height- LIMIT_MAP_Y_CORRECTION < pos.y)
+	{
+		character->SetPos(prevDPos);
+		return;
+	}
+
+	pos.x += CHAR_NORMAL_X;			// 기준 좌표값 ++
+	pos.y += CHAR_NORMAL_Y;			// 기준 좌표값 ++
+
+	pos = worldMap.ChangePosToMapPoint(pos);	// 맵상의 좌표로 변환 후
+
+	if (0 != worldMap.GetData(MapEdittorSelectState::COLLIDER, pos))	// 콜라이더 위에 위치하고 있는 경우
+	{
+		character->SetPos(prevDPos);
+		return;
+	}
 }
 
 const GameState GameManager::GetState()

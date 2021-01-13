@@ -80,7 +80,6 @@ void ImageManager::LoadAnimationBitmapData(const string str)
 	string path;
 	string bitmapCount;
 	string delay;
-	string pos[2];
 
 	readFile.open(str);
 	if (readFile.is_open())
@@ -100,10 +99,6 @@ void ImageManager::LoadAnimationBitmapData(const string str)
 
 				readFile >> delay;
 				animationData.back().AddDelay(stoi(delay));
-
-				readFile >> pos[0];
-				readFile >> pos[1];
-				animationData.back().AddNormalPos({ stoi(pos[0]),stoi(pos[1]) });
 			}
 		}
 		catch (const std::exception&)

@@ -5,6 +5,12 @@ constexpr int TILE_SIZE = 32;	// 맵 한 칸의 크기 ( 32 x 32)
 constexpr int MAP_MAX_X = 25;	// 행의 개수
 constexpr int MAP_MAX_Y = 19;	// 열의 개수
 
+constexpr int CHAR_NORMAL_X = 16;	// pivot 좌표 
+constexpr int CHAR_NORMAL_Y = 37;	// pivot 좌표
+
+constexpr int LIMIT_MAP_X_CORRECTION = 32;	// 맵 밖으로 나가는 경우 보정 크기
+constexpr int LIMIT_MAP_Y_CORRECTION = 46;	// 맵 밖으로 나가는 경우 보정 크기
+
 constexpr POINT START_BUTTON_POINT = { 370,430 };
 constexpr POINT MAPEDITTOR_BUTTON_POINT = { 370,480 };
 constexpr SIZE BUTTON_SIZE = { 100,30 };

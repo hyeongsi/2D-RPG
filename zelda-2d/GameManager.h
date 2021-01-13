@@ -27,6 +27,7 @@ public:
 
 public:
 	void Run();
+	void LimitMoveMent(const DPOINT prevDPos);			
 public:
 	const GameState GetState();
 	void SetState(const GameState state);
@@ -36,5 +37,6 @@ public:
 
 	void SetCharacter(Character* character);
 	const Character GetCharacter();
+
 };
 

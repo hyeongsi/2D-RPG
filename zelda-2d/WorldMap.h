@@ -13,5 +13,7 @@ public:
 
 	int GetData(MapEdittorSelectState state, POINT pos);
 	void SetData(MapEdittorSelectState state, POINT pos, int data);
+
+	const POINT ChangePosToMapPoint(const POINT pos);		// 좌표값을 맵 배열에서 사용하는 값으로 변환
 };
 

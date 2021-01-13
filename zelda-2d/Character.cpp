@@ -45,6 +45,11 @@ const DPOINT Character::GetPos()
 	return pos;
 }
 
+void Character::SetPos(const DPOINT pos)
+{
+	this->pos = pos;
+}
+
 const int Character::GetHp()
 {
 	return hp;

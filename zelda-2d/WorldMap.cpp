@@ -46,3 +46,12 @@ void WorldMap::SetData(MapEdittorSelectState state, POINT pos, int data)
 		return;
 	}
 }
+
+const POINT WorldMap::ChangePosToMapPoint(const POINT pos)
+{
+	POINT mapPos;
+	mapPos.x = pos.x / TILE_SIZE;
+	mapPos.y = pos.y / TILE_SIZE;
+
+	return mapPos;
+}

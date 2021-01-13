@@ -31,6 +31,8 @@ public:
 
 public:
 	const DPOINT GetPos();
+	void SetPos(const DPOINT pos);
+
 	const int GetHp();
 	const int GetLevel();
 	const int GetDamage();
