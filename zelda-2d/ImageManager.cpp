@@ -133,6 +133,8 @@ const HBITMAP ImageManager::GetBitmapData(const BitmapKind kind,const int select
 			return objectBitmapData[selectNumber];
 		case BitmapKind::UI:
 			return uiBitmapData[selectNumber];
+		default:
+			return NULL;
 		}
 	}
 	catch (const std::exception&)
@@ -151,6 +153,8 @@ const string ImageManager::GetStringData(const BitmapKind kind, const int select
 			return backgroundStringData[selectNumber];
 		case BitmapKind::OBJECT:
 			return objectStringData[selectNumber];
+		default:
+			return "";
 		}
 	}
 	catch (const std::exception&)
@@ -161,7 +165,7 @@ const string ImageManager::GetStringData(const BitmapKind kind, const int select
 
 AnimationObject* ImageManager::GetAnimationData(const int uiName)
 {
-	if (0 < static_cast<int>(animationData.size()) && uiName < static_cast<int>(animationData.size()))
+	if (0 <= uiName && uiName < static_cast<int>(animationData.size()))
 		return &animationData[uiName];
 	else
 		return nullptr;

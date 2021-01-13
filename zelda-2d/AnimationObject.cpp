@@ -2,7 +2,7 @@
 
 #include "AnimationObject.h"
 
-void AnimationObject::AddAnimationBitmap(HBITMAP hbitmap)
+void AnimationObject::AddAnimationBitmap(const HBITMAP hbitmap)
 {
 	animationBitmapData.emplace_back(hbitmap);
 }
@@ -29,7 +29,7 @@ const int AnimationObject::GetAnimationBitmapSize()
 
 const int AnimationObject::GetBitmapCount(const int index)
 {
-	if (0 >= index && index < static_cast<int>(animationBitmapData.size()))
+	if (0 <= index && index < static_cast<int>(bitmapCount.size()))
 		return bitmapCount[index];
 	else
 		return NULL;
@@ -42,7 +42,8 @@ const int AnimationObject::GetSelectAnimationBitmapIndex()
 
 void AnimationObject::SetSelectAnimationBitmapIndex(const int index)
 {
-	selectAnimationBitmapIndex = index;
+	if (index < static_cast<int>(animationBitmapData.size()) && 0 <= index)
+		selectAnimationBitmapIndex = index;
 }
 
 const int AnimationObject::GetSelectBitmapIndex()
@@ -57,7 +58,7 @@ void AnimationObject::SetSelectBitmapIndex(const int index)
 
 const HBITMAP AnimationObject::GetAnimationBitmap(const int index)
 {
-	if (index < static_cast<int>(animationBitmapData.size()) && 0 >= index)
+	if (index < static_cast<int>(animationBitmapData.size()) && 0 <= index)
 		return animationBitmapData[index];
 	else
 		return nullptr;
@@ -66,13 +67,13 @@ const HBITMAP AnimationObject::GetAnimationBitmap(const int index)
 
 void AnimationObject::SetBitmap(const int index, const HBITMAP hbitmap)
 {
-	if (index < static_cast<int>(animationBitmapData.size()) && 0 >= index)
+	if (index < static_cast<int>(animationBitmapData.size()) && 0 <= index)
 		animationBitmapData[index] = hbitmap;
 }
 
 const POINT AnimationObject::GetNormalPos(const int index)
 {
-	if (index > static_cast<int>(normalPos.size()) && 0 > index)
+	if (index >= static_cast<int>(normalPos.size()) && 0 > index)
 		return { NULL, NULL };
 
 	return normalPos[index];
@@ -80,7 +81,7 @@ const POINT AnimationObject::GetNormalPos(const int index)
 
 void AnimationObject::SetNormalPos(const int index, const POINT pos)
 {
-	if (index > static_cast<int>(normalPos.size()) && 0 > index)
+	if (index >= static_cast<int>(normalPos.size()) && 0 > index)
 		return;
 
 	normalPos[index] = pos;

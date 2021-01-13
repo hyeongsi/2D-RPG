@@ -232,7 +232,7 @@ void RenderManager::DrawCharacter(Character& character)
 {
     AnimationObject* animationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::CHARACTER_WALK);
 
-    //animationObject->SetSelectAnimationBitmapIndex(character.GetDir());       // 방향에 따른 방향 애니메이션 설정
+    animationObject->SetSelectAnimationBitmapIndex(character.GetDir());       // 방향에 따른 방향 애니메이션 설정
 
     switch (character.GetState())
     {
@@ -282,6 +282,7 @@ void RenderManager::DrawCursorFollowBitmap()
 {
     MapEdittor* mapEdittor = MapEdittor::GetInstance();
     MapEdittorSelectState selectState = mapEdittor->GetSelectState();
+
     BitmapKind kind;
     switch (selectState)
     {
@@ -325,6 +326,6 @@ void RenderManager::DrawAnimation(const int uiName, const DPOINT pos)
     SelectObject(backMemDC, bitmap);
     GetObject(bitmap, sizeof(bit), &bit);
     TransparentBlt(memDC, static_cast<int>(pos.x), static_cast<int>(pos.y), bit.bmWidth/count, bit.bmHeight, 
-        backMemDC, selectBitmapIndex * bit.bmWidth / count, 0, bit.bmWidth/count,
+        backMemDC, selectBitmapIndex * (bit.bmWidth / count), 0, bit.bmWidth/count,
         bit.bmHeight, RGB(215, 123, 186));
 }

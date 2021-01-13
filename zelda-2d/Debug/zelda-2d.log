@@ -1,2 +1,23 @@
-﻿  RenderManager.cpp
+﻿  AnimationObject.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\xmemory(694,82): warning C4244: '초기화 중': 'const int'에서 '_Objty'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+          with
+          [
+              _Objty=float
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\vector(682): message : 컴파일되는 함수 템플릿 인스턴스화 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,const int&>(_Alloc &,_Objty *const ,const int &)'에 대한 참조를 확인하세요.
+          with
+          [
+              _Alloc=std::allocator<float>,
+              _Ty=float,
+              _Objty=float
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\vector(687): message : 컴파일되는 함수 템플릿 인스턴스화 'void std::_Default_allocator_traits<_Alloc>::construct<_Ty,const int&>(_Alloc &,_Objty *const ,const int &)'에 대한 참조를 확인하세요.
+          with
+          [
+              _Alloc=std::allocator<float>,
+              _Ty=float,
+              _Objty=float
+          ]
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.27.29110\include\vector(700): message : 컴파일되는 함수 템플릿 인스턴스화 'void std::vector<float,std::allocator<float>>::_Emplace_back_with_unused_capacity<const int&>(const int &)'에 대한 참조를 확인하세요.
+C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\AnimationObject.cpp(22): message : 컴파일되는 함수 템플릿 인스턴스화 'void std::vector<float,std::allocator<float>>::emplace_back<const int&>(const int &)'에 대한 참조를 확인하세요.
   zelda-2d.vcxproj -> C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\zelda-2d.exe
