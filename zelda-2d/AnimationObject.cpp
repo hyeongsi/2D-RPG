@@ -28,7 +28,7 @@ const int AnimationObject::GetAnimationBitmapSize()
 
 const int AnimationObject::GetBitmapCount(const int index)
 {
-	if (0 >= index && index < animationBitmapData.size())
+	if (0 >= index && index < static_cast<int>(animationBitmapData.size()))
 		return bitmapCount[index];
 	else
 		return NULL;

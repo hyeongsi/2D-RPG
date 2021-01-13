@@ -2,6 +2,7 @@
 #include "DataStruct.h"
 #include "WorldMap.h"
 #include "Character.h"
+#include "Time.h"
 
 class GameManager
 {
@@ -11,6 +12,8 @@ private:
 	WorldMap worldMap;
 
 	Character* character;
+
+	Time* time;
 
 private:
 	static GameManager* instance;

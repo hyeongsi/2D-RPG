@@ -33,6 +33,12 @@ enum class GameState
 	INGAME
 };
 
+typedef struct DOUBLEPOINT
+{
+	double x;
+	double y;
+}DPOINT;
+
 namespace BackGroundTextureName
 {
 	enum

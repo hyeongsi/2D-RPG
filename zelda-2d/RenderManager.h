@@ -51,7 +51,7 @@ public:
 	void DrawCursorFollowBitmap();
 
 public:
-	void DrawAnimation(const int uiName, const POINT pos);
+	void DrawAnimation(const int uiName, const DPOINT pos);
 
 };
 

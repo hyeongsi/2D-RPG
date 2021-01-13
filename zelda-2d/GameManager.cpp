@@ -6,12 +6,15 @@ GameManager* GameManager::instance = nullptr;
 GameManager::GameManager()
 {
 	state = GameState::MAIN;
+	character = nullptr;
+	time = Time::GetInstance();
 }
 
 GameManager::~GameManager()
 {
 	delete character;
 	character = nullptr;
+	time->ReleaseInstance();
 }
 
 GameManager* GameManager::GetInstance()
@@ -30,6 +33,8 @@ void GameManager::ReleaseInstance()
 
 void GameManager::Run()
 {
+	character->Input(time->Update());
+
 
 }
 

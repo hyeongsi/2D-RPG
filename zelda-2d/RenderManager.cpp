@@ -285,7 +285,7 @@ void RenderManager::DrawCursorFollowBitmap()
     BitBlt(memDC, mousePoint.x, mousePoint.y, bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, SRCCOPY);
 }
 
-void RenderManager::DrawAnimation(const int uiName, const POINT pos)
+void RenderManager::DrawAnimation(const int uiName, const DPOINT pos)
 {
     AnimationObject* animationObject = ImageManager::GetInstance()->GetAnimationData(uiName);
 
