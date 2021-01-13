@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "DataStruct.h"
 
 constexpr DPOINT START_POS = { 400,400 };
@@ -10,7 +10,10 @@ constexpr int INIT_DAMAGE = 1;
 class Character
 {
 private:
-	DPOINT pos;			// ��ġ��
+	DPOINT pos;			// 위치값
+
+	int state;			// 상태값
+	int dir;			// 방향
 
 	int maxHp;			// maxHp
 	int hp;				// hp
@@ -31,6 +34,8 @@ public:
 	const int GetHp();
 	const int GetLevel();
 	const int GetDamage();
+	const int GetState();
+	const int GetDir();
 
 public:
 	void Input(const double deltaTime);

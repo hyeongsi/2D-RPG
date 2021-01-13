@@ -45,6 +45,7 @@ public:
 public:
 	void DrawWorldMapData(const GameState gameState);
 
+	void DrawCharacter(Character& character);
 	void DrawCharUIData(const int uiName, const POINT pos);
 
 	void DrawCheckPattern();

@@ -39,9 +39,9 @@ typedef struct DOUBLEPOINT
 	double y;
 }DPOINT;
 
-namespace BackGroundTextureName
+namespace TextureName
 {
-	enum
+	enum BackGround
 	{
 		grass = 1,
 		grass_water1,
@@ -55,11 +55,8 @@ namespace BackGroundTextureName
 		grass_water9,
 		castle_tile
 	};
-}
 
-namespace ObjectTextureName
-{
-	enum
+	enum Object
 	{
 		grassBlock1 = 1,
 		grassBlock2,
@@ -69,22 +66,16 @@ namespace ObjectTextureName
 		castle_door_close,
 		castle_pillar
 	};
-}
 
-namespace UITextureName
-{
-	enum
+	enum UI
 	{
 		Char_Info = 1,
 		HP_Empty,
 		HP_Half,
 		HP_Full,
 	};
-}
 
-namespace AnimationTextureName
-{
-	enum
+	enum Animation
 	{
 		CHARACTER_WALK,
 	};
@@ -117,5 +108,25 @@ namespace ButtonKind
 	{
 		START,
 		MAPEDITTOR
+	};
+}
+
+namespace CharacterInfo
+{
+	enum DIR
+	{
+		DOWN,
+		RIGHT,
+		UP,
+		LEFT,
+	};
+
+	enum CharacterState
+	{
+		IDLE,
+		WALK,
+		ATTACK,
+		INTERACTION,	// 상호작용
+
 	};
 }

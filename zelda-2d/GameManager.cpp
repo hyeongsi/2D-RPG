@@ -33,6 +33,7 @@ void GameManager::ReleaseInstance()
 
 void GameManager::Run()
 {
+	// 이동 제한 코드 작성
 	character->Input(time->Update());
 
 

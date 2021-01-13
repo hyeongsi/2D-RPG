@@ -1,8 +1,2 @@
-﻿  Character.cpp
-  GameManager.cpp
-  RenderManager.cpp
-C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\RenderManager.cpp(302,37): warning C4244: '인수': 'const double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\RenderManager.cpp(302,30): warning C4244: '인수': 'const double'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-  zelda-2d.cpp
-  코드를 생성하고 있습니다...
+﻿  RenderManager.cpp
   zelda-2d.vcxproj -> C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\zelda-2d.exe

@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+
 #include "RenderManager.h"
 
 extern HWND g_hWnd;
@@ -122,17 +123,17 @@ void RenderManager::InGameDataRender(Character character)
 
     DrawWorldMapData(GameState::INGAME);        // 맵 출력
 
-    DrawAnimation(AnimationTextureName::CHARACTER_WALK, character.GetPos());         //캐릭터 출력
-                                     
+    DrawCharacter(character);                   // 캐릭터 출력
+
     //UI 출력
-    DrawCharUIData(UITextureName::Char_Info, { 10,10 });
+    DrawCharUIData(TextureName::Char_Info, { 10,10 });
 
     // HP에 따라 출력되는 HP UI 설정 부분   /   ex)(0이면 빈하트 3개 출력) , (2이면 빈하트 2개, 꽉찬하트 1개 출력)
-    int hp[3] = { UITextureName::HP_Full, UITextureName::HP_Full , UITextureName::HP_Full };
+    int hp[3] = { TextureName::HP_Full, TextureName::HP_Full , TextureName::HP_Full };
     int tempCharacterHp = character.GetHp();
     for (int index = HP_UI_COUNT; index > 0; index--)               // 3,2,1 루프
     {
-        for (int count = 0; count < (UITextureName::HP_Full - UITextureName::HP_Empty); count++)    // 2번 루프
+        for (int count = 0; count < (TextureName::HP_Full - TextureName::HP_Empty); count++)    // 2번 루프
         {
             if (tempCharacterHp < MAX_HP)
             {
@@ -227,6 +228,29 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
     }
 }
 
+void RenderManager::DrawCharacter(Character& character)
+{
+    AnimationObject* animationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::CHARACTER_WALK);
+
+    //animationObject->SetSelectAnimationBitmapIndex(character.GetDir());       // 방향에 따른 방향 애니메이션 설정
+
+    switch (character.GetState())
+    {
+    case CharacterInfo::IDLE:
+        animationObject->SetSelectBitmapIndex(CharacterInfo::IDLE);             // 초기 이미지로 변경
+        DrawAnimation(TextureName::CHARACTER_WALK, character.GetPos());
+        break;
+    case CharacterInfo::WALK:
+        DrawAnimation(TextureName::CHARACTER_WALK, character.GetPos());
+        animationObject->NextSelectBitmapIndex();                               // 출력 이미지 위치 변경
+        break;
+    case CharacterInfo::ATTACK:
+        break;
+    default:
+        break;
+    }
+}
+
 void RenderManager::DrawCharUIData(const int uiName, const POINT pos)
 {
     HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::UI, uiName);
@@ -292,14 +316,15 @@ void RenderManager::DrawAnimation(const int uiName, const DPOINT pos)
     if (nullptr == animationObject)
         return;
 
-    int index = animationObject->GetSelectBitmapIndex();
-    int count = animationObject->GetBitmapCount(index);
+    int animationIndex = animationObject->GetSelectAnimationBitmapIndex();
+    int selectBitmapIndex = animationObject->GetSelectBitmapIndex();
+    int count = animationObject->GetBitmapCount(animationIndex);
 
-    HBITMAP bitmap = animationObject->GetAnimationBitmap(index);
+    HBITMAP bitmap = animationObject->GetAnimationBitmap(animationIndex);
     BITMAP bit;
     SelectObject(backMemDC, bitmap);
     GetObject(bitmap, sizeof(bit), &bit);
-    TransparentBlt(memDC, pos.x, pos.y, bit.bmWidth/count, bit.bmHeight, 
-        backMemDC, index * bit.bmWidth / count, 0, bit.bmWidth/count, 
+    TransparentBlt(memDC, static_cast<int>(pos.x), static_cast<int>(pos.y), bit.bmWidth/count, bit.bmHeight, 
+        backMemDC, selectBitmapIndex * bit.bmWidth / count, 0, bit.bmWidth/count,
         bit.bmHeight, RGB(215, 123, 186));
 }

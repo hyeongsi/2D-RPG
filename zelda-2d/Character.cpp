@@ -1,9 +1,12 @@
-#include "pch.h"
+Ôªø#include "pch.h"
 #include "Character.h"
 
 Character::Character()
 {
 	pos = START_POS;
+
+	state = CharacterInfo::IDLE;
+	dir = CharacterInfo::DOWN;
 
 	maxHp = MAX_HP;
 	hp = MAX_HP;
@@ -18,6 +21,9 @@ Character::Character()
 Character::Character(const DPOINT pos, const int hp, const int level, const int speed, const int damage)
 {
 	this->pos = pos;
+
+	state = CharacterInfo::IDLE;
+	dir = CharacterInfo::DOWN;
 
 	maxHp = MAX_HP;
 	this->hp = hp;
@@ -54,25 +60,48 @@ const int Character::GetDamage()
 	return damage;
 }
 
+const int Character::GetState()
+{
+	return state;
+}
+
+const int Character::GetDir()
+{
+	return dir;
+}
+
 void Character::Input(const double deltaTime)
 {
-	// ¿Ãµø ¡¶«— ƒ⁄µÂ √ﬂ∞°
-
-	if (GetAsyncKeyState(VK_UP) & 0x8000)		// ªÛ
+	if (GetAsyncKeyState(VK_UP) & 0x8000)			// ÏÉÅ
 	{
 		pos.y -= speed * deltaTime;
+		state = CharacterInfo::WALK;
+		dir = CharacterInfo::UP;
 	}
-	if (GetAsyncKeyState(VK_DOWN) & 0x8000)		// «œ
+	else if (GetAsyncKeyState(VK_DOWN) & 0x8000)	// Ìïò
 	{
 		pos.y += speed * deltaTime;
+		state = CharacterInfo::WALK;
+		dir = CharacterInfo::DOWN;
+
 	}
-	if (GetAsyncKeyState(VK_LEFT) & 0x8000)		// ¡¬
+	else if (GetAsyncKeyState(VK_LEFT) & 0x8000)	// Ï¢å
 	{
 		pos.x -= speed * deltaTime;
+		state = CharacterInfo::WALK;
+		dir = CharacterInfo::LEFT;
+
 	}
-	if (GetAsyncKeyState(VK_RIGHT) & 0x8000)	// øÏ
+	else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)	// Ïö∞
 	{
 		pos.x += speed * deltaTime;
+		state = CharacterInfo::WALK;
+		dir = CharacterInfo::RIGHT;
+
+	}
+	else
+	{
+		state = CharacterInfo::IDLE;
 	}
 }
 

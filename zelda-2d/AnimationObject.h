@@ -28,7 +28,10 @@ public:
 	const int GetBitmapCount(const int index);
 
 	const int GetSelectAnimationBitmapIndex();
+	void SetSelectAnimationBitmapIndex(const int index);
+
 	const int GetSelectBitmapIndex();
+	void SetSelectBitmapIndex(const int index);
 
 	const HBITMAP GetAnimationBitmap(const int index);
 	void SetBitmap(const int index, const HBITMAP hbitmap);

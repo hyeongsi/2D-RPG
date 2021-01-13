@@ -1,4 +1,5 @@
 ﻿#include "pch.h"
+
 #include "ImageManager.h"
 
 extern HINSTANCE hInst;
@@ -160,7 +161,7 @@ const string ImageManager::GetStringData(const BitmapKind kind, const int select
 
 AnimationObject* ImageManager::GetAnimationData(const int uiName)
 {
-	if (0 < animationData.size() && uiName < animationData.size())
+	if (0 < static_cast<int>(animationData.size()) && uiName < static_cast<int>(animationData.size()))
 		return &animationData[uiName];
 	else
 		return nullptr;

@@ -44,7 +44,7 @@ void MapEdittor::Init()
 
     mapData = new WorldMap();
 
-    selectIndex = BackGroundTextureName::grass;
+    selectIndex = TextureName::grass;
     selectState = MapEdittorSelectState::BACKGROUND;
 }
 
