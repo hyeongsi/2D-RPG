@@ -5,8 +5,8 @@ constexpr int TILE_SIZE = 32;	// 맵 한 칸의 크기 ( 32 x 32)
 constexpr int MAP_MAX_X = 25;	// 행의 개수
 constexpr int MAP_MAX_Y = 19;	// 열의 개수
 
-constexpr POINT CHAR_COLLIDER_BOX_LEFT_TOP = { 0,39 };	// pivot 좌표 
-constexpr POINT CHAR_COLLIDER_BOX_RIGHT_BOTTOM = {32,46};	// pivot 좌표
+constexpr POINT CHAR_COLLIDER_BOX_LEFT_TOP = { 9,49 };	// pivot 좌표 
+constexpr POINT CHAR_COLLIDER_BOX_RIGHT_BOTTOM = {24,51};	// pivot 좌표
 
 constexpr int LIMIT_MAP_X_CORRECTION = 32;	// 맵 밖으로 나가는 경우 보정 크기
 constexpr int LIMIT_MAP_Y_CORRECTION = 46;	// 맵 밖으로 나가는 경우 보정 크기

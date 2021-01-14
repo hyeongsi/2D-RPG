@@ -68,7 +68,7 @@ void AnimationObject::SetBitmap(const int index, const HBITMAP hbitmap)
 
 void AnimationObject::NextSelectBitmapIndex()
 {
-	if (GetTickCount64() > tick + delay[selectBitmapIndex])
+	if (GetTickCount64() > tick + (delay[selectBitmapIndex]))
 	{
 		tick = GetTickCount64();
 		++selectBitmapIndex;

@@ -10,7 +10,7 @@ private:
 	vector<HBITMAP> animationBitmapData; // 애니메이션 비트맵	
 	vector<int> bitmapCount;	// 한 애니메이션 속에서 나눠쓸 비트맵 수 (한 비트맵 안의 짤라서 사용할 비트맵 수)
 
-	vector<float> delay;		// 애니메이션 변경 딜레이
+	vector<int> delay;		// 애니메이션 변경 딜레이
 	ULONGLONG tick = GetTickCount64();
 
 	int selectAnimationBitmapIndex = 0;			// 출력할 애니메이션 비트맵 인덱스
