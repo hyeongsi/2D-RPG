@@ -1,5 +1,16 @@
+3
 4	
-images/character/char_front_walk.bmp		4	200
-images/character/char_right_walk.bmp		4	200
-images/character/char_back_walk.bmp		4	200
-images/character/char_left_walk.bmp		4	200
+images/character/char_walk/char_front_walk.bmp		4	200
+images/character/char_walk/char_right_walk.bmp		4	200
+images/character/char_walk/char_back_walk.bmp		4	200
+images/character/char_walk/char_left_walk.bmp		4	200
+4	
+images/character/char_attack/char_front_attack.bmp	4	200
+images/character/char_attack/char_right_attack.bmp	4	200
+images/character/char_attack/char_back_attack.bmp	4	200
+images/character/char_attack/char_left_attack.bmp	4	200
+4	
+images/character/char_interaction/char_front_interaction.bmp	4	200
+images/character/char_interaction/char_right_interaction.bmp	4	200
+images/character/char_interaction/char_back_interaction.bmp	4	200
+images/character/char_interaction/char_left_interaction.bmp	4	200
