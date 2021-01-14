@@ -53,16 +53,22 @@ void GameManager::LimitMoveMent(const DPOINT prevDPos)
 		return;
 	}
 
-	pos.x += CHAR_NORMAL_X;			// 기준 좌표값 ++
-	pos.y += CHAR_NORMAL_Y;			// 기준 좌표값 ++
+	POINT colliderPos[4] = { {pos.x + CHAR_COLLIDER_BOX_LEFT_TOP.x, pos.y + CHAR_COLLIDER_BOX_LEFT_TOP.y},
+		{pos.x + CHAR_COLLIDER_BOX_LEFT_TOP.x, pos.y + CHAR_COLLIDER_BOX_RIGHT_BOTTOM.y},
+		{ pos.x + CHAR_COLLIDER_BOX_RIGHT_BOTTOM.x, pos.y + CHAR_COLLIDER_BOX_LEFT_TOP.y},
+		 {pos.x + CHAR_COLLIDER_BOX_RIGHT_BOTTOM.x, pos.y + CHAR_COLLIDER_BOX_RIGHT_BOTTOM.y} };
 
-	pos = worldMap.ChangePosToMapPoint(pos);	// 맵상의 좌표로 변환 후
-
-	if (0 != worldMap.GetData(MapEdittorSelectState::COLLIDER, pos))	// 콜라이더 위에 위치하고 있는 경우
+	for (int i = 0; i < sizeof(colliderPos)/sizeof(colliderPos[0]); i++)
 	{
-		character->SetPos(prevDPos);
-		return;
+		colliderPos[i] = worldMap.ChangePosToMapPoint(colliderPos[i]);	// 맵상의 좌표로 변환 후
+
+		if (0 != worldMap.GetData(MapEdittorSelectState::COLLIDER, colliderPos[i]))	// 콜라이더 위에 위치하고 있는 경우
+		{
+			character->SetPos(prevDPos);
+			return;
+		}
 	}
+	
 }
 
 const GameState GameManager::GetState()
