@@ -117,7 +117,7 @@ void RenderManager::MapEdittorDataRender()
     Render();                   // 출력
 }
 
-void RenderManager::InGameDataRender(Character character)
+void RenderManager::InGameDataRender(Character* character)
 {
     RenderInitSetting();        // 출력 전 초기화 작업
 
@@ -130,7 +130,7 @@ void RenderManager::InGameDataRender(Character character)
 
     // HP에 따라 출력되는 HP UI 설정 부분   /   ex)(0이면 빈하트 3개 출력) , (2이면 빈하트 2개, 꽉찬하트 1개 출력)
     int hp[3] = { TextureName::HP_Full, TextureName::HP_Full , TextureName::HP_Full };
-    int tempCharacterHp = character.GetHp();
+    int tempCharacterHp = character->GetHp();
     for (int index = HP_UI_COUNT; index > 0; index--)               // 3,2,1 루프
     {
         for (int count = 0; count < (TextureName::HP_Full - TextureName::HP_Empty); count++)    // 2번 루프
@@ -228,25 +228,33 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
     }
 }
 
-void RenderManager::DrawCharacter(Character& character)
+void RenderManager::DrawCharacter(Character* character)
 {
-    AnimationObject* animationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::CHARACTER_WALK);
+    AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::CHARACTER_WALK);
+    AnimationObject* attackAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::CHARACTER_ATTACK);
 
-    animationObject->SetSelectAnimationBitmapIndex(character.GetDir());       // 방향에 따른 방향 애니메이션 설정
-
-    switch (character.GetState())
+    switch (character->GetState())
     {
-    case CharacterInfo::IDLE:
-        animationObject->SetSelectBitmapIndex(CharacterInfo::IDLE);             // 초기 이미지로 변경
-        DrawAnimation(TextureName::CHARACTER_WALK, character.GetPos());
-        break;
     case CharacterInfo::WALK:
-        DrawAnimation(TextureName::CHARACTER_WALK, character.GetPos());
-        animationObject->NextSelectBitmapIndex();                               // 출력 이미지 위치 변경
+        InitCharAnimation(CharacterInfo::WALK, character);
+
+        DrawAnimation(TextureName::CHARACTER_WALK, character->GetPos());
+        walkAnimationObject->NextSelectBitmapIndex();                               // 출력 이미지 위치 변경
         break;
     case CharacterInfo::ATTACK:
+        InitCharAnimation(CharacterInfo::ATTACK, character);
+
+        DrawAnimation(TextureName::CHARACTER_ATTACK, character->GetPos());
+        if (attackAnimationObject->NextSelectBitmapIndex())      // 출력 이미지 위치 변경
+            character->SetState(CharacterInfo::IDLE);
+
         break;
+    case CharacterInfo::IDLE:
     default:
+        InitCharAnimation(CharacterInfo::IDLE, character);
+
+        walkAnimationObject->SetSelectBitmapIndex(CharacterInfo::IDLE);             // 초기 이미지로 변경
+        DrawAnimation(TextureName::CHARACTER_WALK, character->GetPos());
         break;
     }
 }
@@ -328,4 +336,25 @@ void RenderManager::DrawAnimation(const int uiName, const DPOINT pos)
     TransparentBlt(memDC, static_cast<int>(pos.x), static_cast<int>(pos.y), bit.bmWidth/count, bit.bmHeight, 
         backMemDC, selectBitmapIndex * (bit.bmWidth / count), 0, bit.bmWidth/count,
         bit.bmHeight, RGB(215, 123, 186));
+}
+
+void RenderManager::InitCharAnimation(const int state, Character * character)
+{
+    AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::CHARACTER_WALK);
+    AnimationObject* attackAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::CHARACTER_ATTACK);
+
+    switch (state)
+    {
+    case CharacterInfo::IDLE:
+    case CharacterInfo::WALK:
+        attackAnimationObject->SetSelectBitmapIndex(0);                 // 다른 애니메이션 초기화
+
+        walkAnimationObject->SetSelectAnimationBitmapIndex(character->GetDir());       // 방향에 따른 방향 애니메이션 설정
+        break;
+    case CharacterInfo::ATTACK:
+        walkAnimationObject->SetSelectBitmapIndex(0);                 // 다른 애니메이션 초기화
+
+        attackAnimationObject->SetSelectAnimationBitmapIndex(character->GetDir());       // 방향에 따른 방향 애니메이션 설정
+        break;
+    }
 }

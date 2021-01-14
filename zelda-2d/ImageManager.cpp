@@ -76,6 +76,7 @@ void ImageManager::LoadMapBitmapData()
 void ImageManager::LoadAnimationBitmapData(const string str)
 {
 	ifstream readFile;
+	string animationCount;
 	string size;
 	string path;
 	string bitmapCount;
@@ -86,20 +87,24 @@ void ImageManager::LoadAnimationBitmapData(const string str)
 	{
 		try
 		{
-			readFile >> size;
-			AnimationObject animationObject;
-			animationData.emplace_back(animationObject);
-			for (int i = 0; i < stoi(size); i++)
+			readFile >> animationCount;
+			for (int count = 0; count < stoi(animationCount); count++)
 			{
-				readFile >> path;
-				animationData.back().AddAnimationBitmap((HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION));
+				readFile >> size;
+				AnimationObject animationObject;
+				animationData.emplace_back(animationObject);
+				for (int i = 0; i < stoi(size); i++)
+				{
+					readFile >> path;
+					animationData.back().AddAnimationBitmap((HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION));
 
-				readFile >> bitmapCount;
-				animationData.back().AddBitmapCount(stoi(bitmapCount));
+					readFile >> bitmapCount;
+					animationData.back().AddBitmapCount(stoi(bitmapCount));
 
-				readFile >> delay;
-				animationData.back().AddDelay(stoi(delay));
-			}
+					readFile >> delay;
+					animationData.back().AddDelay(stoi(delay));
+				}
+			}		
 		}
 		catch (const std::exception&)
 		{

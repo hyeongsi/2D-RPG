@@ -41,7 +41,7 @@ void GameManager::Run()
 
 void GameManager::LimitMoveMent(const DPOINT prevDPos)
 {
-	POINT pos = { character->GetPos().x,  character->GetPos().y };
+	POINT pos = { static_cast<LONG>(character->GetPos().x),  static_cast<LONG>(character->GetPos().y) };
 	if (0 > pos.x || ClientSize::width- LIMIT_MAP_X_CORRECTION < pos.x)
 	{
 		character->SetPos(prevDPos);
@@ -96,7 +96,7 @@ void GameManager::SetCharacter(Character* character)
 	this->character = character;
 }
 
-const Character GameManager::GetCharacter()
+Character* GameManager::GetCharacter()
 {
-	return *character;
+	return character;
 }

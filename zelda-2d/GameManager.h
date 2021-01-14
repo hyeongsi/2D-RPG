@@ -36,7 +36,7 @@ public:
 	const WorldMap GetWorldMapData();
 
 	void SetCharacter(Character* character);
-	const Character GetCharacter();
+	Character* GetCharacter();
 
 };
 

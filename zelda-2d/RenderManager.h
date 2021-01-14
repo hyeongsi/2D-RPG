@@ -40,12 +40,12 @@ public:
 public:
 	void MainFrameDataRender();
 	void MapEdittorDataRender();
-	void InGameDataRender(Character character);
+	void InGameDataRender(Character* character);
 
 public:
 	void DrawWorldMapData(const GameState gameState);
 
-	void DrawCharacter(Character& character);
+	void DrawCharacter(Character* character);
 	void DrawCharUIData(const int uiName, const POINT pos);
 
 	void DrawCheckPattern();
@@ -53,6 +53,8 @@ public:
 
 public:
 	void DrawAnimation(const int uiName, const DPOINT pos);
+
+	void InitCharAnimation(const int state, Character *character);
 
 };
 

@@ -37,6 +37,8 @@ public:
 	const int GetLevel();
 	const int GetDamage();
 	const int GetState();
+	void SetState(const int state);
+
 	const int GetDir();
 
 public:

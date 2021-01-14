@@ -66,7 +66,7 @@ void AnimationObject::SetBitmap(const int index, const HBITMAP hbitmap)
 		animationBitmapData[index] = hbitmap;
 }
 
-void AnimationObject::NextSelectBitmapIndex()
+bool AnimationObject::NextSelectBitmapIndex()
 {
 	if (GetTickCount64() > tick + (delay[selectBitmapIndex]))
 	{
@@ -74,9 +74,18 @@ void AnimationObject::NextSelectBitmapIndex()
 		++selectBitmapIndex;
 	}
 
-	if(selectBitmapIndex >= static_cast<int>(bitmapCount.size()))
+	if (selectBitmapIndex >= static_cast<int>(bitmapCount.size()))
+	{
 		selectBitmapIndex = 0;
+		return true;
+	}
+		
 
 	if (selectBitmapIndex >= bitmapCount[selectBitmapIndex])
+	{
 		selectBitmapIndex = 0;
+		return true;
+	}
+
+	return false;
 }

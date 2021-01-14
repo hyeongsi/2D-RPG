@@ -70,6 +70,11 @@ const int Character::GetState()
 	return state;
 }
 
+void Character::SetState(const int state)
+{
+	this->state = state;
+}
+
 const int Character::GetDir()
 {
 	return dir;
@@ -77,36 +82,42 @@ const int Character::GetDir()
 
 void Character::Input(const double deltaTime)
 {
-	if (GetAsyncKeyState(VK_UP) & 0x8000)			// 상
+	if ((GetAsyncKeyState(VK_UP) & 0x8000) && state != CharacterInfo::ATTACK)			// 상
 	{
 		pos.y -= speed * deltaTime;
 		state = CharacterInfo::WALK;
 		dir = CharacterInfo::UP;
 	}
-	else if (GetAsyncKeyState(VK_DOWN) & 0x8000)	// 하
+	else if ((GetAsyncKeyState(VK_DOWN) & 0x8000) && state != CharacterInfo::ATTACK)	// 하
 	{
 		pos.y += speed * deltaTime;
 		state = CharacterInfo::WALK;
 		dir = CharacterInfo::DOWN;
-
 	}
-	else if (GetAsyncKeyState(VK_LEFT) & 0x8000)	// 좌
+	else if ((GetAsyncKeyState(VK_LEFT) & 0x8000) && state != CharacterInfo::ATTACK)	// 좌
 	{
 		pos.x -= speed * deltaTime;
 		state = CharacterInfo::WALK;
 		dir = CharacterInfo::LEFT;
-
 	}
-	else if (GetAsyncKeyState(VK_RIGHT) & 0x8000)	// 우
+	else if ((GetAsyncKeyState(VK_RIGHT) & 0x8000) && state != CharacterInfo::ATTACK)	// 우
 	{
 		pos.x += speed * deltaTime;
 		state = CharacterInfo::WALK;
 		dir = CharacterInfo::RIGHT;
-
+	}
+	else if (GetAsyncKeyState(VK_CONTROL) & 0x8000)	// 공격
+	{
+		state = CharacterInfo::ATTACK;
+	}
+	else if ((GetAsyncKeyState(VK_SPACE) & 0x8000))	// 상호작용
+	{
+		state = CharacterInfo::INTERACTION;
 	}
 	else
 	{
-		state = CharacterInfo::IDLE;
+		if(state != CharacterInfo::ATTACK)
+			state = CharacterInfo::IDLE;
 	}
 }
 

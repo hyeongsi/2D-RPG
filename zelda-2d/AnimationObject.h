@@ -39,5 +39,5 @@ public:
 	void SetNormalPos(const int index, const POINT pos);
 
 public:
-	void NextSelectBitmapIndex();
+	bool NextSelectBitmapIndex();
 };
