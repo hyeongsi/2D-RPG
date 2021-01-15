@@ -187,8 +187,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 imageManager->LoadAnimationBitmapData(CHARACTER_ANIMATION_PATH);    // 인게임에서 사용할 캐릭터 애니메이션 로드
                 imageManager->LoadBitmapPathData(BitmapKind::UI, UI_BITMAP_PATH);   // 인게임에서 사용할 UI 비트맵 로드
                 LoadTextMapData(GameState::INGAME, STAGE1_PATH);     // 인게임에서 사용할 맵데이터 로드
-
-                InvalidateRect(hWnd, nullptr, true);    // 화면 초기화
                 break;
             case ButtonKind::MAPEDITTOR:
                 HideMainFrameButton();                               // 버튼 숨기기
@@ -289,16 +287,17 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
         case IDC_lBACKGROUND:
         case IDC_rBACKGROUND:
             SelectListBoxSetting(MapEdittorSelectState::BACKGROUND);
-            break;
+            return (INT_PTR)TRUE;
         case IDC_lOBJECT:
         case IDC_rOBJECT:
             SelectListBoxSetting(MapEdittorSelectState::OBJECT);
-            break;
+            return (INT_PTR)TRUE;
         case IDC_rCOLLIDER:
-            mapEdittor->SetSelectState(MapEdittorSelectState::COLLIDER);    break;
+            mapEdittor->SetSelectState(MapEdittorSelectState::COLLIDER);   
+            return (INT_PTR)TRUE;
         case IDC_bSAVE: 
-            ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
-            openFileName.lStructSize = sizeof(openFileName);
+            ZeroMemory(&openFileName, sizeof(OPENFILENAME));    // 구조체를 0으로 셋업
+            openFileName.lStructSize = sizeof(OPENFILENAME);
             openFileName.hwndOwner = g_hWnd;
             openFileName.lpstrTitle = "저장";
             openFileName.lpstrFileTitle = strFileTitle;
@@ -313,12 +312,14 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
                 {
                 case 1:
                     SaveTextMapData(strFilePath);
-                    break;
+                    ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
+                    return (INT_PTR)TRUE;
                 default:
                     break;
                 }
             }
-            break;
+            ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
+            return (INT_PTR)TRUE;
         case IDC_bLOAD:
             ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
             openFileName.lStructSize = sizeof(openFileName);
@@ -336,12 +337,14 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
                 {
                 case 1:
                     LoadTextMapData(GameState::MAPEDITTOR, strFilePath);
-                    break;
+                    ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
+                    return (INT_PTR)TRUE;
                 default:
                     break;
                 }
             }
-            break;    
+            ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
+            return (INT_PTR)TRUE;
         case IDC_bEXIT:
             ShowMainFrameButton();
 
@@ -390,11 +393,12 @@ void LoadTextMapData(const GameState state,const char* filePath)
     MapEdittorSelectState selectState;
     string str;
 
-    readFile.open(filePath);
-    if (readFile.is_open())
+    try
     {
-        try
+        readFile.open(filePath);
+        if (readFile.is_open())
         {
+        
             for (int i = 0; i < 2; i++) // 맵의 크기, x,y값을 받고
             {
                 readFile >> str;
@@ -425,22 +429,22 @@ void LoadTextMapData(const GameState state,const char* filePath)
                 }
             }
         }
-        catch (const std::exception&)
+
+        switch (state)
         {
-            readFile.close();
-            return;
+        case GameState::MAPEDITTOR:
+            mapEdittor->SetWorldMapData(mapData);
+            break;
+        case GameState::INGAME:
+            gameManager->SetWorldMapData(mapData);
+            break;
+        default:
+            break;
         }
+       
     }
-    switch (state)
+    catch (const std::exception&)
     {
-    case GameState::MAPEDITTOR:
-        mapEdittor->SetWorldMapData(mapData);
-        break;
-    case GameState::INGAME:
-        gameManager->SetWorldMapData(mapData);
-        break;
-    default:
-        break;
     }
 
     readFile.close();
@@ -453,12 +457,12 @@ void SaveTextMapData(const char* filePath)
     WorldMap mapData = mapEdittor->GetWorldMapData();   // 저장할 맵 에디터의 맵 데이터
     MapEdittorSelectState selectState;
     string str;
-    
-    writeFile.open(filePath);
-    if (writeFile.is_open())
+    try
     {
-        try
+        writeFile.open(filePath);
+        if (writeFile.is_open())
         {
+       
             for (int i = 0; i < 2; i++) // 맵의 크기, x,y값 저장
             {
                 writeFile << value[i]<<' ';
@@ -492,11 +496,11 @@ void SaveTextMapData(const char* filePath)
                 }
             }
         }
-        catch (const std::exception&)
-        {
-            writeFile.close();
-            return;
-        }
+        
+    }
+    catch (const std::exception&)
+    {
+        
     }
 
     writeFile.close();

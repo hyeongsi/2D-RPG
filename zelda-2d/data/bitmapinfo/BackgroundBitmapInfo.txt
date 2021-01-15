@@ -1,0 +1,11 @@
+1	images/backgrounds/grass.bmp			grass
+2	images/backgrounds/grass_water1.bmp		grass_water1
+3	images/backgrounds/grass_water2.bmp		grass_water2
+4	images/backgrounds/grass_water3.bmp		grass_water3
+5	images/backgrounds/grass_water4.bmp		grass_water4
+6	images/backgrounds/grass_water5.bmp		grass_water5
+7	images/backgrounds/grass_water6.bmp		grass_water6
+8	images/backgrounds/grass_water7.bmp		grass_water7
+9	images/backgrounds/grass_water8.bmp		grass_water8
+10	images/backgrounds/grass_water9.bmp		grass_water9
+11	images/backgrounds/castle_tile.bmp			castle_tile

@@ -34,9 +34,6 @@ public:
 	const HBITMAP GetAnimationBitmap(const int index);
 	void SetBitmap(const int index, const HBITMAP hbitmap);
 
-	const POINT GetNormalPos(const int index);
-	void SetNormalPos(const int index, const POINT pos);
-
 public:
 	bool NextSelectBitmapIndex();
 };

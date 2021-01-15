@@ -35,33 +35,39 @@ void ImageManager::LoadBitmapPathData(const BitmapKind kind, const string str)
 	string path;
 	string name;
 
-	readFile.open(str);
-	if (readFile.is_open())
+	try 
 	{
-		while (!readFile.eof())
+		readFile.open(str);
+		if (readFile.is_open())
 		{
-			readFile >> number;
-			readFile >> path;
-
-			switch (kind)
+			while (!readFile.eof())
 			{
-			case BitmapKind::BACKGROUND:
-				readFile >> name;
+				readFile >> number;
+				readFile >> path;
 
-				backgroundBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-				backgroundStringData[stoi(number)] = name;
-				break;
-			case BitmapKind::OBJECT:
-				readFile >> name;
+				switch (kind)
+				{
+				case BitmapKind::BACKGROUND:
+					readFile >> name;
 
-				objectBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-				objectStringData[stoi(number)] = name;
-				break;
-			case BitmapKind::UI:
-				uiBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-				break;
+					backgroundBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+					backgroundStringData[stoi(number)] = name;
+					break;
+				case BitmapKind::OBJECT:
+					readFile >> name;
+
+					objectBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+					objectStringData[stoi(number)] = name;
+					break;
+				case BitmapKind::UI:
+					uiBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+					break;
+				}
 			}
 		}
+	}
+	catch (const std::exception&)
+	{
 	}
 
 	readFile.close();
@@ -82,10 +88,10 @@ void ImageManager::LoadAnimationBitmapData(const string str)
 	string bitmapCount;
 	string delay;
 
-	readFile.open(str);
-	if (readFile.is_open())
+	try
 	{
-		try
+		readFile.open(str);
+		if (readFile.is_open())
 		{
 			readFile >> animationCount;
 			for (int count = 0; count < stoi(animationCount); count++)
@@ -106,13 +112,11 @@ void ImageManager::LoadAnimationBitmapData(const string str)
 				}
 			}		
 		}
-		catch (const std::exception&)
-		{
-			readFile.close();
-			return;
-		}
 	}
+	catch (const std::exception&)
+	{
 
+	}
 	readFile.close();
 }
 
