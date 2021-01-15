@@ -19,7 +19,6 @@ private:
 public:
 	void AddAnimationBitmap(const HBITMAP hbitmap);
 	void AddBitmapCount(const int count);
-	void AddNormalPos(const POINT pos);
 	void AddDelay(const int delay);
 
 public:

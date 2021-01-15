@@ -16,6 +16,7 @@ Character::Character()
 
 	speed = INIT_SPEED;
 	damage = INIT_DAMAGE;
+	money = 102;
 }
 
 Character::Character(const DPOINT pos, const int hp, const int level, const int speed, const int damage)
@@ -33,6 +34,7 @@ Character::Character(const DPOINT pos, const int hp, const int level, const int 
 
 	this->speed = speed;
 	this->damage = damage;
+	money = 0;
 }
 
 Character::~Character()
@@ -78,6 +80,11 @@ void Character::SetState(const int state)
 const int Character::GetDir()
 {
 	return dir;
+}
+
+const int Character::GetMoney()
+{
+	return money;
 }
 
 void Character::Input(const double deltaTime)

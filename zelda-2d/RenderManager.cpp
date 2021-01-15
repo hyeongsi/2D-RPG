@@ -127,6 +127,21 @@ void RenderManager::InGameDataRender(Character* character)
 
     //UI 출력
     DrawCharUIData(TextureName::Char_Info, { 10,10 });
+    DrawCharUIData(TextureName::Money_Info, { 11,110 });
+
+    int money = character->GetMoney();
+    if(0 == money)
+        DrawCharUIData(TextureName::ZERO, { 105,125 });
+
+    int count = 0;  // 출력 숫자 정하는 변수
+    int space = 0;  // 출력 위치 정하는 변수
+    while (money > 0)
+    {
+        count = money % 10;
+        space += 1;
+        DrawCharUIData(TextureName::ZERO + count, { 115-(13 * space),125 });
+        money /= 10;
+    }
 
     // HP에 따라 출력되는 HP UI 설정 부분   /   ex)(0이면 빈하트 3개 출력) , (2이면 빈하트 2개, 꽉찬하트 1개 출력)
     int hp[3] = { TextureName::HP_Full, TextureName::HP_Full , TextureName::HP_Full };
@@ -141,7 +156,7 @@ void RenderManager::InGameDataRender(Character* character)
                 tempCharacterHp += 1;
             }
         }
-        DrawCharUIData(hp[index - 1], { 70 + (30 * (index - 1)),40 });     // 배열이 0부터 시작하여 i에 -1을 해줌
+        DrawCharUIData(hp[index - 1], { 70 + (30 * (index - 1)),52 });     // 배열이 0부터 시작하여 i에 -1을 해줌
     }
 
     Render();                   // 출력

@@ -24,6 +24,8 @@ private:
 	int speed;			// speed
 	int damage;			// damage
 
+	int money;			// money
+
 public:
 	Character();
 	Character(const DPOINT pos, const int hp, const int level, const int speed, const int damage);
@@ -40,7 +42,7 @@ public:
 	void SetState(const int state);
 
 	const int GetDir();
-
+	const int GetMoney();
 public:
 	void Input(const double deltaTime);
 	void Update();
