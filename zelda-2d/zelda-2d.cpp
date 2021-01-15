@@ -275,6 +275,7 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 {
     OPENFILENAME openFileName;
     static char strFileTitle[MAX_PATH], strFileExtension[10], strFilePath[100];
+    TCHAR curDirectoryPath[256];
 
     UNREFERENCED_PARAMETER(lParam);
     switch (message)
@@ -296,6 +297,8 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
             mapEdittor->SetSelectState(MapEdittorSelectState::COLLIDER);   
             return (INT_PTR)TRUE;
         case IDC_bSAVE: 
+            GetCurrentDirectory(256, curDirectoryPath);         // GetOpenFileName 호출하면 기본 경로명이 바뀌기 때문에 기본 경로명 미리 저장
+
             ZeroMemory(&openFileName, sizeof(OPENFILENAME));    // 구조체를 0으로 셋업
             openFileName.lStructSize = sizeof(OPENFILENAME);
             openFileName.hwndOwner = g_hWnd;
@@ -312,15 +315,16 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
                 {
                 case 1:
                     SaveTextMapData(strFilePath);
-                    ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
-                    return (INT_PTR)TRUE;
+                    break;
                 default:
                     break;
                 }
             }
-            ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
+            SetCurrentDirectory(curDirectoryPath);  // 변경된 경로를 원래 경로로 설정
             return (INT_PTR)TRUE;
         case IDC_bLOAD:
+            GetCurrentDirectory(256, curDirectoryPath);         // GetOpenFileName 호출하면 기본 경로명이 바뀌기 때문에 기본 경로명 미리 저장
+
             ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
             openFileName.lStructSize = sizeof(openFileName);
             openFileName.hwndOwner = g_hWnd;
@@ -337,13 +341,13 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
                 {
                 case 1:
                     LoadTextMapData(GameState::MAPEDITTOR, strFilePath);
-                    ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
-                    return (INT_PTR)TRUE;
+                    break;
                 default:
                     break;
                 }
             }
-            ZeroMemory(&openFileName, sizeof(openFileName));    // 구조체를 0으로 셋업
+            SetCurrentDirectory(curDirectoryPath);  // 변경된 경로를 원래 경로로 설정
+
             return (INT_PTR)TRUE;
         case IDC_bEXIT:
             ShowMainFrameButton();
