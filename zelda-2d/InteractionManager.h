@@ -2,6 +2,8 @@
 #include "DataStruct.h"
 #include "WorldMap.h"
 
+constexpr const int tickDelay = 250;
+
 class InteractionManager
 {
 private:
@@ -9,6 +11,8 @@ private:
 
 	InteractionManager();
 	~InteractionManager();
+private:
+	ULONGLONG tick;
 public:
 	static InteractionManager* GetInstance();
 	static void ReleaseInstance();

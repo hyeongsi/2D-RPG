@@ -5,10 +5,10 @@ constexpr const int TILE_SIZE = 32;	// 맵 한 칸의 크기 ( 32 x 32)
 constexpr const int MAP_MAX_X = 25;	// 행의 개수
 constexpr const int MAP_MAX_Y = 19;	// 열의 개수
 
-constexpr const POINT CHAR_COLLIDER_BOX_LEFT_TOP = { 1,47 };	// 캐릭터 콜라이더 기준 좌표 
-constexpr const POINT CHAR_COLLIDER_BOX_RIGHT_BOTTOM = {31,51};	// 캐릭터 콜라이더 기준 좌표
+constexpr const POINT PLAYER_COLLIDER_BOX_LEFT_TOP = { 1,47 };	// 캐릭터 콜라이더 기준 좌표 
+constexpr const POINT PLAYER_COLLIDER_BOX_RIGHT_BOTTOM = {31,51};	// 캐릭터 콜라이더 기준 좌표
 
-constexpr const POINT CHAR_PIVOT_POS = { 16,47 };	// 캐릭터 콜라이더 기준 좌표 
+constexpr const POINT PLAYER_PIVOT_POS = { 16,47 };	// 캐릭터 콜라이더 기준 좌표 
 
 constexpr const int LIMIT_MAP_X_CORRECTION = 32;	// 맵 밖으로 나가는 경우 보정 크기
 constexpr const int LIMIT_MAP_Y_CORRECTION = 46;	// 맵 밖으로 나가는 경우 보정 크기
@@ -23,7 +23,8 @@ constexpr const char UI_BITMAP_PATH[] = { "data/bitmapinfo/UIBitmapInfo.txt" };
 
 constexpr const char STAGE1_PATH[] = { "data/mapinfo/TileMapInfo.txt" };
 
-constexpr const char CHARACTER_ANIMATION_PATH[] = { "data/bitmapinfo/AnimationBitmapInfo.txt" };
+constexpr const char PLAYER_ANIMATION_PATH[] = { "data/bitmapinfo/CharacterAnimationBitmapInfo.txt" };
+constexpr const char NPC_ANIMATION_PATH[] = { "data/bitmapinfo/NPCAnimationBitmapInfo.txt" };
 
 namespace ClientSize
 {
@@ -71,6 +72,7 @@ namespace TextureName
 		grassBlock3,
 		grassBlock4,
 		wood_house,
+		wood_house_close,
 		castle_door_close,
 		castle_pillar,
 		lever_off,
@@ -100,8 +102,9 @@ namespace TextureName
 
 	enum Animation
 	{
-		CHARACTER_WALK,
-		CHARACTER_ATTACK,
+		PLAYER_WALK,
+		PLAYER_ATTACK,
+		NPC_WALK,
 	};
 }
 
@@ -151,6 +154,6 @@ namespace CharacterInfo
 		WALK,
 		ATTACK,
 		INTERACTION,	// 상호작용
-
+		HIT,
 	};
 }

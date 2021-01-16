@@ -117,13 +117,22 @@ void RenderManager::MapEdittorDataRender()
     Render();                   // 출력
 }
 
-void RenderManager::InGameDataRender(Character* character)
+void RenderManager::InGameDataRender(Player* character, NPC* npc)
 {
     RenderInitSetting();        // 출력 전 초기화 작업
 
     DrawWorldMapData(GameState::INGAME);        // 맵 출력
 
-    DrawCharacter(character);                   // 캐릭터 출력
+    if (character->GetPos().y <= npc->GetPos().y)
+    {
+        DrawPlayer(character);                  // 캐릭터 출력
+        DrawNPC(npc);                           // NPC 출력
+    }
+    else
+    {
+        DrawNPC(npc);                           // NPC 출력
+        DrawPlayer(character);                  // 캐릭터 출력
+    }
 
     //UI 출력
     DrawCharUIData(TextureName::Char_Info, { 10,10 });
@@ -150,7 +159,7 @@ void RenderManager::InGameDataRender(Character* character)
     {
         for (int count = 0; count < (TextureName::HP_Full - TextureName::HP_Empty); count++)    // 2번 루프
         {
-            if (tempCharacterHp < MAX_HP)
+            if (tempCharacterHp < INIT_HP)
             {
                 hp[index - 1] -= 1;
                 tempCharacterHp += 1;
@@ -243,33 +252,53 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
     }
 }
 
-void RenderManager::DrawCharacter(Character* character)
+void RenderManager::DrawPlayer(Player* player)
 {
-    AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::CHARACTER_WALK);
-    AnimationObject* attackAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::CHARACTER_ATTACK);
+    AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::PLAYER_WALK);
+    AnimationObject* attackAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::PLAYER_ATTACK);
 
-    switch (character->GetState())
+    switch (player->GetState())
     {
     case CharacterInfo::WALK:
-        InitCharAnimation(CharacterInfo::WALK, character);
+        InitPlayerAnimation(CharacterInfo::WALK, player);
 
-        DrawAnimation(TextureName::CHARACTER_WALK, character->GetPos());
+        DrawAnimation(TextureName::PLAYER_WALK, player->GetPos());
         walkAnimationObject->NextSelectBitmapIndex();                               // 출력 이미지 위치 변경
         break;
     case CharacterInfo::ATTACK:
-        InitCharAnimation(CharacterInfo::ATTACK, character);
+        InitPlayerAnimation(CharacterInfo::ATTACK, player);
 
-        DrawAnimation(TextureName::CHARACTER_ATTACK, character->GetPos());
+        DrawAnimation(TextureName::PLAYER_ATTACK, player->GetPos());
         if (attackAnimationObject->NextSelectBitmapIndex())      // 출력 이미지 위치 변경
-            character->SetState(CharacterInfo::IDLE);
+            player->SetState(CharacterInfo::IDLE);
 
         break;
     case CharacterInfo::IDLE:
     default:
-        InitCharAnimation(CharacterInfo::IDLE, character);
+        InitPlayerAnimation(CharacterInfo::IDLE, player);
 
         walkAnimationObject->SetSelectBitmapIndex(CharacterInfo::IDLE);             // 초기 이미지로 변경
-        DrawAnimation(TextureName::CHARACTER_WALK, character->GetPos());
+        DrawAnimation(TextureName::PLAYER_WALK, player->GetPos());
+        break;
+    }
+}
+
+void RenderManager::DrawNPC(NPC* npc)
+{
+    AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::NPC_WALK);
+    walkAnimationObject->SetSelectAnimationBitmapIndex(npc->GetDir());       // 방향에 따른 방향 애니메이션 설정
+
+    switch (npc->GetState())
+    {
+    case CharacterInfo::WALK:
+        DrawAnimation(TextureName::NPC_WALK, npc->GetPos());
+        walkAnimationObject->NextSelectBitmapIndex();                               // 출력 이미지 위치 변경
+        break;
+  
+    case CharacterInfo::IDLE:
+    default:
+        walkAnimationObject->SetSelectBitmapIndex(CharacterInfo::IDLE);             // 초기 이미지로 변경
+        DrawAnimation(TextureName::NPC_WALK, npc->GetPos());
         break;
     }
 }
@@ -353,23 +382,21 @@ void RenderManager::DrawAnimation(const int uiName, const DPOINT pos)
         bit.bmHeight, RGB(215, 123, 186));
 }
 
-void RenderManager::InitCharAnimation(const int state, Character * character)
+void RenderManager::InitPlayerAnimation(const int state, Player * player)
 {
-    AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::CHARACTER_WALK);
-    AnimationObject* attackAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::CHARACTER_ATTACK);
+    AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::PLAYER_WALK);
+    AnimationObject* attackAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::PLAYER_ATTACK);
 
     switch (state)
     {
     case CharacterInfo::IDLE:
     case CharacterInfo::WALK:
         attackAnimationObject->SetSelectBitmapIndex(0);                 // 다른 애니메이션 초기화
-
-        walkAnimationObject->SetSelectAnimationBitmapIndex(character->GetDir());       // 방향에 따른 방향 애니메이션 설정
+        walkAnimationObject->SetSelectAnimationBitmapIndex(player->GetDir());       // 방향에 따른 방향 애니메이션 설정
         break;
     case CharacterInfo::ATTACK:
         walkAnimationObject->SetSelectBitmapIndex(0);                 // 다른 애니메이션 초기화
-
-        attackAnimationObject->SetSelectAnimationBitmapIndex(character->GetDir());       // 방향에 따른 방향 애니메이션 설정
+        attackAnimationObject->SetSelectAnimationBitmapIndex(player->GetDir());       // 방향에 따른 방향 애니메이션 설정
         break;
     }
 }

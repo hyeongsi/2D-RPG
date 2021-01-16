@@ -8,7 +8,7 @@
 #include "mapEdittor.h"
 #include "imageManager.h"
 #include "renderManager.h"
-#include "Character.h"
+#include "Player.h"
 #include <commdlg.h>
 
 #define MAX_LOADSTRING 100
@@ -32,7 +32,7 @@ MapEdittor* mapEdittor;                         // 맵 에디터
 ImageManager* imageManager;                     // 이미지 매니저
 RenderManager* renderManager;                   // 랜더 매니저
 
-Character* character;                            // 캐릭터 클래스
+Player* character;                            // 캐릭터 클래스
 
 void SetMapEdittorData();                       // 함수 선언
 void LoadTextMapData(const GameState state,const char* filePath);           // 맵 정보 로드
@@ -104,7 +104,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             break;
         case GameState::INGAME:
             gameManager->Run();
-            renderManager->InGameDataRender(gameManager->GetCharacter());
+            renderManager->InGameDataRender(gameManager->GetPlayer(), gameManager->GetNPC());
             break;
         default:
             break;
@@ -181,10 +181,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case ButtonKind::START:
                 HideMainFrameButton();                               // 버튼 숨기기
                 gameManager->SetState(GameState::INGAME);            // 인게임 실행
-                gameManager->SetCharacter(new Character());          // 캐릭터 생성
+                gameManager->SetPlayer(new Player());          // 플레이어 생성
+                gameManager->SetNPC(new NPC());          // npc 생성
 
                 imageManager->LoadMapBitmapData();                      // 인게임에서 사용할 맵 관련 비트맵 로드
-                imageManager->LoadAnimationBitmapData(CHARACTER_ANIMATION_PATH);    // 인게임에서 사용할 캐릭터 애니메이션 로드
+                imageManager->LoadAnimationBitmapData(PLAYER_ANIMATION_PATH);    // 인게임에서 사용할 플레이어 애니메이션 로드
+                imageManager->LoadAnimationBitmapData(NPC_ANIMATION_PATH);    // 인게임에서 사용할 NPC 애니메이션 로드
                 imageManager->LoadBitmapPathData(BitmapKind::UI, UI_BITMAP_PATH);   // 인게임에서 사용할 UI 비트맵 로드
                 LoadTextMapData(GameState::INGAME, STAGE1_PATH);     // 인게임에서 사용할 맵데이터 로드
                 break;
@@ -562,16 +564,19 @@ void GetSelectListBoxData(const MapEdittorSelectState state)
 void SelectListBoxSetting(const MapEdittorSelectState state)
 {
     int unCheckButton;
+    int unCheckButton2;
     int checkButton;
 
     switch (state)
     {
     case MapEdittorSelectState::BACKGROUND:
         unCheckButton = IDC_rOBJECT;
+        unCheckButton2 = IDC_rCOLLIDER;
         checkButton = IDC_rBACKGROUND;
         break;
     case MapEdittorSelectState::OBJECT:
         unCheckButton = IDC_rBACKGROUND;
+        unCheckButton2 = IDC_rCOLLIDER;
         checkButton = IDC_rOBJECT; 
         break;
     default:
@@ -579,6 +584,7 @@ void SelectListBoxSetting(const MapEdittorSelectState state)
     }
 
     SendMessage(GetDlgItem(g_hMapEdittorDlg, unCheckButton), BM_SETCHECK, BST_UNCHECKED, 0);        // 버튼 선택상태 초기화
+    SendMessage(GetDlgItem(g_hMapEdittorDlg, unCheckButton2), BM_SETCHECK, BST_UNCHECKED, 0);        // 버튼 선택상태 초기화
     SendMessage(GetDlgItem(g_hMapEdittorDlg, checkButton), BM_SETCHECK, BST_CHECKED, 0);            // 버튼 선택상태 초기화
     mapEdittor->SetSelectState(state);
     GetSelectListBoxData(state);

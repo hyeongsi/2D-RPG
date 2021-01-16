@@ -3,9 +3,10 @@
 3		images/objects/grassBlock3.bmp		grassBlock3
 4		images/objects/grassBlock4.bmp		grassBlock4
 5		images/objects/wood_house.bmp		wood_house
-6		images/objects/castle_door_close.bmp		castle_door_close
-7		images/objects/castle_pillar.bmp		castle_pillar
-8		images/objects/lever_off.bmp		lever_off
-9		images/objects/lever_on.bmp		lever_on
-10		images/objects/box_off.bmp			box_off
-11		images/objects/box_on.bmp			box_on
+6		images/objects/wood_house_close.bmp	wood_house_close
+7		images/objects/castle_door_close.bmp		castle_door_close
+8		images/objects/castle_pillar.bmp		castle_pillar
+9		images/objects/lever_off.bmp		lever_off
+10		images/objects/lever_on.bmp		lever_on
+11		images/objects/box_off.bmp			box_off
+12		images/objects/box_on.bmp			box_on

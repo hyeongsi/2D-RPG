@@ -25,6 +25,12 @@
     <Filter Include="헤더 파일\Manager">
       <UniqueIdentifier>{3d6d40d2-7e21-40b2-8b55-0e1891528d96}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Character">
+      <UniqueIdentifier>{dad91bfc-fe6d-4bc4-900d-1ba338dc1c75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="헤더 파일\Character">
+      <UniqueIdentifier>{937a3fe5-77f8-419c-a9b2-fad492fe1ed7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -60,9 +66,6 @@
     <ClInclude Include="RenderManager.h">
       <Filter>헤더 파일\Manager</Filter>
     </ClInclude>
-    <ClInclude Include="Character.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="AnimationObject.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -71,6 +74,15 @@
     </ClInclude>
     <ClInclude Include="InteractionManager.h">
       <Filter>헤더 파일\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="NPC.h">
+      <Filter>헤더 파일\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>헤더 파일\Character</Filter>
+    </ClInclude>
+    <ClInclude Include="Character.h">
+      <Filter>헤더 파일\Character</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -95,9 +107,6 @@
     <ClCompile Include="RenderManager.cpp">
       <Filter>소스 파일\Manager</Filter>
     </ClCompile>
-    <ClCompile Include="Character.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
     <ClCompile Include="AnimationObject.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
@@ -106,6 +115,15 @@
     </ClCompile>
     <ClCompile Include="InteractionManager.cpp">
       <Filter>소스 파일\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="NPC.cpp">
+      <Filter>소스 파일\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>소스 파일\Character</Filter>
+    </ClCompile>
+    <ClCompile Include="Character.cpp">
+      <Filter>소스 파일\Character</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

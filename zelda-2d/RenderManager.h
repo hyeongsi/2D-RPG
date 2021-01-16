@@ -4,7 +4,8 @@
 #include "ImageManager.h"
 #include "MapEdittor.h"
 #include "GameManager.h"
-#include "Character.h"
+#include "Player.h"
+#include "NPC.h"
 
 #pragma comment (lib, "Msimg32.lib")
 
@@ -40,12 +41,13 @@ public:
 public:
 	void MainFrameDataRender();
 	void MapEdittorDataRender();
-	void InGameDataRender(Character* character);
+	void InGameDataRender(Player* character, NPC* npc);
 
 public:
 	void DrawWorldMapData(const GameState gameState);
 
-	void DrawCharacter(Character* character);
+	void DrawPlayer(Player* character);
+	void DrawNPC(NPC* npc);
 	void DrawCharUIData(const int uiName, const POINT pos);
 
 	void DrawCheckPattern();
@@ -54,7 +56,7 @@ public:
 public:
 	void DrawAnimation(const int uiName, const DPOINT pos);
 
-	void InitCharAnimation(const int state, Character *character);
+	void InitPlayerAnimation(const int state, Player* player);
 
 };
 

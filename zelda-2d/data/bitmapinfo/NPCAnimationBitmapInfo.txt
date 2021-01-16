@@ -1,0 +1,6 @@
+1
+4	
+images/character/npc_walk/npc_front_walk.bmp		4	200
+images/character/npc_walk/npc_right_walk.bmp		4	200
+images/character/npc_walk/npc_back_walk.bmp		4	200
+images/character/npc_walk/npc_left_walk.bmp		4	200

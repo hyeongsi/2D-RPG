@@ -97,6 +97,7 @@ void ImageManager::LoadAnimationBitmapData(const string str)
 			for (int count = 0; count < stoi(animationCount); count++)
 			{
 				readFile >> size;
+
 				AnimationObject animationObject;
 				animationData.emplace_back(animationObject);
 				for (int i = 0; i < stoi(size); i++)

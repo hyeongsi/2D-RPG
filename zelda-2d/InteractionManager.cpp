@@ -5,7 +5,7 @@ InteractionManager* InteractionManager::instance = nullptr;
 
 InteractionManager::InteractionManager()
 {
-
+	tick = GetTickCount64();
 }
 
 InteractionManager::~InteractionManager()
@@ -29,6 +29,13 @@ void InteractionManager::ReleaseInstance()
 
 void InteractionManager::ChangeMapData(WorldMap* worldMap, POINT pos, const int dir)
 {
+	if (GetTickCount64() > tick + tickDelay)
+	{
+		tick = GetTickCount64();
+	}
+	else
+		return;
+
 	switch (dir)
 	{
 	case CharacterInfo::DOWN:

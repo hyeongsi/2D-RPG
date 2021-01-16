@@ -1,9 +1,10 @@
 ﻿#pragma once
 #include "DataStruct.h"
 #include "WorldMap.h"
-#include "Character.h"
+#include "Player.h"
 #include "Time.h"
 #include "InteractionManager.h"
+#include "NPC.h"
 
 class GameManager
 {
@@ -12,7 +13,8 @@ private:
 
 	WorldMap worldMap;
 
-	Character* character;
+	Player* player;
+	NPC* npc;
 
 	Time* time;
 
@@ -38,8 +40,10 @@ public:
 	void SetWorldMapData(const WorldMap worldMap);
 	const WorldMap GetWorldMapData();
 
-	void SetCharacter(Character* character);
-	Character* GetCharacter();
+	void SetPlayer(Player* player);
+	Player* GetPlayer();
 
+	void SetNPC(NPC* npc);
+	NPC* GetNPC();
 };
 
