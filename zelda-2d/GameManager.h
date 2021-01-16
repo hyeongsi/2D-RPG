@@ -3,6 +3,7 @@
 #include "WorldMap.h"
 #include "Character.h"
 #include "Time.h"
+#include "InteractionManager.h"
 
 class GameManager
 {
@@ -14,6 +15,8 @@ private:
 	Character* character;
 
 	Time* time;
+
+	InteractionManager* interactionManager;
 
 private:
 	static GameManager* instance;

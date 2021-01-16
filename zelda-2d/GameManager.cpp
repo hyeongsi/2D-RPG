@@ -8,6 +8,7 @@ GameManager::GameManager()
 	state = GameState::MAIN;
 	character = nullptr;
 	time = Time::GetInstance();
+	interactionManager = InteractionManager::GetInstance();
 }
 
 GameManager::~GameManager()
@@ -15,6 +16,9 @@ GameManager::~GameManager()
 	delete character;
 	character = nullptr;
 	time->ReleaseInstance();
+	time = nullptr;
+	interactionManager->ReleaseInstance();
+	interactionManager = nullptr;
 }
 
 GameManager* GameManager::GetInstance()
@@ -35,8 +39,20 @@ void GameManager::Run()
 {
 	DPOINT prevPos = character->GetPos();	
 	character->Input(time->Update());
-	LimitMoveMent(prevPos);					// 맵 외곽 및 콜라이더 위치 이동 제한
+	switch (character->GetState())
+	{
+	case CharacterInfo::WALK:
+		LimitMoveMent(prevPos);					// 맵 외곽 및 콜라이더 위치 이동 제한
+		break;
+	case CharacterInfo::INTERACTION:
+		POINT pivotPos = { static_cast<LONG>(character->GetPos().x),  static_cast<LONG>(character->GetPos().y) };
+		pivotPos.x += CHAR_PIVOT_POS.x;
+		pivotPos.y += CHAR_PIVOT_POS.y;
 
+		pivotPos = worldMap.ChangePosToMapPoint(pivotPos);	// 맵 좌표로 변환
+		interactionManager->ChangeMapData(&worldMap ,pivotPos, character->GetDir());
+		break;
+	}
 }
 
 void GameManager::LimitMoveMent(const DPOINT prevDPos)
