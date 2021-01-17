@@ -52,6 +52,16 @@ void WorldMap::SetData(MapEdittorSelectState state, POINT pos, int data)
 	}
 }
 
+const bool WorldMap::GetIsLoad()
+{
+	return isLoad;
+}
+
+void WorldMap::SetIsLoad()
+{
+	isLoad = true;
+}
+
 const POINT WorldMap::ChangePosToMapPoint(const POINT pos)
 {
 	POINT mapPos;

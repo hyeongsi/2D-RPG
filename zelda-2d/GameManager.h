@@ -3,15 +3,20 @@
 #include "WorldMap.h"
 #include "Player.h"
 #include "Time.h"
-#include "InteractionManager.h"
 #include "NPC.h"
 
+constexpr const int TICK_DELAY = 250;
+
+using namespace std;
+
+class InteractionManager;
 class GameManager
 {
 private:
 	GameState state;
 
-	WorldMap worldMap;
+	WorldMap worldMap[STAGE_SIZE];	// stage 1(길거리), 2(오두막)
+	int currentStage;		// 현재 스테이지
 
 	Player* player;
 	NPC* npc;
@@ -25,7 +30,8 @@ private:
 
 	GameManager();
 	~GameManager();
-
+private:
+	ULONGLONG tick;
 public:
 	static GameManager* GetInstance();
 	static void ReleaseInstance();
@@ -37,8 +43,11 @@ public:
 	const GameState GetState();
 	void SetState(const GameState state);
 
-	void SetWorldMapData(const WorldMap worldMap);
-	const WorldMap GetWorldMapData();
+	void SetWorldMapData(const WorldMap worldMap, const int index);
+	WorldMap* GetWorldMapData(const int index);
+
+	void SetCurrentStage(const int currentStage);
+	const int GetCurrentStage();
 
 	void SetPlayer(Player* player);
 	Player* GetPlayer();

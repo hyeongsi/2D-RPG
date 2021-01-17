@@ -9,3 +9,5 @@
 9	images/backgrounds/grass_water8.bmp		grass_water8
 10	images/backgrounds/grass_water9.bmp		grass_water9
 11	images/backgrounds/castle_tile.bmp			castle_tile
+12	images/backgrounds/black_tile.bmp			black_tile
+13	images/backgrounds/inside_tile.bmp			inside_tile

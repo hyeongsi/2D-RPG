@@ -10,3 +10,12 @@
 10		images/objects/lever_on.bmp		lever_on
 11		images/objects/box_off.bmp			box_off
 12		images/objects/box_on.bmp			box_on
+13		images/objects/castle_wall_left.bmp		castle_wall_left
+14		images/objects/castle_wall_center.bmp		castle_wall_center
+15		images/objects/castle_wall_right.bmp		castle_wall_right
+16		images/objects/fireplace.bmp		fireplace
+17		images/objects/table.bmp			table
+18		images/objects/chair_center.bmp		chair_center
+19		images/objects/chair_left.bmp		chair_left
+20		images/objects/chair_right.bmp		chair_right
+21		images/objects/bed.bmp			bed

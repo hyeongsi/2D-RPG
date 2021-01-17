@@ -1,11 +1,15 @@
 ﻿#include "pch.h"
 #include "GameManager.h"
+#include "InteractionManager.h"
 
 GameManager* GameManager::instance = nullptr;
 
 GameManager::GameManager()
 {
+	tick = GetTickCount64();
+
 	state = GameState::MAIN;
+	currentStage = 0;
 	player = nullptr;
 	npc = nullptr;
 	time = Time::GetInstance();
@@ -55,8 +59,35 @@ void GameManager::Run()
 		pivotPos.x += PLAYER_PIVOT_POS.x;
 		pivotPos.y += PLAYER_PIVOT_POS.y;
 
-		pivotPos = worldMap.ChangePosToMapPoint(pivotPos);	// 맵 좌표로 변환
-		interactionManager->ChangeMapData(&worldMap ,pivotPos, player->GetDir());
+		pivotPos = worldMap[currentStage].ChangePosToMapPoint(pivotPos);	// 맵 좌표로 변환
+		// 캐릭터가 보고있는 방향의 오브젝트의 상호작용 실행 시키기 위해 연산
+		switch (player->GetDir())
+		{
+		case CharacterInfo::DOWN:
+			pivotPos.y += 1;
+			break;
+		case CharacterInfo::RIGHT:
+			pivotPos.x += 1;
+			break;
+		case CharacterInfo::UP:
+			pivotPos.y -= 1;
+			break;
+		case CharacterInfo::LEFT:
+			pivotPos.x -= 1;
+			break;
+		default:
+			return;
+		}
+
+		// 이벤트에 딜레이 추가
+		if (GetTickCount64() > tick + TICK_DELAY)
+			tick = GetTickCount64();
+		else
+			break;
+
+		interactionManager->ChangeMapData(pivotPos);		// 오브젝트 애니메이션 변경
+		interactionManager->ActionEvent(pivotPos);			// 연결 이벤트 발생
+
 		break;
 	}
 }
@@ -82,9 +113,9 @@ void GameManager::LimitMoveMent(const DPOINT prevDPos)
 
 	for (int i = 0; i < sizeof(colliderPos)/sizeof(colliderPos[0]); i++)
 	{
-		colliderPos[i] = worldMap.ChangePosToMapPoint(colliderPos[i]);	// 맵상의 좌표로 변환 후
+		colliderPos[i] = worldMap[currentStage].ChangePosToMapPoint(colliderPos[i]);	// 맵상의 좌표로 변환 후
 
-		if (0 != worldMap.GetData(MapEdittorSelectState::COLLIDER, colliderPos[i]))	// 콜라이더 위에 위치하고 있는 경우
+		if (0 != worldMap[currentStage].GetData(MapEdittorSelectState::COLLIDER, colliderPos[i]))	// 콜라이더 위에 위치하고 있는 경우
 		{
 			player->SetPos(prevDPos);
 			return;
@@ -102,14 +133,29 @@ void GameManager::SetState(const GameState state)
 	this->state = state;
 }
 
-void GameManager::SetWorldMapData(const WorldMap worldMap)
+void GameManager::SetWorldMapData(const WorldMap worldMap, const int index)
 {
-	this->worldMap = worldMap;
+	if (0 <= index && STAGE_SIZE > index)
+		this->worldMap[index] = worldMap;
 }
 
-const WorldMap GameManager::GetWorldMapData()
+WorldMap* GameManager::GetWorldMapData(const int index)
 {
-	return worldMap;
+	if(0 <= index && STAGE_SIZE > index)
+		return &worldMap[index];
+	else
+		return &worldMap[0];
+}
+
+void GameManager::SetCurrentStage(const int currentStage)
+{
+	if(0 <= currentStage && STAGE_SIZE > currentStage)
+		this->currentStage = currentStage;
+}
+
+const int GameManager::GetCurrentStage()
+{
+	return currentStage;
 }
 
 void GameManager::SetPlayer(Player* player)

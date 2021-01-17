@@ -108,6 +108,7 @@ void RenderManager::MainFrameDataRender()
 
 void RenderManager::MapEdittorDataRender()
 {
+
     RenderInitSetting();        // 출력 전 초기화 작업
 
     DrawWorldMapData(GameState::MAPEDITTOR);         // 출력할 비트맵 세팅 작업
@@ -126,11 +127,13 @@ void RenderManager::InGameDataRender(Player* character, NPC* npc)
     if (character->GetPos().y <= npc->GetPos().y)
     {
         DrawPlayer(character);                  // 캐릭터 출력
-        DrawNPC(npc);                           // NPC 출력
+        if(MapInfo::NORMAL == GameManager::GetInstance()->GetCurrentStage())
+            DrawNPC(npc);                       // NPC 출력
     }
     else
     {
-        DrawNPC(npc);                           // NPC 출력
+        if (MapInfo::NORMAL == GameManager::GetInstance()->GetCurrentStage())
+            DrawNPC(npc);                       // NPC 출력                          
         DrawPlayer(character);                  // 캐릭터 출력
     }
 
@@ -181,7 +184,7 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
     {
     case GameState::INGAME:
         gameManager = GameManager::GetInstance();
-        tempWorldMap = gameManager->GetWorldMapData();
+        tempWorldMap = *gameManager->GetWorldMapData(gameManager->GetCurrentStage());
         break;
     case GameState::MAPEDITTOR:
         mapEdittor = MapEdittor::GetInstance();

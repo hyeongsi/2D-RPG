@@ -10,6 +10,7 @@
 #include "renderManager.h"
 #include "Player.h"
 #include <commdlg.h>
+#include "InteractionManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -35,7 +36,6 @@ RenderManager* renderManager;                   // 랜더 매니저
 Player* character;                            // 캐릭터 클래스
 
 void SetMapEdittorData();                       // 함수 선언
-void LoadTextMapData(const GameState state,const char* filePath);           // 맵 정보 로드
 void SaveTextMapData(const char* filePath);           // 맵 정보 저장
 void SetMapEdittorDlgData();                                // mapEdittorDlg 데이터 설정
 void GetSelectListBoxData(const MapEdittorSelectState state);     // mapEdittorDlg 리스트박스 데이터 가져오기
@@ -188,7 +188,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 imageManager->LoadAnimationBitmapData(PLAYER_ANIMATION_PATH);    // 인게임에서 사용할 플레이어 애니메이션 로드
                 imageManager->LoadAnimationBitmapData(NPC_ANIMATION_PATH);    // 인게임에서 사용할 NPC 애니메이션 로드
                 imageManager->LoadBitmapPathData(BitmapKind::UI, UI_BITMAP_PATH);   // 인게임에서 사용할 UI 비트맵 로드
-                LoadTextMapData(GameState::INGAME, STAGE1_PATH);     // 인게임에서 사용할 맵데이터 로드
+                InteractionManager::GetInstance()->LoadTextMapData(GameState::INGAME, STAGE1_PATH); // 인게임에서 사용할 맵데이터 로드
+                InteractionManager::GetInstance()->LoadTextEventData(STAGE1_EVENT_PATH, gameManager->GetWorldMapData(gameManager->GetCurrentStage()));
                 break;
             case ButtonKind::MAPEDITTOR:
                 HideMainFrameButton();                               // 버튼 숨기기
@@ -342,7 +343,7 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
                 switch (openFileName.nFilterIndex)
                 {
                 case 1:
-                    LoadTextMapData(GameState::MAPEDITTOR, strFilePath);
+                    InteractionManager::GetInstance()->LoadTextMapData(GameState::MAPEDITTOR, strFilePath);
                     break;
                 default:
                     break;
@@ -391,73 +392,6 @@ void SetMapEdittorData()
     }
 }
 
-void LoadTextMapData(const GameState state,const char* filePath)
-{
-    ifstream readFile;
-    int value[2];       // 처음 값 2개를 받을 변수
-    WorldMap mapData;   // 불러온 맵의 값 저장할 변수
-    MapEdittorSelectState selectState;
-    string str;
-
-    try
-    {
-        readFile.open(filePath);
-        if (readFile.is_open())
-        {
-        
-            for (int i = 0; i < 2; i++) // 맵의 크기, x,y값을 받고
-            {
-                readFile >> str;
-                value[i] = stoi(str);
-            }
-
-            for (int i = 0; i < 4; i++) // 배경, 오브젝트, 콜라이더 데이터를 받는다.
-            {
-                readFile >> str;    // background, objects, colider 구분할려고 문자열 넣은거 없애는 부분
-
-                switch (i)
-                {
-                case 0:
-                    selectState = MapEdittorSelectState::BACKGROUND;     break;
-                case 1:
-                    selectState = MapEdittorSelectState::OBJECT;         break;
-                case 2:
-                    selectState = MapEdittorSelectState::COLLIDER;      break;
-                case 3:
-                    selectState = MapEdittorSelectState::EVENT;      break;
-                }
-
-                for (int y = 0; y < value[0]; y++)
-                {
-                    for (int x = 0; x < value[1]; x++)
-                    { 
-                        readFile >> str;
-                        mapData.SetData(selectState, { x,y }, stoi(str));
-                    }
-                }
-            }
-        }
-
-        switch (state)
-        {
-        case GameState::MAPEDITTOR:
-            mapEdittor->SetWorldMapData(mapData);
-            break;
-        case GameState::INGAME:
-            gameManager->SetWorldMapData(mapData);
-            break;
-        default:
-            break;
-        }
-       
-    }
-    catch (const std::exception&)
-    {
-    }
-
-    readFile.close();
-}
-
 void SaveTextMapData(const char* filePath)
 {
     ofstream writeFile;
@@ -478,7 +412,7 @@ void SaveTextMapData(const char* filePath)
 
             writeFile << '\n';
 
-            for (int i = 0; i < 3; i++) // 배경, 오브젝트, 콜라이더 데이터를 받는다.
+            for (int i = 0; i < 4; i++) // 배경, 오브젝트, 콜라이더 데이터를 받는다.
             {
                 switch (i)
                 {

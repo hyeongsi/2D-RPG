@@ -13,6 +13,8 @@ constexpr const POINT PLAYER_PIVOT_POS = { 16,47 };	// 캐릭터 콜라이더 �
 constexpr const int LIMIT_MAP_X_CORRECTION = 32;	// 맵 밖으로 나가는 경우 보정 크기
 constexpr const int LIMIT_MAP_Y_CORRECTION = 46;	// 맵 밖으로 나가는 경우 보정 크기
 
+constexpr const POINT WOOD_HOUSE_DOOR_POS = {2, 4};	// 오두막 집 문의 위치, 기준 위치로 부터 + alpah 값
+
 constexpr const POINT START_BUTTON_POINT = { 370,430 };
 constexpr const POINT MAPEDITTOR_BUTTON_POINT = { 370,480 };
 constexpr const SIZE BUTTON_SIZE = { 100,30 };
@@ -21,7 +23,11 @@ constexpr const char BACKGROUND_BITMAP_PATH[] = { "data/bitmapinfo/BackgroundBit
 constexpr const char OBJECT_BITMAP_PATH[] = { "data/bitmapinfo/ObjectBitmapInfo.txt" };
 constexpr const char UI_BITMAP_PATH[] = { "data/bitmapinfo/UIBitmapInfo.txt" };
 
-constexpr const char STAGE1_PATH[] = { "data/mapinfo/TileMapInfo.txt" };
+constexpr const char STAGE1_PATH[] = { "data/mapinfo/Stage1.txt" };
+constexpr const char STAGE1_EVENT_PATH[] = { "data/eventinfo/Stage1_event.txt" };
+
+constexpr const char STAGE2_PATH[] = { "data/mapinfo/Stage2.txt" };
+constexpr const char STAGE2_EVENT_PATH[] = { "data/eventinfo/Stage2_event.txt" };
 
 constexpr const char PLAYER_ANIMATION_PATH[] = { "data/bitmapinfo/CharacterAnimationBitmapInfo.txt" };
 constexpr const char NPC_ANIMATION_PATH[] = { "data/bitmapinfo/NPCAnimationBitmapInfo.txt" };
@@ -62,7 +68,9 @@ namespace TextureName
 		grass_water7,
 		grass_water8,
 		grass_water9,
-		castle_tile
+		castle_tile,
+		black_tile,
+		inside_tile,
 	};
 
 	enum Object
@@ -79,6 +87,15 @@ namespace TextureName
 		lever_on,
 		box_off,
 		box_on,
+		castle_wall_left,
+		castle_wall_center,
+		castle_wall_right,
+		fireplace,
+		table,
+		chair_center,
+		chair_left,
+		chair_right,
+		bed,
 	};
 
 	enum UI
@@ -116,12 +133,29 @@ enum class MapEdittorSelectState
 	EVENT,
 };
 
+constexpr const int STAGE_SIZE = 2;
+constexpr const POINT STAGE2_SPAWN_POINT = {400,400};	// 추후에 수정
+
+namespace MapInfo
+{
+
+	enum MapStage
+	{
+		NORMAL,
+		WOOD_HOUSE,
+	};
+}
+
 namespace Event
 {
 	enum eventKind
 	{
-		OPEN_WOOD_HOUSE_DOOR = 1,
+		NONE,
+		OPEN_WOOD_HOUSE_DOOR,
+		CLOSE_WOOD_HOUSE_DOOR,
 		OPEN_BOX,
+		MOVE_STAGE_1,
+		MOVE_STAGE_2,
 	};
 }
 
