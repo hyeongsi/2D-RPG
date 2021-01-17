@@ -7,10 +7,9 @@
 7		images/UI/1.bmp
 8		images/UI/2.bmp
 9		images/UI/3.bmp
-10		images/UI/3.bmp
-11		images/UI/4.bmp
-12		images/UI/5.bmp
-13		images/UI/6.bmp
-14		images/UI/7.bmp
-15		images/UI/8.bmp
-16		images/UI/9.bmp
+10		images/UI/4.bmp
+11		images/UI/5.bmp
+12		images/UI/6.bmp
+13		images/UI/7.bmp
+14		images/UI/8.bmp
+15		images/UI/9.bmp
