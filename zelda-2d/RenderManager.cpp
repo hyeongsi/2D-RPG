@@ -144,15 +144,17 @@ void RenderManager::InGameDataRender(Player* character, NPC* npc)
     int money = character->GetMoney();
     if(0 == money)
         DrawCharUIData(TextureName::ZERO, { 105,125 });
-
-    int count = 0;  // 출력 숫자 정하는 변수
-    int space = 0;  // 출력 위치 정하는 변수
-    while (money > 0)
+    else
     {
-        count = money % 10;
-        space += 1;
-        DrawCharUIData(TextureName::ZERO + count, { 115-(13 * space),125 });
-        money /= 10;
+        int count = 0;  // 출력 숫자 정하는 변수
+        int space = 0;  // 출력 위치 정하는 변수
+        while (money > 0)
+        {
+            count = money % 10;
+            space += 1;
+            DrawCharUIData(TextureName::ZERO + count, { 115 - (13 * space),125 });
+            money /= 10;
+        }
     }
 
     // HP에 따라 출력되는 HP UI 설정 부분   /   ex)(0이면 빈하트 3개 출력) , (2이면 빈하트 2개, 꽉찬하트 1개 출력)
