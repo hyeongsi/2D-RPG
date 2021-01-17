@@ -411,7 +411,7 @@ void LoadTextMapData(const GameState state,const char* filePath)
                 value[i] = stoi(str);
             }
 
-            for (int i = 0; i < 3; i++) // 배경, 오브젝트, 콜라이더 데이터를 받는다.
+            for (int i = 0; i < 4; i++) // 배경, 오브젝트, 콜라이더 데이터를 받는다.
             {
                 readFile >> str;    // background, objects, colider 구분할려고 문자열 넣은거 없애는 부분
 
@@ -423,6 +423,8 @@ void LoadTextMapData(const GameState state,const char* filePath)
                     selectState = MapEdittorSelectState::OBJECT;         break;
                 case 2:
                     selectState = MapEdittorSelectState::COLLIDER;      break;
+                case 3:
+                    selectState = MapEdittorSelectState::EVENT;      break;
                 }
 
                 for (int y = 0; y < value[0]; y++)

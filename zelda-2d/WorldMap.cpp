@@ -16,6 +16,8 @@ int WorldMap::GetData(MapEdittorSelectState state, POINT pos)
 		return objectData[pos.y][pos.x];
 	case MapEdittorSelectState::COLLIDER:
 		return coliderData[pos.y][pos.x];
+	case MapEdittorSelectState::EVENT:
+		return eventData[pos.y][pos.x];
 	default:
 		return 0;
 	}
@@ -41,6 +43,9 @@ void WorldMap::SetData(MapEdittorSelectState state, POINT pos, int data)
 			coliderData[pos.y][pos.x] = true;
 		else
 			coliderData[pos.y][pos.x] = false;
+		break;
+	case MapEdittorSelectState::EVENT:
+		eventData[pos.y][pos.x] = data;
 		break;
 	default:
 		return;

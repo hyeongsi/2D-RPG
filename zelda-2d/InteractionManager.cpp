@@ -74,4 +74,32 @@ void InteractionManager::ChangeMapData(WorldMap* worldMap, POINT pos, const int 
 	default:
 		return;
 	}
+
+	ActionEvent(worldMap, pos);		// 매칭된 이벤트 실행
+}
+
+void InteractionManager::ActionEvent(WorldMap* worldMap, const POINT pos)
+{
+	switch (worldMap->GetData(MapEdittorSelectState::EVENT, pos))
+	{
+	case Event::OPEN_WOOD_HOUSE_DOOR:
+		for (int y = 0; y < MAP_MAX_Y; y++)
+		{
+			for (int x = 0; x < MAP_MAX_X; x++)
+			{
+				if (TextureName::wood_house_close == worldMap->GetData(MapEdittorSelectState::OBJECT, { x,y }))
+				{
+					worldMap->SetData(MapEdittorSelectState::OBJECT, { x,y }, TextureName::wood_house);
+					y = MAP_MAX_Y;
+				}
+			}
+		}
+		break;
+	case Event::OPEN_BOX:
+		// 아이템 드랍
+		break;
+	default:
+		break;
+	}
+
 }

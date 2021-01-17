@@ -112,8 +112,18 @@ enum class MapEdittorSelectState
 {
 	BACKGROUND,
 	OBJECT,
-	COLLIDER
+	COLLIDER,
+	EVENT,
 };
+
+namespace Event
+{
+	enum eventKind
+	{
+		OPEN_WOOD_HOUSE_DOOR = 1,
+		OPEN_BOX,
+	};
+}
 
 enum class BitmapKind
 {
