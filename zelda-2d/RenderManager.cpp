@@ -108,7 +108,6 @@ void RenderManager::MainFrameDataRender()
 
 void RenderManager::MapEdittorDataRender()
 {
-
     RenderInitSetting();        // 출력 전 초기화 작업
 
     DrawWorldMapData(GameState::MAPEDITTOR);         // 출력할 비트맵 세팅 작업
@@ -118,11 +117,28 @@ void RenderManager::MapEdittorDataRender()
     Render();                   // 출력
 }
 
-void RenderManager::InGameDataRender(Player* character, NPC* npc)
+void RenderManager::InGameDataRender(Player* character, NPC* npc, vector<Item> fieldItem)
 {
     RenderInitSetting();        // 출력 전 초기화 작업
 
     DrawWorldMapData(GameState::INGAME);        // 맵 출력
+
+    for (auto item : fieldItem)
+    {
+        switch (item.GetIndex())
+        {
+        case ItemInfo::HP:
+            DrawAnimation(TextureName::HEART_SPIN, 
+                { static_cast<double>(item.GetPos().x),  static_cast<double>(item.GetPos().y) });
+            ImageManager::GetInstance()->GetAnimationData(TextureName::HEART_SPIN)->NextSelectBitmapIndex();
+            break;
+        case ItemInfo::MONEY:
+            DrawAnimation(TextureName::MONEY_SPIN,
+                { static_cast<double>(item.GetPos().x),  static_cast<double>(item.GetPos().y) });
+            ImageManager::GetInstance()->GetAnimationData(TextureName::MONEY_SPIN)->NextSelectBitmapIndex();
+            break;
+        }
+    }
 
     if (character->GetPos().y <= npc->GetPos().y)
     {

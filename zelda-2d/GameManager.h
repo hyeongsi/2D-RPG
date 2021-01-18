@@ -4,6 +4,8 @@
 #include "Player.h"
 #include "Time.h"
 #include "NPC.h"
+#include "Item.h"
+#include <vector>
 
 constexpr const int TICK_DELAY = 250;
 
@@ -20,6 +22,7 @@ private:
 
 	Player* player;
 	NPC* npc;
+	vector<Item> FieldItem;	// 필드 스폰 아이템
 
 	Time* time;
 
@@ -54,5 +57,12 @@ public:
 
 	void SetNPC(NPC* npc);
 	NPC* GetNPC();
+
+	void AddItem(const Item item);
+	void DeleteItem(const int index);
+	const Item GetItem(const int index);
+
+	vector<Item> GetFieldItem();
+
 };
 

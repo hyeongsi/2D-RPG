@@ -177,3 +177,40 @@ NPC* GameManager::GetNPC()
 {
 	return npc;
 }
+
+void GameManager::AddItem(const Item item)
+{
+	FieldItem.emplace_back(item);
+}
+
+void GameManager::DeleteItem(const int index)
+{
+	if (0 <= index && index < FieldItem.size())
+	{
+		int count = 0;
+		for (auto iterator = FieldItem.begin(); iterator != FieldItem.end();)
+		{
+			if (index == count)
+			{
+				FieldItem.erase(iterator);
+				return;
+			}
+
+			count++;
+			iterator++;
+		}
+	}
+}
+
+const Item GameManager::GetItem(const int index)
+{
+	if (0 <= index && index < FieldItem.size())
+		return FieldItem[index];
+	else
+		return Item();
+}
+
+vector<Item> GameManager::GetFieldItem()
+{
+	return FieldItem;
+}

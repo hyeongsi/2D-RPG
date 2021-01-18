@@ -4,8 +4,12 @@
 #include "ImageManager.h"
 #include "MapEdittor.h"
 #include "GameManager.h"
+#include "Item.h"
 #include "Player.h"
 #include "NPC.h"
+#include <vector>
+
+using namespace std;
 
 #pragma comment (lib, "Msimg32.lib")
 
@@ -24,7 +28,6 @@ private:
 
 	RenderManager();
 	~RenderManager();
-
 public:
 	static RenderManager* GetInstance();
 	static void ReleaseInstance();
@@ -41,7 +44,7 @@ public:
 public:
 	void MainFrameDataRender();
 	void MapEdittorDataRender();
-	void InGameDataRender(Player* character, NPC* npc);
+	void InGameDataRender(Player* character, NPC* npc, vector<Item> fieldItem);
 
 public:
 	void DrawWorldMapData(const GameState gameState);

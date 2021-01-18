@@ -32,6 +32,9 @@ constexpr const char STAGE2_EVENT_PATH[] = { "data/eventinfo/Stage2_event.txt" }
 constexpr const char PLAYER_ANIMATION_PATH[] = { "data/bitmapinfo/CharacterAnimationBitmapInfo.txt" };
 constexpr const char NPC_ANIMATION_PATH[] = { "data/bitmapinfo/NPCAnimationBitmapInfo.txt" };
 
+constexpr const char HEART_ANIMATION_PATH[] = { "data/bitmapinfo/HeartAnimationBitmapInfo.txt" };
+constexpr const char MONEY_ANIMATION_PATH[] = { "data/bitmapinfo/MoneyAnimationBitmapInfo.txt" };
+
 namespace ClientSize
 {
 	enum
@@ -122,6 +125,8 @@ namespace TextureName
 		PLAYER_WALK,
 		PLAYER_ATTACK,
 		NPC_WALK,
+		HEART_SPIN,
+		MONEY_SPIN,
 	};
 }
 
@@ -199,5 +204,14 @@ namespace CharacterInfo
 		ATTACK,
 		INTERACTION,	// 상호작용
 		HIT,
+	};
+}
+
+namespace ItemInfo
+{
+	enum INDEX
+	{
+		HP,
+		MONEY,
 	};
 }
