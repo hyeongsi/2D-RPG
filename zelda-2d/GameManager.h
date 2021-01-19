@@ -7,7 +7,9 @@
 #include "Item.h"
 #include <vector>
 
-constexpr const int TICK_DELAY = 250;
+extern HWND g_hWnd;
+extern HWND g_hInventoryDlg;
+constexpr const int EVENT_DELAY = 250;
 
 using namespace std;
 
@@ -34,12 +36,14 @@ private:
 	GameManager();
 	~GameManager();
 private:
-	ULONGLONG tick;
+	ULONGLONG eventDelay;
+
 public:
 	static GameManager* GetInstance();
 	static void ReleaseInstance();
 
 public:
+	void Input();
 	void Run();
 	void LimitMoveMent(const DPOINT prevDPos);			
 public:

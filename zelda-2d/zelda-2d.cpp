@@ -20,6 +20,7 @@ WCHAR szTitle[MAX_LOADSTRING];                  // 제목 표시줄 텍스트입
 WCHAR szWindowClass[MAX_LOADSTRING];            // 기본 창 클래스 이름입니다.
 HWND g_hWnd;                                    // 전역 윈도우 핸들
 HWND g_hMapEdittorDlg;                          // 전역 맵에디터 다이얼로그 핸들
+HWND g_hInventoryDlg;                           // 전역 인벤토리 다이얼로그 핸들
 RECT g_clientRect{ 0,0, ClientSize::width,ClientSize::height }; // 클라이언트 크기
 SIZE g_clientSize;                              // 클라이언트 사이즈
 
@@ -48,6 +49,7 @@ ATOM                MyRegisterClass(HINSTANCE hInstance);
 BOOL                InitInstance(HINSTANCE, int);
 LRESULT CALLBACK    WndProc(HWND, UINT, WPARAM, LPARAM);
 INT_PTR CALLBACK    MapEdittorDlg(HWND, UINT, WPARAM, LPARAM);
+INT_PTR CALLBACK    InventoryDlg(HWND, UINT, WPARAM, LPARAM);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
                      _In_opt_ HINSTANCE hPrevInstance,
@@ -103,6 +105,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             renderManager->MapEdittorDataRender();
             break;
         case GameState::INGAME:
+            gameManager->Input();
             gameManager->Run();
             renderManager->InGameDataRender(
                 gameManager->GetPlayer(), gameManager->GetNPC(), 
@@ -167,7 +170,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         AdjustWindowRect(&g_clientRect, WS_OVERLAPPEDWINDOW, false);    // 메뉴창 크기 빼고 윈도우 크기 계산
         g_clientSize.cx = g_clientRect.right - g_clientRect.left;
         g_clientSize.cy = g_clientRect.bottom - g_clientRect.top;
-        MoveWindow(hWnd, 500, 200, g_clientSize.cx, g_clientSize.cy, true);   // 500,200 지점에 클라이언트 크기만큼 설정 후 출력
+        MoveWindow(hWnd, HWND_SPAWN_POS.x, HWND_SPAWN_POS.y, g_clientSize.cx, g_clientSize.cy, true);   // 500,200 지점에 클라이언트 크기만큼 설정 후 출력
         
         g_hStartButton = CreateWindow("button", "Start", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON
             , START_BUTTON_POINT.x, START_BUTTON_POINT.y, BUTTON_SIZE.cx, BUTTON_SIZE.cy, hWnd, (HMENU)ButtonKind::START, hInst, NULL);    // 메인화면의 시작 버튼 생성
@@ -180,7 +183,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             switch (LOWORD(wParam))
             {
-            case ButtonKind::START:
+            case IDC_lNVEN_OPEN:
+                ShowWindow(g_hInventoryDlg, SW_SHOW);
+                break;
+            case IDC_lNVEN_CLOSE:
+                ShowWindow(g_hInventoryDlg, SW_HIDE);
+                break;
+            case ButtonKind::START:         // 시작 버튼 누르면
                 HideMainFrameButton();                               // 버튼 숨기기
                 gameManager->SetState(GameState::INGAME);            // 인게임 실행
                 gameManager->SetPlayer(new Player());          // 플레이어 생성
@@ -194,8 +203,18 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 imageManager->LoadBitmapPathData(BitmapKind::UI, UI_BITMAP_PATH);   // 인게임에서 사용할 UI 비트맵 로드
                 InteractionManager::GetInstance()->LoadTextMapData(GameState::INGAME, STAGE1_PATH); // 인게임에서 사용할 맵데이터 로드
                 InteractionManager::GetInstance()->LoadTextEventData(STAGE1_EVENT_PATH, gameManager->GetWorldMapData(gameManager->GetCurrentStage()));
+                
+                g_hInventoryDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_INVENTORY), hWnd, InventoryDlg);  // 다이얼로그 생성
+                RECT invenDlgRect;
+                SIZE invenDlgSize;
+                GetWindowRect(g_hInventoryDlg, &invenDlgRect);
+                invenDlgSize.cx = invenDlgRect.right - invenDlgRect.left;
+                invenDlgSize.cy = invenDlgRect.bottom - invenDlgRect.top;
+                MoveWindow(g_hInventoryDlg, HWND_SPAWN_POS.x + 530, HWND_SPAWN_POS.y + 50,
+                    invenDlgSize.cx, invenDlgSize.cy, true);   // 해당 지점에 클라이언트 크기만큼 설정 후 출력
+                // 인벤토리 창 생성
                 break;
-            case ButtonKind::MAPEDITTOR:
+            case ButtonKind::MAPEDITTOR:       // 맵에디터 버튼 누르면
                 HideMainFrameButton();                               // 버튼 숨기기
 
                 gameManager->SetState(GameState::MAPEDITTOR);        // 맵 에디터 실행
@@ -266,6 +285,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_DESTROY:
+        if(0x00000000 != g_hInventoryDlg)
+            DestroyWindow(g_hInventoryDlg);                    // 다이얼로그 삭제
+
         GameManager::ReleaseInstance();
         MapEdittor::ReleaseInstance();
         ImageManager::ReleaseInstance();
@@ -363,6 +385,35 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
             DestroyWindow(g_hMapEdittorDlg);                    // 다이얼로그 삭제
 
             InvalidateRect(g_hWnd, nullptr, true);              // 화면 초기화
+            return (INT_PTR)TRUE;
+        default:
+            break;
+        }
+        break;
+    }
+    return (INT_PTR)FALSE;
+}
+
+INT_PTR CALLBACK InventoryDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+    switch (message)
+    {
+    case WM_INITDIALOG:
+        return (INT_PTR)TRUE;
+    case WM_SYSCOMMAND:
+        switch (LOWORD(wParam))
+        {
+        case SC_CLOSE:
+            ShowWindow(g_hInventoryDlg, SW_HIDE);
+            return (INT_PTR)TRUE;
+        }
+        break;
+    case WM_COMMAND:
+        switch (LOWORD(wParam))
+        {
+        case IDC_bSAVE:
+            return (INT_PTR)TRUE;
+        case IDC_bLOAD:
             return (INT_PTR)TRUE;
         default:
             break;

@@ -4,7 +4,7 @@
 constexpr DPOINT START_POS = { 400,400 };
 
 constexpr int INIT_HP = 6;
-constexpr int INIT_SPEED = 100;
+constexpr int INIT_SPEED = 150;
 constexpr int INIT_DAMAGE = 1;
 
 class Character

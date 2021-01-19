@@ -14,6 +14,7 @@
 #define IDC_ZELDA2D                     109
 #define IDR_MAINFRAME                   128
 #define IDD_DIALOG1                     129
+#define IDD_INVENTORY                   130
 #define IDC_bLOAD                       1001
 #define IDC_bSAVE                       1002
 #define IDC_rCOLLIDER                   1007
@@ -21,6 +22,9 @@
 #define IDC_rBACKGROUND                 1009
 #define IDC_lOBJECT                     1011
 #define IDC_lBACKGROUND                 1013
+#define IDC_lNVEN_EXIT_BTN              1020
+#define IDC_lNVEN_OPEN                  1021
+#define IDC_lNVEN_CLOSE                 1022
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -28,9 +32,9 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        130
+#define _APS_NEXT_RESOURCE_VALUE        131
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1016
+#define _APS_NEXT_CONTROL_VALUE         1021
 #define _APS_NEXT_SYMED_VALUE           110
 #endif
 #endif

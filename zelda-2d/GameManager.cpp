@@ -1,12 +1,13 @@
 ﻿#include "pch.h"
 #include "GameManager.h"
 #include "InteractionManager.h"
+#include "resource.h"
 
 GameManager* GameManager::instance = nullptr;
 
 GameManager::GameManager()
 {
-	tick = GetTickCount64();
+	eventDelay = GetTickCount64();
 
 	state = GameState::MAIN;
 	currentStage = 0;
@@ -45,6 +46,14 @@ void GameManager::ReleaseInstance()
 	instance = nullptr;
 }
 
+void GameManager::Input()
+{
+	if (GetAsyncKeyState(0x49) & 0x8000)
+	{
+		SendMessage(g_hWnd, WM_COMMAND, IDC_lNVEN_OPEN, 0);    // 버튼 선택상태 초기화
+	}
+}
+
 void GameManager::Run()
 {
 	DPOINT prevPos = player->GetPos();	
@@ -80,8 +89,8 @@ void GameManager::Run()
 		}
 
 		// 이벤트에 딜레이 추가
-		if (GetTickCount64() > tick + TICK_DELAY)
-			tick = GetTickCount64();
+		if (GetTickCount64() > eventDelay + EVENT_DELAY)
+			eventDelay = GetTickCount64();
 		else
 			break;
 

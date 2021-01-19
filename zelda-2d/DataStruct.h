@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+constexpr const POINT HWND_SPAWN_POS = { 500,200 };	// 메인 프레임 출력 위치
+
 constexpr const int TILE_SIZE = 32;	// 맵 한 칸의 크기 ( 32 x 32)
 
 constexpr const int MAP_MAX_X = 25;	// 행의 개수
