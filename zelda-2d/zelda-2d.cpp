@@ -104,7 +104,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             break;
         case GameState::INGAME:
             gameManager->Run();
-            renderManager->InGameDataRender(gameManager->GetPlayer(), gameManager->GetNPC(), gameManager->GetFieldItem());
+            renderManager->InGameDataRender(
+                gameManager->GetPlayer(), gameManager->GetNPC(), 
+                gameManager->GetFieldItem(gameManager->GetCurrentStage()));
             break;
         default:
             break;

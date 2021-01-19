@@ -22,7 +22,7 @@ private:
 
 	Player* player;
 	NPC* npc;
-	vector<Item> FieldItem;	// 필드 스폰 아이템
+	vector<Item> FieldItem[STAGE_SIZE];	// 필드 스폰 아이템
 
 	Time* time;
 
@@ -58,11 +58,11 @@ public:
 	void SetNPC(NPC* npc);
 	NPC* GetNPC();
 
-	void AddItem(const Item item);
-	void DeleteItem(const int index);
-	const Item GetItem(const int index);
+	void AddItem(const int stage, const Item item);
+	void DeleteItem(const int stage, const int index);
+	const Item GetItem(const int stage, const int index);
 
-	vector<Item> GetFieldItem();
+	vector<Item> GetFieldItem(const int stage);
 
 };
 

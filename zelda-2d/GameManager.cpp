@@ -178,21 +178,22 @@ NPC* GameManager::GetNPC()
 	return npc;
 }
 
-void GameManager::AddItem(const Item item)
+void GameManager::AddItem(const int stage, const Item item)
 {
-	FieldItem.emplace_back(item);
+	if(0 <= stage && stage < STAGE_SIZE)
+		(FieldItem[stage]).emplace_back(item);
 }
 
-void GameManager::DeleteItem(const int index)
+void GameManager::DeleteItem(const int stage, const int index)
 {
-	if (0 <= index && index < FieldItem.size())
+	if (0 <= index && index < static_cast<int>((FieldItem[stage]).size()))
 	{
 		int count = 0;
-		for (auto iterator = FieldItem.begin(); iterator != FieldItem.end();)
+		for (auto iterator = (FieldItem[stage]).begin(); iterator != (FieldItem[stage]).end();)
 		{
 			if (index == count)
 			{
-				FieldItem.erase(iterator);
+				(FieldItem[stage]).erase(iterator);
 				return;
 			}
 
@@ -202,15 +203,15 @@ void GameManager::DeleteItem(const int index)
 	}
 }
 
-const Item GameManager::GetItem(const int index)
+const Item GameManager::GetItem(const int stage, const int index)
 {
-	if (0 <= index && index < FieldItem.size())
-		return FieldItem[index];
+	if (0 <= index && index < static_cast<int>((FieldItem[stage]).size()))
+		return (FieldItem[stage])[index];
 	else
 		return Item();
 }
 
-vector<Item> GameManager::GetFieldItem()
+vector<Item> GameManager::GetFieldItem(const int stage)
 {
-	return FieldItem;
+	return (FieldItem[stage]);
 }
