@@ -93,6 +93,9 @@
     <ClInclude Include="Item.h">
       <Filter>헤더 파일\item</Filter>
     </ClInclude>
+    <ClInclude Include="Inventory.h">
+      <Filter>헤더 파일\item</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="zelda-2d.cpp">
@@ -135,6 +138,9 @@
       <Filter>소스 파일\Character</Filter>
     </ClCompile>
     <ClCompile Include="Item.cpp">
+      <Filter>소스 파일\item</Filter>
+    </ClCompile>
+    <ClCompile Include="Inventory.cpp">
       <Filter>소스 파일\item</Filter>
     </ClCompile>
   </ItemGroup>

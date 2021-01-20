@@ -111,7 +111,7 @@ void RenderManager::MapEdittorDataRender()
     RenderInitSetting();        // 출력 전 초기화 작업
 
     DrawWorldMapData(GameState::MAPEDITTOR);         // 출력할 비트맵 세팅 작업
-    DrawCheckPattern();
+    DrawCheckPattern(memDC, g_clientSize);
     DrawCursorFollowBitmap();
 
     Render();                   // 출력
@@ -334,20 +334,20 @@ void RenderManager::DrawCharUIData(const int uiName, const POINT pos)
     TransparentBlt(memDC, pos.x, pos.y, bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, bit.bmWidth, bit.bmHeight, RGB(215, 123, 186));
 }
 
-void RenderManager::DrawCheckPattern()
+void RenderManager::DrawCheckPattern(HDC hdc, const SIZE size)
 {
     // 세로선
-    for (int i = 0; i < g_clientSize.cx / TILE_SIZE; i++)
+    for (int i = 0; i < size.cx / TILE_SIZE; i++)
     {
-        MoveToEx(memDC, i * TILE_SIZE, 0, NULL);
-        LineTo(memDC, i * TILE_SIZE, g_clientSize.cy);
+        MoveToEx(hdc, i * TILE_SIZE, 0, NULL);
+        LineTo(hdc, i * TILE_SIZE, size.cy);
     }
 
     // 가로선
-    for (int i = 0; i < g_clientSize.cy / TILE_SIZE; i++)
+    for (int i = 0; i < size.cy / TILE_SIZE; i++)
     {
-        MoveToEx(memDC, 0, i * TILE_SIZE, NULL);
-        LineTo(memDC, g_clientSize.cx, i * TILE_SIZE);
+        MoveToEx(hdc, 0, i * TILE_SIZE, NULL);
+        LineTo(hdc, size.cx, i * TILE_SIZE);
     }
 }
 

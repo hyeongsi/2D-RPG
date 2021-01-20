@@ -53,7 +53,7 @@ public:
 	void DrawNPC(NPC* npc);
 	void DrawCharUIData(const int uiName, const POINT pos);
 
-	void DrawCheckPattern();
+	void DrawCheckPattern(HDC hdc, const SIZE size);
 	void DrawCursorFollowBitmap();
 
 public:

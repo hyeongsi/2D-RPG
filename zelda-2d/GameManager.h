@@ -5,10 +5,12 @@
 #include "Time.h"
 #include "NPC.h"
 #include "Item.h"
+#include "Inventory.h"
 #include <vector>
 
 extern HWND g_hWnd;
 extern HWND g_hInventoryDlg;
+constexpr const int INPUT_DELAY = 200;
 constexpr const int EVENT_DELAY = 250;
 
 using namespace std;
@@ -23,6 +25,7 @@ private:
 	int currentStage;		// 현재 스테이지
 
 	Player* player;
+	Inventory* inventory;
 	NPC* npc;
 	vector<Item> FieldItem[STAGE_SIZE];	// 필드 스폰 아이템
 
@@ -36,7 +39,8 @@ private:
 	GameManager();
 	~GameManager();
 private:
-	ULONGLONG eventDelay;
+	ULONGLONG inputTick;
+	ULONGLONG eventTick;
 
 public:
 	static GameManager* GetInstance();
@@ -58,6 +62,8 @@ public:
 
 	void SetPlayer(Player* player);
 	Player* GetPlayer();
+
+	void SetInventory(Inventory* inventory);
 
 	void SetNPC(NPC* npc);
 	NPC* GetNPC();

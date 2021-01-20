@@ -7,11 +7,13 @@ GameManager* GameManager::instance = nullptr;
 
 GameManager::GameManager()
 {
-	eventDelay = GetTickCount64();
+	inputTick = GetTickCount64();
+	eventTick = GetTickCount64();
 
 	state = GameState::MAIN;
 	currentStage = 0;
 	player = nullptr;
+	inventory = nullptr;
 	npc = nullptr;
 	time = Time::GetInstance();
 	interactionManager = InteractionManager::GetInstance();
@@ -22,6 +24,9 @@ GameManager::~GameManager()
 	if(player != nullptr)
 		delete player;
 	player = nullptr;
+	if (inventory != nullptr)
+		delete inventory;
+	inventory = nullptr;
 	if (npc != nullptr)
 		delete npc;
 	npc = nullptr;
@@ -48,9 +53,23 @@ void GameManager::ReleaseInstance()
 
 void GameManager::Input()
 {
+	if (GetTickCount64() > inputTick + INPUT_DELAY)
+		inputTick = GetTickCount64();
+	else
+		return;
+
 	if (GetAsyncKeyState(0x49) & 0x8000)
 	{
-		SendMessage(g_hWnd, WM_COMMAND, IDC_lNVEN_OPEN, 0);    // 버튼 선택상태 초기화
+		if (inventory->IsOpen())
+		{
+			inventory->SetOpen(false);
+			SendMessage(g_hWnd, WM_COMMAND, IDC_lNVEN_CLOSE, 0);    // 버튼 선택상태 초기화
+		}
+		else
+		{
+			inventory->SetOpen(true);
+			SendMessage(g_hWnd, WM_COMMAND, IDC_lNVEN_OPEN, 0);    // 버튼 선택상태 초기화
+		}
 	}
 }
 
@@ -89,8 +108,8 @@ void GameManager::Run()
 		}
 
 		// 이벤트에 딜레이 추가
-		if (GetTickCount64() > eventDelay + EVENT_DELAY)
-			eventDelay = GetTickCount64();
+		if (GetTickCount64() > eventTick + EVENT_DELAY)
+			eventTick = GetTickCount64();
 		else
 			break;
 
@@ -175,6 +194,11 @@ void GameManager::SetPlayer(Player* player)
 Player* GameManager::GetPlayer()
 {
 	return player;
+}
+
+void GameManager::SetInventory(Inventory* inventory)
+{
+	this->inventory = inventory;
 }
 
 void GameManager::SetNPC(NPC* npc)

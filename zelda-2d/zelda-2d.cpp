@@ -192,8 +192,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             case ButtonKind::START:         // 시작 버튼 누르면
                 HideMainFrameButton();                               // 버튼 숨기기
                 gameManager->SetState(GameState::INGAME);            // 인게임 실행
-                gameManager->SetPlayer(new Player());          // 플레이어 생성
-                gameManager->SetNPC(new NPC());          // npc 생성
+                gameManager->SetPlayer(new Player());           // 플레이어 생성
+                gameManager->SetInventory(new Inventory());     // 인벤토리 생성
+                gameManager->SetNPC(new NPC());                 // npc 생성
 
                 imageManager->LoadMapBitmapData();                      // 인게임에서 사용할 맵 관련 비트맵 로드
                 imageManager->LoadAnimationBitmapData(PLAYER_ANIMATION_PATH);    // 인게임에서 사용할 플레이어 애니메이션 로드
