@@ -3,7 +3,6 @@
 #include "DataStruct.h"
 #include "ImageManager.h"
 #include "MapEdittor.h"
-#include "GameManager.h"
 #include "Item.h"
 #include "Player.h"
 #include "NPC.h"
@@ -44,7 +43,7 @@ public:
 public:
 	void MainFrameDataRender();
 	void MapEdittorDataRender();
-	void InGameDataRender(Player* character, NPC* npc, vector<Item> fieldItem);
+	void InGameDataRender(Player* character, NPC* npc);
 
 public:
 	void DrawWorldMapData(const GameState gameState);

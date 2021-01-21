@@ -26,12 +26,6 @@ constexpr const char BACKGROUND_BITMAP_PATH[] = { "data/bitmapinfo/BackgroundBit
 constexpr const char OBJECT_BITMAP_PATH[] = { "data/bitmapinfo/ObjectBitmapInfo.txt" };
 constexpr const char UI_BITMAP_PATH[] = { "data/bitmapinfo/UIBitmapInfo.txt" };
 
-constexpr const char STAGE1_PATH[] = { "data/mapinfo/Stage1.txt" };
-constexpr const char STAGE1_EVENT_PATH[] = { "data/eventinfo/Stage1_event.txt" };
-
-constexpr const char STAGE2_PATH[] = { "data/mapinfo/Stage2.txt" };
-constexpr const char STAGE2_EVENT_PATH[] = { "data/eventinfo/Stage2_event.txt" };
-
 constexpr const char PLAYER_ANIMATION_PATH[] = { "data/bitmapinfo/CharacterAnimationBitmapInfo.txt" };
 constexpr const char NPC_ANIMATION_PATH[] = { "data/bitmapinfo/NPCAnimationBitmapInfo.txt" };
 

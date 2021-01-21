@@ -11,6 +11,7 @@
 #include "Player.h"
 #include <commdlg.h>
 #include "InteractionManager.h"
+#include "WorldMapManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -33,6 +34,7 @@ GameManager* gameManager;                       // 게임 매니저
 MapEdittor* mapEdittor;                         // 맵 에디터
 ImageManager* imageManager;                     // 이미지 매니저
 RenderManager* renderManager;                   // 랜더 매니저
+WorldMapManager* worldMapManager;               // 월드맵 매니저
 
 Player* character;                            // 캐릭터 클래스
 
@@ -81,6 +83,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     mapEdittor = MapEdittor::GetInstance();  
     imageManager = ImageManager::GetInstance();
     renderManager = RenderManager::GetInstance();
+    worldMapManager = WorldMapManager::GetInstance();
 
     // 기본 메시지 루프입니다:
     while (true)
@@ -108,8 +111,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             gameManager->Input();
             gameManager->Run();
             renderManager->InGameDataRender(
-                gameManager->GetPlayer(), gameManager->GetNPC(), 
-                gameManager->GetFieldItem(gameManager->GetCurrentStage()));
+                gameManager->GetPlayer(), gameManager->GetNPC());
             break;
         default:
             break;
@@ -202,9 +204,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 imageManager->LoadAnimationBitmapData(HEART_ANIMATION_PATH);    // 인게임에서 하트 UI 애니메이션 로드
                 imageManager->LoadAnimationBitmapData(MONEY_ANIMATION_PATH);    // 인게임에서 돈 UI 애니메이션 로드
                 imageManager->LoadBitmapPathData(BitmapKind::UI, UI_BITMAP_PATH);   // 인게임에서 사용할 UI 비트맵 로드
-                InteractionManager::GetInstance()->LoadTextMapData(GameState::INGAME, STAGE1_PATH); // 인게임에서 사용할 맵데이터 로드
-                InteractionManager::GetInstance()->LoadTextEventData(STAGE1_EVENT_PATH, gameManager->GetWorldMapData(gameManager->GetCurrentStage()));
                 
+                worldMapManager->LoadMapData(GameState::INGAME, worldMapManager->GetCurrentStage());
+                worldMapManager->LoadEventData(worldMapManager->GetCurrentStage());
+
                 g_hInventoryDlg = CreateDialog(hInst, MAKEINTRESOURCE(IDD_INVENTORY), hWnd, InventoryDlg);  // 다이얼로그 생성
                 RECT invenDlgRect;
                 SIZE invenDlgSize;
@@ -293,6 +296,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         MapEdittor::ReleaseInstance();
         ImageManager::ReleaseInstance();
         RenderManager::ReleaseInstance();
+        WorldMapManager::ReleaseInstance();
         PostQuitMessage(0);
         break;
     default:
@@ -370,9 +374,7 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
                 switch (openFileName.nFilterIndex)
                 {
                 case 1:
-                    InteractionManager::GetInstance()->LoadTextMapData(GameState::MAPEDITTOR, strFilePath);
-                    break;
-                default:
+                    WorldMapManager::GetInstance()->LoadMapData(GameState::MAPEDITTOR, strFilePath);
                     break;
                 }
             }
@@ -468,7 +470,7 @@ void SaveTextMapData(const char* filePath)
 
             writeFile << '\n';
 
-            for (int i = 0; i < 4; i++) // 배경, 오브젝트, 콜라이더 데이터를 받는다.
+            for (int i = 0; i < 3; i++) // 배경, 오브젝트, 콜라이더 데이터를 받는다.
             {
                 switch (i)
                 {

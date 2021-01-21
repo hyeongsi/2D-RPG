@@ -165,6 +165,7 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="Time.h" />
     <ClInclude Include="WorldMap.h" />
+    <ClInclude Include="WorldMapManager.h" />
     <ClInclude Include="zelda-2d.h" />
   </ItemGroup>
   <ItemGroup>
@@ -209,6 +210,9 @@
     </ClCompile>
     <ClCompile Include="Time.cpp" />
     <ClCompile Include="WorldMap.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="WorldMapManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="zelda-2d.cpp">

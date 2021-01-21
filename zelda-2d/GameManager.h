@@ -11,7 +11,7 @@
 extern HWND g_hWnd;
 extern HWND g_hInventoryDlg;
 constexpr const int INPUT_DELAY = 200;
-constexpr const int EVENT_DELAY = 250;
+constexpr const int EVENT_DELAY = 200;
 
 using namespace std;
 
@@ -20,9 +20,6 @@ class GameManager
 {
 private:
 	GameState state;
-
-	WorldMap worldMap[STAGE_SIZE];	// stage 1(길거리), 2(오두막)
-	int currentStage;		// 현재 스테이지
 
 	Player* player;
 	Inventory* inventory;
@@ -49,16 +46,11 @@ public:
 public:
 	void Input();
 	void Run();
-	void LimitMoveMent(const DPOINT prevDPos);			
+	void LimitMoveMent(const DPOINT prevDPos);		
+	POINT GetPlayerPivotMapPoint();
 public:
 	const GameState GetState();
 	void SetState(const GameState state);
-
-	void SetWorldMapData(const WorldMap worldMap, const int index);
-	WorldMap* GetWorldMapData(const int index);
-
-	void SetCurrentStage(const int currentStage);
-	const int GetCurrentStage();
 
 	void SetPlayer(Player* player);
 	Player* GetPlayer();

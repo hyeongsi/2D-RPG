@@ -17,11 +17,7 @@ public:
 	static void ReleaseInstance();
 
 public:
-	void ChangeMapData(POINT pos);
-	void ActionEvent(const POINT pos);
-
-public:
-	void LoadTextMapData(const GameState state, const char* filePath);           // 맵 정보 로드
-	void LoadTextEventData(const char* filePath, WorldMap* worldMap);           // 맵과 관련된 이벤트 정보 로드
+	/*void ChangeMapData(POINT pos);
+	void ActionEvent(const POINT pos);*/
 
 };

@@ -2,6 +2,7 @@
 #include "GameManager.h"
 #include "InteractionManager.h"
 #include "resource.h"
+#include "WorldMapManager.h"
 
 GameManager* GameManager::instance = nullptr;
 
@@ -11,7 +12,6 @@ GameManager::GameManager()
 	eventTick = GetTickCount64();
 
 	state = GameState::MAIN;
-	currentStage = 0;
 	player = nullptr;
 	inventory = nullptr;
 	npc = nullptr;
@@ -53,13 +53,14 @@ void GameManager::ReleaseInstance()
 
 void GameManager::Input()
 {
-	if (GetTickCount64() > inputTick + INPUT_DELAY)
-		inputTick = GetTickCount64();
-	else
-		return;
-
 	if (GetAsyncKeyState(0x49) & 0x8000)
 	{
+		if (GetTickCount64() > inputTick + INPUT_DELAY)
+			inputTick = GetTickCount64();
+		else
+			return;
+
+
 		if (inventory->IsOpen())
 		{
 			inventory->SetOpen(false);
@@ -77,17 +78,35 @@ void GameManager::Run()
 {
 	DPOINT prevPos = player->GetPos();	
 	player->Input(time->Update());
+	POINT pivotPos;
+
 	switch (player->GetState())
 	{
 	case CharacterInfo::WALK:
-		LimitMoveMent(prevPos);					// 맵 외곽 및 콜라이더 위치 이동 제한
-		break;
-	case CharacterInfo::INTERACTION:
-		POINT pivotPos = { static_cast<LONG>(player->GetPos().x),  static_cast<LONG>(player->GetPos().y) };
-		pivotPos.x += PLAYER_PIVOT_POS.x;
-		pivotPos.y += PLAYER_PIVOT_POS.y;
+		LimitMoveMent(prevPos);						// 맵 외곽 및 콜라이더 위치 이동 제한
 
-		pivotPos = worldMap[currentStage].ChangePosToMapPoint(pivotPos);	// 맵 좌표로 변환
+		// 포탈 이동 관련 코드
+		pivotPos = GetPlayerPivotMapPoint();		// 피벗 좌표를 기준으로 캐릭터의 맵 좌표 가져옴
+		for (const auto& iterator : WorldMapManager::GetInstance()->GetProtalData())
+		{
+			if (iterator.pos.x == pivotPos.x && iterator.pos.y == pivotPos.y)
+			{
+				WorldMapManager::GetInstance()->SetCurrentStage(iterator.stage);
+				WorldMapManager::GetInstance()->LoadMapData(GameState::INGAME, iterator.stage);
+				WorldMapManager::GetInstance()->LoadEventData(iterator.stage);
+
+				break;
+			}
+		}
+		break;
+	case CharacterInfo::INTERACTION:	
+		if (GetTickCount64() > eventTick + EVENT_DELAY)			// 이벤트에 딜레이 추가
+			eventTick = GetTickCount64();
+		else
+			break;
+
+		pivotPos = GetPlayerPivotMapPoint();
+		
 		// 캐릭터가 보고있는 방향의 오브젝트의 상호작용 실행 시키기 위해 연산
 		switch (player->GetDir())
 		{
@@ -107,14 +126,8 @@ void GameManager::Run()
 			return;
 		}
 
-		// 이벤트에 딜레이 추가
-		if (GetTickCount64() > eventTick + EVENT_DELAY)
-			eventTick = GetTickCount64();
-		else
-			break;
-
-		interactionManager->ChangeMapData(pivotPos);		// 오브젝트 애니메이션 변경
-		interactionManager->ActionEvent(pivotPos);			// 연결 이벤트 발생
+		//interactionManager->ChangeMapData(playerPivotMapPos);		// 오브젝트 애니메이션 변경
+		//interactionManager->ActionEvent(playerPivotMapPos);			// 연결 이벤트 발생
 
 		break;
 	}
@@ -141,14 +154,25 @@ void GameManager::LimitMoveMent(const DPOINT prevDPos)
 
 	for (int i = 0; i < sizeof(colliderPos)/sizeof(colliderPos[0]); i++)
 	{
-		colliderPos[i] = worldMap[currentStage].ChangePosToMapPoint(colliderPos[i]);	// 맵상의 좌표로 변환 후
+		colliderPos[i] = WorldMapManager::GetInstance()->ChangePosToMapPoint(colliderPos[i]);	// 맵상의 좌표로 변환 후
 
-		if (0 != worldMap[currentStage].GetData(MapEdittorSelectState::COLLIDER, colliderPos[i]))	// 콜라이더 위에 위치하고 있는 경우
+		if (0 != WorldMapManager::GetInstance()->GetWorldMap()->GetData(MapEdittorSelectState::COLLIDER, colliderPos[i]))	// 콜라이더 위에 위치하고 있는 경우
 		{
 			player->SetPos(prevDPos);
 			return;
 		}
 	}
+}
+
+POINT GameManager::GetPlayerPivotMapPoint()
+{
+	POINT pivotPos = { static_cast<LONG>(player->GetPos().x),  static_cast<LONG>(player->GetPos().y) };
+	pivotPos.x += PLAYER_PIVOT_POS.x;
+	pivotPos.y += PLAYER_PIVOT_POS.y;
+
+	pivotPos = WorldMapManager::GetInstance()->ChangePosToMapPoint(pivotPos);	// 맵 좌표로 변환
+
+	return pivotPos;
 }
 
 const GameState GameManager::GetState()
@@ -159,31 +183,6 @@ const GameState GameManager::GetState()
 void GameManager::SetState(const GameState state)
 {
 	this->state = state;
-}
-
-void GameManager::SetWorldMapData(const WorldMap worldMap, const int index)
-{
-	if (0 <= index && STAGE_SIZE > index)
-		this->worldMap[index] = worldMap;
-}
-
-WorldMap* GameManager::GetWorldMapData(const int index)
-{
-	if(0 <= index && STAGE_SIZE > index)
-		return &worldMap[index];
-	else
-		return &worldMap[0];
-}
-
-void GameManager::SetCurrentStage(const int currentStage)
-{
-	if(0 <= currentStage && STAGE_SIZE > currentStage)
-		this->currentStage = currentStage;
-}
-
-const int GameManager::GetCurrentStage()
-{
-	return currentStage;
 }
 
 void GameManager::SetPlayer(Player* player)

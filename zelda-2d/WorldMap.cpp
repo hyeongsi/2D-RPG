@@ -52,21 +52,26 @@ void WorldMap::SetData(MapEdittorSelectState state, POINT pos, int data)
 	}
 }
 
-const bool WorldMap::GetIsLoad()
-{
-	return isLoad;
-}
-
-void WorldMap::SetIsLoad()
-{
-	isLoad = true;
-}
-
-const POINT WorldMap::ChangePosToMapPoint(const POINT pos)
-{
-	POINT mapPos;
-	mapPos.x = pos.x / TILE_SIZE;
-	mapPos.y = pos.y / TILE_SIZE;
-
-	return mapPos;
-}
+//void WorldMap::LoadMap(const char* mapFilePath)
+//{
+//
+//	PortalSetCallBack(LoadMap, 3, 3);
+//
+//	mapFilePath read
+//
+//		switch (map)
+//		{
+//		case normal:
+//
+//		case bossMap:
+//
+//		case cutsceneMap:
+//
+//	}
+//
+//	if (3, 3 tile = > portal)
+//	{
+//		portalData[3][3] = LoadMap;
+//		mapfilename[3][3] = "블라블라";
+//	}
+//}

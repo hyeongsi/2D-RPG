@@ -1,6 +1,7 @@
 ﻿#include "pch.h"
 
 #include "RenderManager.h"
+#include "WorldMapManager.h"
 
 extern HWND g_hWnd;
 extern SIZE g_clientSize;
@@ -117,13 +118,13 @@ void RenderManager::MapEdittorDataRender()
     Render();                   // 출력
 }
 
-void RenderManager::InGameDataRender(Player* character, NPC* npc, vector<Item> fieldItem)
+void RenderManager::InGameDataRender(Player* character, NPC* npc)
 {
     RenderInitSetting();        // 출력 전 초기화 작업
 
     DrawWorldMapData(GameState::INGAME);        // 맵 출력
 
-    for (auto item : fieldItem)
+    /*for (auto item : fieldItem)
     {
         switch (item.GetIndex())
         {
@@ -138,19 +139,17 @@ void RenderManager::InGameDataRender(Player* character, NPC* npc, vector<Item> f
             ImageManager::GetInstance()->GetAnimationData(TextureName::MONEY_SPIN)->NextSelectBitmapIndex();
             break;
         }
-    }
+    }*/
 
     if (character->GetPos().y <= npc->GetPos().y)
     {
-        DrawPlayer(character);                  // 캐릭터 출력
-        if(MapInfo::NORMAL == GameManager::GetInstance()->GetCurrentStage())
-            DrawNPC(npc);                       // NPC 출력
+        DrawPlayer(character);              // 캐릭터 출력
+        DrawNPC(npc);                       // NPC 출력
     }
     else
     {
-        if (MapInfo::NORMAL == GameManager::GetInstance()->GetCurrentStage())
-            DrawNPC(npc);                       // NPC 출력                          
-        DrawPlayer(character);                  // 캐릭터 출력
+        DrawNPC(npc);                       // NPC 출력                          
+        DrawPlayer(character);              // 캐릭터 출력
     }
 
     //UI 출력
@@ -194,19 +193,15 @@ void RenderManager::InGameDataRender(Player* character, NPC* npc, vector<Item> f
 
 void RenderManager::DrawWorldMapData(const GameState gameState)
 {
-    GameManager* gameManager = nullptr;
-    MapEdittor* mapEdittor = nullptr;
     WorldMap tempWorldMap;
 
     switch (gameState)
     {
     case GameState::INGAME:
-        gameManager = GameManager::GetInstance();
-        tempWorldMap = *gameManager->GetWorldMapData(gameManager->GetCurrentStage());
+        tempWorldMap = *(WorldMapManager::GetInstance()->GetWorldMap());
         break;
     case GameState::MAPEDITTOR:
-        mapEdittor = MapEdittor::GetInstance();
-        tempWorldMap = mapEdittor->GetWorldMapData();
+        tempWorldMap = MapEdittor::GetInstance()->GetWorldMapData();
         break;
     default:
         return;
@@ -248,9 +243,22 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
         }
     }
 
+    // 포탈 위치 출력
+    for (const auto& iterator : WorldMapManager::GetInstance()->GetProtalData())
+    {
+        HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
+        HBRUSH oldBrush = (HBRUSH)SelectObject(memDC, myBrush);
+
+        Ellipse(memDC, iterator.pos.x * TILE_SIZE, iterator.pos.y * TILE_SIZE,
+            iterator.pos.x * TILE_SIZE + TILE_SIZE, iterator.pos.y * TILE_SIZE + TILE_SIZE);
+
+        SelectObject(memDC, oldBrush);
+    }
+
     switch (gameState)
     {
     case GameState::MAPEDITTOR:
+
         // 콜라이더 출력
         for (int y = 0; y < MAP_MAX_Y; y++)
         {

@@ -96,6 +96,9 @@
     <ClInclude Include="Inventory.h">
       <Filter>헤더 파일\item</Filter>
     </ClInclude>
+    <ClInclude Include="WorldMapManager.h">
+      <Filter>헤더 파일\map</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="zelda-2d.cpp">
@@ -142,6 +145,9 @@
     </ClCompile>
     <ClCompile Include="Inventory.cpp">
       <Filter>소스 파일\item</Filter>
+    </ClCompile>
+    <ClCompile Include="WorldMapManager.cpp">
+      <Filter>소스 파일\map</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

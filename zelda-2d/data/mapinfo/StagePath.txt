@@ -1,0 +1,7 @@
+2
+mapPath
+data/mapinfo/Stage1.txt
+data/mapinfo/Stage2.txt
+eventPath
+data/eventinfo/Stage1_event.txt
+data/eventinfo/Stage2_event.txt
