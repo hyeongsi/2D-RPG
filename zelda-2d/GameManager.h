@@ -46,7 +46,11 @@ public:
 public:
 	void Input();
 	void Run();
-	void LimitMoveMent(const DPOINT prevDPos);		
+
+	void test();
+
+	void LimitMoveMent(const DPOINT prevDPos);
+	void UsePortal();
 	POINT GetPlayerPivotMapPoint();
 public:
 	const GameState GetState();

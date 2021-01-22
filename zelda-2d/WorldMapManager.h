@@ -10,6 +10,7 @@ typedef struct protal
 {
 	POINT pos;
 	int stage;
+	POINT spawnPos;
 }Portal;
 
 class WorldMapManager
@@ -43,7 +44,9 @@ public:
 	void SetCurrentStage(const int currentStage);
 	const int GetCurrentStage();
 	
-	const vector<Portal> GetProtalData();
+	void AddProtalData(const Portal portal);	// 포탈 데이터 추가
+	const vector<Portal> GetProtalData();		
+	void DeleteProtalData(const int index);		// 포탈 데이터 삭제
 
 	void LoadPathData();	// 맵 경로 관련 데이터 변수에 저장
 

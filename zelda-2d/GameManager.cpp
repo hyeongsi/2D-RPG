@@ -84,20 +84,8 @@ void GameManager::Run()
 	{
 	case CharacterInfo::WALK:
 		LimitMoveMent(prevPos);						// 맵 외곽 및 콜라이더 위치 이동 제한
-
-		// 포탈 이동 관련 코드
-		pivotPos = GetPlayerPivotMapPoint();		// 피벗 좌표를 기준으로 캐릭터의 맵 좌표 가져옴
-		for (const auto& iterator : WorldMapManager::GetInstance()->GetProtalData())
-		{
-			if (iterator.pos.x == pivotPos.x && iterator.pos.y == pivotPos.y)
-			{
-				WorldMapManager::GetInstance()->SetCurrentStage(iterator.stage);
-				WorldMapManager::GetInstance()->LoadMapData(GameState::INGAME, iterator.stage);
-				WorldMapManager::GetInstance()->LoadEventData(iterator.stage);
-
-				break;
-			}
-		}
+		UsePortal();								// 포탈 이동 관련 코드
+		
 		break;
 	case CharacterInfo::INTERACTION:	
 		if (GetTickCount64() > eventTick + EVENT_DELAY)			// 이벤트에 딜레이 추가
@@ -126,10 +114,26 @@ void GameManager::Run()
 			return;
 		}
 
-		//interactionManager->ChangeMapData(playerPivotMapPos);		// 오브젝트 애니메이션 변경
-		//interactionManager->ActionEvent(playerPivotMapPos);			// 연결 이벤트 발생
+		interactionManager->ChangeMapData(pivotPos);		// 오브젝트 애니메이션 변경
+		interactionManager->ActionEvent(pivotPos);			// 연결 이벤트 발생
 
 		break;
+	}
+}
+
+void GameManager::test()
+{
+	for (int y = 0; y < MAP_MAX_Y; y++)
+	{
+		for (int x = 0; x < MAP_MAX_X; x++)
+		{
+			if (TextureName::wood_house_close == WorldMapManager::GetInstance()->GetWorldMap()->GetData(MapEdittorSelectState::OBJECT, { x,y }))
+			{
+				WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::OBJECT, { x,y }, TextureName::wood_house);		// 오두막 문 열기	
+				WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::EVENT, {x + WOOD_HOUSE_DOOR_POS.x ,y + WOOD_HOUSE_DOOR_POS .y}, Event::MOVE_STAGE_2);	// 오두막집 열리면 입구쪽 출입 이벤트 등록
+				break;
+			}
+		}
 	}
 }
 
@@ -160,6 +164,24 @@ void GameManager::LimitMoveMent(const DPOINT prevDPos)
 		{
 			player->SetPos(prevDPos);
 			return;
+		}
+	}
+}
+
+void GameManager::UsePortal()
+{
+	POINT pivotPos = GetPlayerPivotMapPoint();		// 피벗 좌표를 기준으로 캐릭터의 맵 좌표 가져옴
+	for (auto& iterator : WorldMapManager::GetInstance()->GetProtalData())
+	{
+		if (iterator.pos.x == pivotPos.x && iterator.pos.y == pivotPos.y)
+		{
+			WorldMapManager::GetInstance()->SetCurrentStage(iterator.stage);
+			WorldMapManager::GetInstance()->LoadMapData(GameState::INGAME, iterator.stage);
+			WorldMapManager::GetInstance()->LoadEventData(iterator.stage);
+
+			player->SetPos({ static_cast<double>(iterator.spawnPos.x) * TILE_SIZE, 
+				static_cast<double>(iterator.spawnPos.y) * TILE_SIZE });
+			break;
 		}
 	}
 }

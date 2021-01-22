@@ -54,9 +54,26 @@ const int WorldMapManager::GetCurrentStage()
 	return currentStage;
 }
 
+void WorldMapManager::AddProtalData(const Portal portal)
+{
+	protalData.emplace_back(portal);
+}
+
 const vector<Portal> WorldMapManager::GetProtalData()
 {
 	return protalData;
+}
+
+void WorldMapManager::DeleteProtalData(const int index)
+{
+	if (index < static_cast<int>(protalData.size()) && 0 <= index)
+	{
+		auto iterator = protalData.begin();
+		for (int i = 0; i < index; i++)
+			iterator++;
+
+		protalData.erase(iterator);
+	}
 }
 
 void WorldMapManager::LoadPathData()
@@ -280,15 +297,20 @@ void WorldMapManager::LoadEventData(const int stage)
 			while (!readFile.eof())
 			{
 				readFile >> str;
-				value[0] = stoi(str);	// y 좌표
+				value[0] = stoi(str);	// x 좌표
 				readFile >> str;
 				value[1] = stoi(str);	// y 좌표
 				readFile >> str;
 
 				Portal portal;
-				portal.pos.x = value[1];
-				portal.pos.y = value[0];
+				portal.pos = { value[1], value[0] };
 				portal.stage = stoi(str);
+
+				readFile >> str;
+				value[0] = stoi(str);	// spawn x 좌표
+				readFile >> str;
+				value[1] = stoi(str);	// spawn y 좌표
+				portal.spawnPos = { value[1], value[0] };
 
 				protalData.emplace_back(portal);
 			}
