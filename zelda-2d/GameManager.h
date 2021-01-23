@@ -49,8 +49,10 @@ public:
 
 	void test();
 
-	void LimitMoveMent(const DPOINT prevDPos);
-	void UsePortal();
+	void LimitMoveMent(const DPOINT prevDPos);	// 이동 제한
+	void UsePortal();		// 포탈 사용
+	void RetouchMoveMent(POINT colliderPos[4]);	// 이동 보정
+
 	POINT GetPlayerPivotMapPoint();
 public:
 	const GameState GetState();

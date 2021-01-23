@@ -55,7 +55,7 @@ void Player::Input(const double deltaTime)
 	{
 		state = CharacterInfo::ATTACK;
 	}
-	else if ((GetAsyncKeyState(VK_SPACE) & 0x8000) && state != CharacterInfo::ATTACK)	// 상호작용
+	else if ((GetAsyncKeyState(VK_SPACE) & 0x8000) && state != CharacterInfo::ATTACK)	// 상호작용 space
 	{
 		state = CharacterInfo::INTERACTION;
 	}

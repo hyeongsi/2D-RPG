@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 
-constexpr const POINT RETOUCH_WOOD_DOOR_POS{ 2,5 };
+constexpr const POINT RETOUCH_WOOD_DOOR_POS{ 2,4 };
 constexpr const POINT SPAWN_PLAYER_STAGE1_POS{ 12,13 };
 
 InteractionManager* InteractionManager::instance = nullptr;
@@ -72,11 +72,11 @@ void InteractionManager::ActionEvent(const POINT pos)
 	case Event::CLOSE_WOOD_HOUSE_DOOR:			// 오두막 문 닫기,
 		CloseWoodHouseDoor(pos);
 		break;
-	////case Event::OPEN_BOX:	// 아이템 드랍
-	////	gameManager->AddItem(gameManager->GetCurrentStage(),
-	////		Item({pos.x*TILE_SIZE, pos.y*TILE_SIZE}, ItemInfo::MONEY, 5));	// 금액 수정, 아이템 랜덤 드랍으로 수정 필요함
-	////	worldMap->SetData(MapEdittorSelectState::EVENT, { pos.x,pos.y}, Event::NONE);	// 기존 이벤트 삭제
-	////	break;
+	//case Event::OPEN_BOX:	// 아이템 드랍
+	//	gameManager->AddItem(gameManager->GetCurrentStage(),
+	//		Item({pos.x*TILE_SIZE, pos.y*TILE_SIZE}, ItemInfo::MONEY, 5));	// 금액 수정, 아이템 랜덤 드랍으로 수정 필요함
+	//	worldMap->SetData(MapEdittorSelectState::EVENT, { pos.x,pos.y}, Event::NONE);	// 기존 이벤트 삭제
+	//	break;
 	////case Event::MOVE_STAGE_1:
 	////	if (MapInfo::WOOD_HOUSE == gameManager->GetCurrentStage())
 	////		gameManager->GetPlayer()->SetPos({ 
@@ -106,7 +106,13 @@ void InteractionManager::OpenWoodHouseDoor(const POINT pos)
 			{
 				WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::OBJECT, { x,y }, TextureName::wood_house);		// 오두막 문 열기
 				WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::EVENT, pos, Event::CLOSE_WOOD_HOUSE_DOOR);		// 오두막 문닫히는 이벤트 등록
-						
+
+				WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::COLLIDER,		// 문 쪽 콜라이더 제거
+					{ x + RETOUCH_WOOD_DOOR_POS.x, y + RETOUCH_WOOD_DOOR_POS.y }, 0);
+
+				WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::COLLIDER,		// 문 뒤쪽 콜라이더 생성
+					{ x + RETOUCH_WOOD_DOOR_POS.x, y + RETOUCH_WOOD_DOOR_POS.y - 1 }, 1);
+
 				Portal protal;
 				protal.pos = { x+ RETOUCH_WOOD_DOOR_POS.x,y + RETOUCH_WOOD_DOOR_POS.y};
 				protal.stage = 1;

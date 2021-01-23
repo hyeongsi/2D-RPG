@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Item.h"
 
-constexpr const int INVEN_SIZE = 15;	// 임시로 지정
+constexpr const int INVEN_SIZE = 20;
 
 class Inventory
 {

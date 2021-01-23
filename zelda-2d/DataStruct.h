@@ -7,13 +7,7 @@ constexpr const int TILE_SIZE = 32;	// 맵 한 칸의 크기 ( 32 x 32)
 constexpr const int MAP_MAX_X = 25;	// 행의 개수
 constexpr const int MAP_MAX_Y = 19;	// 열의 개수
 
-constexpr const POINT PLAYER_COLLIDER_BOX_LEFT_TOP = { 1,47 };	// 캐릭터 콜라이더 기준 좌표 
-constexpr const POINT PLAYER_COLLIDER_BOX_RIGHT_BOTTOM = {31,51};	// 캐릭터 콜라이더 기준 좌표
-
 constexpr const POINT PLAYER_PIVOT_POS = { 16,47 };	// 캐릭터 콜라이더 기준 좌표 
-
-constexpr const int LIMIT_MAP_X_CORRECTION = 32;	// 맵 밖으로 나가는 경우 보정 크기
-constexpr const int LIMIT_MAP_Y_CORRECTION = 46;	// 맵 밖으로 나가는 경우 보정 크기
 
 constexpr const POINT STAGE2_SPAWN_POS = { 642, 115 };	// 오두막 집 문의 위치, 기준 위치로 부터 + alpah 값
 constexpr const POINT WOOD_HOUSE_DOOR_POS = {2, 4};	// 오두막 집 문의 위치, 기준 위치로 부터 + alpah 값
