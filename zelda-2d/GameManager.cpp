@@ -60,17 +60,10 @@ void GameManager::Input()
 		else
 			return;
 
-
 		if (inventory->IsOpen())
-		{
 			inventory->SetOpen(false);
-			SendMessage(g_hWnd, WM_COMMAND, IDC_lNVEN_CLOSE, 0);    // 버튼 선택상태 초기화
-		}
 		else
-		{
 			inventory->SetOpen(true);
-			SendMessage(g_hWnd, WM_COMMAND, IDC_lNVEN_OPEN, 0);    // 버튼 선택상태 초기화
-		}
 	}
 }
 
@@ -117,22 +110,6 @@ void GameManager::Run()
 		interactionManager->ActionEvent(pivotPos);			// 연결 이벤트 발생
 
 		break;
-	}
-}
-
-void GameManager::test()
-{
-	for (int y = 0; y < MAP_MAX_Y; y++)
-	{
-		for (int x = 0; x < MAP_MAX_X; x++)
-		{
-			if (TextureName::wood_house_close == WorldMapManager::GetInstance()->GetWorldMap()->GetData(MapEdittorSelectState::OBJECT, { x,y }))
-			{
-				WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::OBJECT, { x,y }, TextureName::wood_house);		// 오두막 문 열기	
-				WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::EVENT, {x + WOOD_HOUSE_DOOR_POS.x ,y + WOOD_HOUSE_DOOR_POS .y}, Event::MOVE_STAGE_2);	// 오두막집 열리면 입구쪽 출입 이벤트 등록
-				break;
-			}
-		}
 	}
 }
 
@@ -290,6 +267,11 @@ Player* GameManager::GetPlayer()
 void GameManager::SetInventory(Inventory* inventory)
 {
 	this->inventory = inventory;
+}
+
+Inventory* GameManager::GetInventory()
+{
+	return inventory;
 }
 
 void GameManager::SetNPC(NPC* npc)

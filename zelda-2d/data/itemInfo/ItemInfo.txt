@@ -1,0 +1,4 @@
+1	10	red_posion	hp+1
+2	20	green_posion	hp+2	
+3	50	green_necklace	damage+1
+4	50	lamp		just_lamp

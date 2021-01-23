@@ -47,8 +47,6 @@ public:
 	void Input();
 	void Run();
 
-	void test();
-
 	void LimitMoveMent(const DPOINT prevDPos);	// 이동 제한
 	void UsePortal();		// 포탈 사용
 	void RetouchMoveMent(POINT colliderPos[4]);	// 이동 보정
@@ -62,6 +60,7 @@ public:
 	Player* GetPlayer();
 
 	void SetInventory(Inventory* inventory);
+	Inventory* GetInventory();
 
 	void SetNPC(NPC* npc);
 	NPC* GetNPC();

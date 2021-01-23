@@ -1,0 +1,4 @@
+1	images/Item/red_posion.bmp
+2	images/Item/green_posion.bmp	
+3	images/Item/green_necklace.bmp	
+4	images/Item/lamp.bmp

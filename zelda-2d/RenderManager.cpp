@@ -2,6 +2,7 @@
 
 #include "RenderManager.h"
 #include "WorldMapManager.h"
+#include "GameManager.h"
 
 extern HWND g_hWnd;
 extern SIZE g_clientSize;
@@ -152,6 +153,9 @@ void RenderManager::InGameDataRender(Player* character, NPC* npc)
         DrawPlayer(character);              // 캐릭터 출력
     }
 
+    if (GameManager::GetInstance()->GetInventory()->IsOpen())    // 인벤 창 활성화 ->
+        DrawInventoryItem();    // 인벤 창 출력
+
     //UI 출력
     DrawCharUIData(TextureName::Char_Info, { 10,10 });
     DrawCharUIData(TextureName::Money_Info, { 11,110 });
@@ -279,6 +283,28 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
     default:
         return;
     }
+}
+
+void RenderManager::DrawInventoryItem()
+{
+    // inventory rect draw
+    Rectangle(memDC, INVENTORY_SPAWN_POS.x, INVENTORY_SPAWN_POS.y, INVENTORY_SPAWN_POS.x + INVENTORY_SIZE.cx, INVENTORY_SPAWN_POS.y + INVENTORY_SIZE.cy);
+
+    // item draw
+    for (int i = 0; i < GameManager::GetInstance()->GetInventory()->GetLastItemIndex(); i++)
+    {
+        if (0 != GameManager::GetInstance()->GetInventory()->GetItem()[i].GetIndex())
+        {
+            HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::ITEM,
+                GameManager::GetInstance()->GetInventory()->GetItem()[i].GetIndex());
+
+            BITMAP bit;
+            SelectObject(backMemDC, bitmap);
+            GetObject(bitmap, sizeof(bit), &bit);
+            BitBlt(memDC, INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx, INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy, 
+                bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, SRCCOPY);
+        }
+    }   
 }
 
 void RenderManager::DrawPlayer(Player* player)

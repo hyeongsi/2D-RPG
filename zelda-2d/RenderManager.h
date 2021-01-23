@@ -12,6 +12,8 @@ using namespace std;
 
 #pragma comment (lib, "Msimg32.lib")
 
+constexpr POINT INVENTORY_SPAWN_POS = { 650,170 };
+constexpr SIZE INVENTORY_interval_SIZE = { 8,8 };
 constexpr int HP_UI_COUNT = 3;
 
 class RenderManager
@@ -33,6 +35,7 @@ public:
 
 public:
 	void Init();
+
 	void RenderInitSetting();
 
 public:
@@ -47,6 +50,7 @@ public:
 
 public:
 	void DrawWorldMapData(const GameState gameState);
+	void DrawInventoryItem();	// 인벤토리 아이템 그리기
 
 	void DrawPlayer(Player* character);
 	void DrawNPC(NPC* npc);

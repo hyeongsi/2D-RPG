@@ -14,7 +14,6 @@
 #define IDC_ZELDA2D                     109
 #define IDR_MAINFRAME                   128
 #define IDD_DIALOG1                     129
-#define IDD_INVENTORY                   130
 #define IDC_bLOAD                       1001
 #define IDC_bSAVE                       1002
 #define IDC_rCOLLIDER                   1007
@@ -22,9 +21,6 @@
 #define IDC_rBACKGROUND                 1009
 #define IDC_lOBJECT                     1011
 #define IDC_lBACKGROUND                 1013
-#define IDC_lNVEN_EXIT_BTN              1020
-#define IDC_lNVEN_OPEN                  1021
-#define IDC_lNVEN_CLOSE                 1022
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

@@ -18,7 +18,7 @@ constexpr const SIZE BUTTON_SIZE = { 100,30 };
 
 constexpr const char BACKGROUND_BITMAP_PATH[] = { "data/bitmapinfo/BackgroundBitmapInfo.txt" };
 constexpr const char OBJECT_BITMAP_PATH[] = { "data/bitmapinfo/ObjectBitmapInfo.txt" };
-constexpr const char UI_BITMAP_PATH[] = { "data/bitmapinfo/UIBitmapInfo.txt" };
+
 
 constexpr const char PLAYER_ANIMATION_PATH[] = { "data/bitmapinfo/CharacterAnimationBitmapInfo.txt" };
 constexpr const char NPC_ANIMATION_PATH[] = { "data/bitmapinfo/NPCAnimationBitmapInfo.txt" };
@@ -159,7 +159,8 @@ enum class BitmapKind
 {
 	BACKGROUND,
 	OBJECT,
-	UI
+	UI,
+	ITEM,
 };
 
 enum class ClickLR

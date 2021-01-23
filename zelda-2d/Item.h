@@ -14,6 +14,9 @@ private:
 	string title;	// 아이템 제목
 	string explain;	// 아이템 설명
 public:
+	friend class Inventory;
+	friend class ItemManager;
+
 	Item();
 	Item(const POINT pos, const int index, const int price);
 	~Item();
@@ -21,7 +24,7 @@ public:
 	void SetPos(const POINT pos);
 	const POINT GetPos();
 
-	void SetIndex(const int index);
+	void SetIndex(const int index); 
 	const int GetIndex();
 };
 
