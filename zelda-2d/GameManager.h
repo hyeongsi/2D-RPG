@@ -24,7 +24,7 @@ private:
 	Player* player;
 	Inventory* inventory;
 	NPC* npc;
-	vector<Item> FieldItem[STAGE_SIZE];	// 필드 스폰 아이템
+	vector<Item> FieldItem;	// 필드 스폰 아이템
 
 	Time* time;
 
@@ -48,7 +48,8 @@ public:
 	void Run();
 
 	void LimitMoveMent(const DPOINT prevDPos);	// 이동 제한
-	void UsePortal();		// 포탈 사용
+	void PickUpItem();							// 아이템 파밍
+	void UsePortal();							// 포탈 사용
 	void RetouchMoveMent(POINT colliderPos[4]);	// 이동 보정
 
 	POINT GetPlayerPivotMapPoint();
@@ -65,11 +66,11 @@ public:
 	void SetNPC(NPC* npc);
 	NPC* GetNPC();
 
-	void AddItem(const int stage, const Item item);
-	void DeleteItem(const int stage, const int index);
-	const Item GetItem(const int stage, const int index);
+	void AddFieldItem(const Item item);
+	void DeleteFieldItem(const int index);
+	const Item GetItem(const int index);
 
-	vector<Item> GetFieldItem(const int stage);
+	vector<Item> GetFieldItem();
 
 };
 

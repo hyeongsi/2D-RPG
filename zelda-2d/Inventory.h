@@ -2,7 +2,9 @@
 #include "Item.h"
 
 constexpr const SIZE INVENTORY_SIZE = { 128,208 };
-constexpr const int INVEN_SIZE = 16;
+constexpr const int INVEN_SIZE_X = 3;
+constexpr const int INVEN_SIZE_Y = 5;
+constexpr const int INVEN_SIZE = 15;
 
 class Inventory
 {

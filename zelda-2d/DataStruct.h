@@ -19,7 +19,6 @@ constexpr const SIZE BUTTON_SIZE = { 100,30 };
 constexpr const char BACKGROUND_BITMAP_PATH[] = { "data/bitmapinfo/BackgroundBitmapInfo.txt" };
 constexpr const char OBJECT_BITMAP_PATH[] = { "data/bitmapinfo/ObjectBitmapInfo.txt" };
 
-
 constexpr const char PLAYER_ANIMATION_PATH[] = { "data/bitmapinfo/CharacterAnimationBitmapInfo.txt" };
 constexpr const char NPC_ANIMATION_PATH[] = { "data/bitmapinfo/NPCAnimationBitmapInfo.txt" };
 
@@ -115,6 +114,7 @@ namespace TextureName
 	{
 		PLAYER_WALK,
 		PLAYER_ATTACK,
+		PLAYER_HOLD_WALK,
 		NPC_WALK,
 		HEART_SPIN,
 		MONEY_SPIN,
@@ -150,8 +150,6 @@ namespace Event
 		OPEN_WOOD_HOUSE_DOOR,
 		CLOSE_WOOD_HOUSE_DOOR,
 		OPEN_BOX,
-		MOVE_STAGE_1,
-		MOVE_STAGE_2,
 	};
 }
 

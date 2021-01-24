@@ -3,6 +3,7 @@
 #include "RenderManager.h"
 #include "WorldMapManager.h"
 #include "GameManager.h"
+#include "ItemManager.h"
 
 extern HWND g_hWnd;
 extern SIZE g_clientSize;
@@ -141,6 +142,8 @@ void RenderManager::InGameDataRender(Player* character, NPC* npc)
             break;
         }
     }*/
+
+    DrawFieldItem();    // 필드 아이템 출력
 
     if (character->GetPos().y <= npc->GetPos().y)
     {
@@ -285,12 +288,43 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
     }
 }
 
+void RenderManager::DrawFieldItem()
+{
+    for (const auto& iterator: (*ItemManager::GetInstance()->GetFieldItem()))
+    {
+        if (0 != iterator.index)
+        {
+            HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::ITEM,
+                iterator.index);
+
+            BITMAP bit;
+            SelectObject(backMemDC, bitmap);
+            GetObject(bitmap, sizeof(bit), &bit);
+            TransparentBlt(memDC, iterator.pos.x * TILE_SIZE, iterator.pos.y * TILE_SIZE,
+                bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, bit.bmWidth, bit.bmHeight, RGB(132, 126, 135));
+        }
+    }
+}
+
 void RenderManager::DrawInventoryItem()
 {
-    // inventory rect draw
+    // draw inventory rect 
     Rectangle(memDC, INVENTORY_SPAWN_POS.x, INVENTORY_SPAWN_POS.y, INVENTORY_SPAWN_POS.x + INVENTORY_SIZE.cx, INVENTORY_SPAWN_POS.y + INVENTORY_SIZE.cy);
 
-    // item draw
+    // draw item box
+    int t = 0;
+    for (int i = 0; i < INVEN_SIZE; i++)
+    {
+        t = i;
+
+        Rectangle(memDC, (INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((t % INVEN_SIZE_X) * TILE_SIZE) + ((t % INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx),
+            (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (t / INVEN_SIZE_X * TILE_SIZE) + ((t / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy),
+            (INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((t % INVEN_SIZE_X) * TILE_SIZE) + ((t % INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx) + TILE_SIZE,
+            (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (t / INVEN_SIZE_X * TILE_SIZE) + ((t / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy) + TILE_SIZE);
+    }
+
+    // draw item
+    t = 0;
     for (int i = 0; i < GameManager::GetInstance()->GetInventory()->GetLastItemIndex(); i++)
     {
         if (0 != GameManager::GetInstance()->GetInventory()->GetItem()[i].GetIndex())
@@ -298,13 +332,18 @@ void RenderManager::DrawInventoryItem()
             HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::ITEM,
                 GameManager::GetInstance()->GetInventory()->GetItem()[i].GetIndex());
 
+            t = i;
+
             BITMAP bit;
             SelectObject(backMemDC, bitmap);
             GetObject(bitmap, sizeof(bit), &bit);
-            BitBlt(memDC, INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx, INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy, 
+            BitBlt(memDC, (INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((t% INVEN_SIZE_X) * TILE_SIZE) + ((t% INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx),
+                (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (t / INVEN_SIZE_X * TILE_SIZE) + ((t / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy),
                 bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, SRCCOPY);
         }
     }   
+
+    
 }
 
 void RenderManager::DrawPlayer(Player* player)

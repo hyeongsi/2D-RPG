@@ -50,6 +50,7 @@ public:
 
 public:
 	void DrawWorldMapData(const GameState gameState);
+	void DrawFieldItem();		// 필드 아이템 그리기
 	void DrawInventoryItem();	// 인벤토리 아이템 그리기
 
 	void DrawPlayer(Player* character);

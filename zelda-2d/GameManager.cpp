@@ -3,6 +3,7 @@
 #include "InteractionManager.h"
 #include "resource.h"
 #include "WorldMapManager.h"
+#include "ItemManager.h"
 
 GameManager* GameManager::instance = nullptr;
 
@@ -77,6 +78,7 @@ void GameManager::Run()
 	{
 	case CharacterInfo::WALK:
 		LimitMoveMent(prevPos);						// 맵 외곽 및 콜라이더 위치 이동 제한
+		PickUpItem();								// 아이템 파밍
 		UsePortal();								// 포탈 이동 관련 코드
 		break;
 	case CharacterInfo::INTERACTION:	
@@ -154,6 +156,26 @@ void GameManager::LimitMoveMent(const DPOINT prevDPos)
 	}
 }
 
+void GameManager::PickUpItem()
+{
+	POINT pivotPos = GetPlayerPivotMapPoint();		// 피벗 좌표를 기준으로 캐릭터의 맵 좌표 가져옴
+
+	for (auto iterator = (*ItemManager::GetInstance()->GetFieldItem()).begin(); iterator != (*ItemManager::GetInstance()->GetFieldItem()).end();)
+	{
+		if ((*iterator).pos.x == pivotPos.x && (*iterator).pos.y == pivotPos.y)				// 아이템과 위치가 같으면
+		{
+			if (inventory->GetLastItemIndex() == INVEN_SIZE)		// 인벤토리 풀이면 아이템 파밍 X
+				return;
+
+			inventory->SetItem((*ItemManager::GetInstance()->GetItemData())[(*iterator).index-1]);	// (아이템 매니저의 정보를 가지고) 인벤토리에 아이템 추가 
+			(*ItemManager::GetInstance()->GetFieldItem()).erase(iterator);			// 필드 아이템은 삭제 처리
+			return;
+		}
+		else
+			iterator++;
+	}
+}
+
 void GameManager::UsePortal()
 {
 	POINT pivotPos = GetPlayerPivotMapPoint();		// 피벗 좌표를 기준으로 캐릭터의 맵 좌표 가져옴
@@ -167,6 +189,8 @@ void GameManager::UsePortal()
 
 			player->SetPos({ static_cast<double>(iterator.spawnPos.x) * TILE_SIZE, 
 				static_cast<double>(iterator.spawnPos.y) * TILE_SIZE });
+
+			ItemManager::GetInstance()->GetFieldItem()->clear();	// 이동 시 필드 아이템 삭제
 			break;
 		}
 	}
@@ -284,22 +308,21 @@ NPC* GameManager::GetNPC()
 	return npc;
 }
 
-void GameManager::AddItem(const int stage, const Item item)
+void GameManager::AddFieldItem(const Item item)
 {
-	if(0 <= stage && stage < STAGE_SIZE)
-		(FieldItem[stage]).emplace_back(item);
+	(FieldItem).emplace_back(item);
 }
 
-void GameManager::DeleteItem(const int stage, const int index)
+void GameManager::DeleteFieldItem(const int index)
 {
-	if (0 <= index && index < static_cast<int>((FieldItem[stage]).size()))
+	if (0 <= index && index < static_cast<int>((FieldItem).size()))
 	{
 		int count = 0;
-		for (auto iterator = (FieldItem[stage]).begin(); iterator != (FieldItem[stage]).end();)
+		for (auto iterator = (FieldItem).begin(); iterator != (FieldItem).end();)
 		{
 			if (index == count)
 			{
-				(FieldItem[stage]).erase(iterator);
+				(FieldItem).erase(iterator);
 				return;
 			}
 
@@ -309,15 +332,15 @@ void GameManager::DeleteItem(const int stage, const int index)
 	}
 }
 
-const Item GameManager::GetItem(const int stage, const int index)
+const Item GameManager::GetItem(const int index)
 {
-	if (0 <= index && index < static_cast<int>((FieldItem[stage]).size()))
-		return (FieldItem[stage])[index];
+	if (0 <= index && index < static_cast<int>((FieldItem).size()))
+		return (FieldItem)[index];
 	else
 		return Item();
 }
 
-vector<Item> GameManager::GetFieldItem(const int stage)
+vector<Item> GameManager::GetFieldItem()
 {
-	return (FieldItem[stage]);
+	return (FieldItem);
 }

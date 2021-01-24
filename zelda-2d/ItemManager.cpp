@@ -24,6 +24,30 @@ void ItemManager::ReleaseInstance()
 	instance = nullptr;
 }
 
+void ItemManager::AddFieldItem(const POINT pos, const int index)
+{
+	if (static_cast<int>(itemData.size() < index))
+		return;
+	if (0 >= index)
+		return;
+
+	FieldItem fitem;
+	fitem.pos = pos;
+	fitem.index = index;
+
+	fieldItem.emplace_back(fitem);
+}
+
+vector<FieldItem>* ItemManager::GetFieldItem()
+{
+	return &fieldItem;
+}
+
+vector<Item>* ItemManager::GetItemData()
+{
+	return &itemData;
+}
+
 void ItemManager::LoadItemData()
 {
 	ifstream readFile;

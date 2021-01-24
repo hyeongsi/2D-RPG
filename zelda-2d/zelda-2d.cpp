@@ -12,6 +12,7 @@
 #include <commdlg.h>
 #include "InteractionManager.h"
 #include "WorldMapManager.h"
+#include "ItemManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -34,6 +35,7 @@ MapEdittor* mapEdittor;                         // 맵 에디터
 ImageManager* imageManager;                     // 이미지 매니저
 RenderManager* renderManager;                   // 랜더 매니저
 WorldMapManager* worldMapManager;               // 월드맵 매니저
+ItemManager* itemManager;                       // 아이템 매니저
 
 Player* character;                            // 캐릭터 클래스
 
@@ -82,6 +84,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     imageManager = ImageManager::GetInstance();
     renderManager = RenderManager::GetInstance();
     worldMapManager = WorldMapManager::GetInstance();
+    itemManager = ItemManager::GetInstance();
 
     // 기본 메시지 루프입니다:
     while (true)
@@ -188,6 +191,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 gameManager->SetState(GameState::INGAME);            // 인게임 실행
                 gameManager->SetPlayer(new Player());           // 플레이어 생성
                 gameManager->SetInventory(new Inventory());     // 인벤토리 생성
+
                 gameManager->SetNPC(new NPC());                 // npc 생성
 
                 imageManager->LoadMapBitmapData();                      // 인게임에서 사용할 맵 관련 비트맵 로드
@@ -197,6 +201,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 imageManager->LoadAnimationBitmapData(MONEY_ANIMATION_PATH);    // 인게임에서 돈 UI 애니메이션 로드
                 imageManager->LoadBitmapPathData(BitmapKind::UI, UI_BITMAP_PATH);   // 인게임에서 사용할 UI 비트맵 로드
                 imageManager->LoadBitmapPathData(BitmapKind::ITEM, ITEM_BITMAP_PATH);   // 인게임에서 사용할 아이템 비트맵 로드
+
+                itemManager->LoadItemData();         // 인게임에서 사용할 아이템 정보 로드
+                itemManager->AddFieldItem({ 10, 10 }, 2);
 
                 worldMapManager->LoadMapData(GameState::INGAME, worldMapManager->GetCurrentStage());
                 worldMapManager->LoadEventData(worldMapManager->GetCurrentStage());

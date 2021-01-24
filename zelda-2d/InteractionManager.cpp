@@ -2,6 +2,8 @@
 #include "WorldMapManager.h"
 #include "InteractionManager.h"
 #include "MapEdittor.h"
+#include "GameManager.h"
+#include "ItemManager.h"
 #include <fstream>
 #include <string>
 
@@ -72,26 +74,10 @@ void InteractionManager::ActionEvent(const POINT pos)
 	case Event::CLOSE_WOOD_HOUSE_DOOR:			// 오두막 문 닫기,
 		CloseWoodHouseDoor(pos);
 		break;
-	//case Event::OPEN_BOX:	// 아이템 드랍
-	//	gameManager->AddItem(gameManager->GetCurrentStage(),
-	//		Item({pos.x*TILE_SIZE, pos.y*TILE_SIZE}, ItemInfo::MONEY, 5));	// 금액 수정, 아이템 랜덤 드랍으로 수정 필요함
-	//	worldMap->SetData(MapEdittorSelectState::EVENT, { pos.x,pos.y}, Event::NONE);	// 기존 이벤트 삭제
-	//	break;
-	////case Event::MOVE_STAGE_1:
-	////	if (MapInfo::WOOD_HOUSE == gameManager->GetCurrentStage())
-	////		gameManager->GetPlayer()->SetPos({ 
-	////		static_cast<double>(STAGE2_SPAWN_POS.x),static_cast<double>(STAGE2_SPAWN_POS.y)});
-	////	gameManager->SetCurrentStage(MapInfo::NORMAL);
-	////	break;
-	////case Event::MOVE_STAGE_2:	
-	////	gameManager->SetCurrentStage(MapInfo::WOOD_HOUSE);
-	////	gameManager->GetPlayer()->SetPos
-	////	({ static_cast<double>(STAGE2_SPAWN_POINT.x),static_cast<double>(STAGE2_SPAWN_POINT.y)});
-
-	//	//LoadTextMapData(GameState::INGAME, STAGE2_PATH);     // 인게임에서 사용할 맵데이터 로드
-	//	//LoadTextEventData(STAGE2_EVENT_PATH, gameManager->GetWorldMapData());
-	//	break;
-		default:
+	case Event::OPEN_BOX:						// 아이템 드랍,
+		ItemManager::GetInstance()->AddFieldItem(pos, 1);
+		break;
+	default:
 		break;
 	}
 }
