@@ -21,5 +21,8 @@ public:
 
 	void SetIndex(const int index); 
 	const int GetIndex();
+
+	const string GetTitle();
+	const string GetExplain();
 };
 

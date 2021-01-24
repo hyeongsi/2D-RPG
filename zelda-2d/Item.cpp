@@ -26,3 +26,13 @@ const int Item::GetIndex()
 {
 	return index;
 }
+
+const string Item::GetTitle()
+{
+	return title;
+}
+
+const string Item::GetExplain()
+{
+	return explain;
+}

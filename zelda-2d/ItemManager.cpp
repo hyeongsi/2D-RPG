@@ -26,7 +26,7 @@ void ItemManager::ReleaseInstance()
 
 void ItemManager::AddFieldItem(const POINT pos, const int index)
 {
-	if (static_cast<int>(itemData.size() < index))
+	if (static_cast<int>(itemData.size()) < index)
 		return;
 	if (0 >= index)
 		return;

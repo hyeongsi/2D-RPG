@@ -12,7 +12,7 @@ using namespace std;
 
 #pragma comment (lib, "Msimg32.lib")
 
-constexpr POINT INVENTORY_SPAWN_POS = { 650,170 };
+constexpr POINT INVENTORY_SPAWN_POS = { 600,170 };
 constexpr SIZE INVENTORY_interval_SIZE = { 8,8 };
 constexpr int HP_UI_COUNT = 3;
 
@@ -52,6 +52,7 @@ public:
 	void DrawWorldMapData(const GameState gameState);
 	void DrawFieldItem();		// 필드 아이템 그리기
 	void DrawInventoryItem();	// 인벤토리 아이템 그리기
+	void DrawInvenItemExplain();	// 인벤 창 아이템 설명 그리기
 
 	void DrawPlayer(Player* character);
 	void DrawNPC(NPC* npc);

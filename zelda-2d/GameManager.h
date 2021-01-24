@@ -24,7 +24,6 @@ private:
 	Player* player;
 	Inventory* inventory;
 	NPC* npc;
-	vector<Item> FieldItem;	// 필드 스폰 아이템
 
 	Time* time;
 
@@ -65,12 +64,5 @@ public:
 
 	void SetNPC(NPC* npc);
 	NPC* GetNPC();
-
-	void AddFieldItem(const Item item);
-	void DeleteFieldItem(const int index);
-	const Item GetItem(const int index);
-
-	vector<Item> GetFieldItem();
-
 };
 

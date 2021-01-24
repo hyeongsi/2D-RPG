@@ -6,6 +6,8 @@
 #include "ItemManager.h"
 #include <fstream>
 #include <string>
+#include <stdio.h>
+#include <time.h>
 
 constexpr const POINT RETOUCH_WOOD_DOOR_POS{ 2,4 };
 constexpr const POINT SPAWN_PLAYER_STAGE1_POS{ 12,13 };
@@ -14,7 +16,7 @@ InteractionManager* InteractionManager::instance = nullptr;
 
 InteractionManager::InteractionManager()
 {
-
+	srand(static_cast<unsigned int>(time(NULL)));
 }
 
 InteractionManager::~InteractionManager()
@@ -75,7 +77,7 @@ void InteractionManager::ActionEvent(const POINT pos)
 		CloseWoodHouseDoor(pos);
 		break;
 	case Event::OPEN_BOX:						// 아이템 드랍,
-		ItemManager::GetInstance()->AddFieldItem(pos, 1);
+		DropItem(pos);
 		break;
 	default:
 		break;
@@ -136,6 +138,64 @@ void InteractionManager::CloseWoodHouseDoor(const POINT pos)
 
 				return;
 			}
+		}
+	}
+}
+
+void InteractionManager::DropItem(const POINT pos)
+{
+	// 위 부터 반시계 방향으로 돌아가면서 확인, 상하좌우 검사 한 경우 -> 1사분면,2사분면,3사분면,4사분면 순으로 검사
+	POINT tempPos;
+	for (int i = 0; i < 8; i++)
+	{
+		tempPos = pos;
+		switch (i)
+		{
+		case 0:				// 북쪽
+			tempPos.y-=1;
+			break;
+		case 1:				// 서
+			tempPos.x -= 1;
+			break;
+		case 2:				// 남
+			tempPos.y += 1;
+			break;
+		case 3:				// 동
+			tempPos.x += 1;
+			break;
+		case 4:				// 1사분면
+			tempPos.x += 1;
+			tempPos.y -= 1;
+			break;
+		case 5:				// 2사분면
+			tempPos.x -= 1;
+			tempPos.y -= 1;
+			break;
+		case 6:				// 3사분면
+			tempPos.x -= 1;
+			tempPos.y += 1;
+			break;
+		case 7:				// 4사분면
+			tempPos.x += 1;
+			tempPos.y += 1;
+			break;
+		}
+
+		if (0 == WorldMapManager::GetInstance()->GetWorldMap()->GetData(MapEdittorSelectState::OBJECT, { tempPos.x,tempPos.y}) &&
+			0 == WorldMapManager::GetInstance()->GetWorldMap()->GetData(MapEdittorSelectState::COLLIDER, { tempPos.x,tempPos.y}))
+		{
+			for (const auto& iterator : (*ItemManager::GetInstance()->GetFieldItem()))
+			{
+				if (iterator.pos.x == tempPos.x && iterator.pos.y == tempPos.y)
+					return;
+			}
+			// 드랍 이벤트 삭제
+			WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::EVENT, pos, Event::NONE);		
+
+			// 아이템 스폰
+			ItemManager::GetInstance()->AddFieldItem({ tempPos.x,tempPos.y},
+				static_cast<int>(rand() % (ItemManager::GetInstance()->GetItemData()->size()+1)));
+			return;
 		}
 	}
 }

@@ -23,4 +23,5 @@ public:
 
 	void OpenWoodHouseDoor(const POINT pos);	// 오두막 문여는 이벤트
 	void CloseWoodHouseDoor(const POINT pos);	// 오두막 문닫는 이벤트
+	void DropItem(const POINT pos);	// 아이템 드랍 이벤트
 };

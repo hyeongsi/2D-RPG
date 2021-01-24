@@ -157,7 +157,10 @@ void RenderManager::InGameDataRender(Player* character, NPC* npc)
     }
 
     if (GameManager::GetInstance()->GetInventory()->IsOpen())    // 인벤 창 활성화 ->
+    {
         DrawInventoryItem();    // 인벤 창 출력
+        DrawInvenItemExplain();
+    }
 
     //UI 출력
     DrawCharUIData(TextureName::Char_Info, { 10,10 });
@@ -342,8 +345,50 @@ void RenderManager::DrawInventoryItem()
                 bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, SRCCOPY);
         }
     }   
+}
 
-    
+void RenderManager::DrawInvenItemExplain()
+{
+    constexpr const SIZE EXPLAIN_ITEM_PANEL_SIZE = {150,80};
+    constexpr const POINT ITEM_TITLE_TEXT_RETOUCH_POS = { 10,5 };
+    constexpr const POINT ITEM_EXPLAIN_TEXT_RETOUCH_POS = { 10,40 };
+
+    POINT mousePos;
+    GetCursorPos(&mousePos);
+    ScreenToClient(g_hWnd, &mousePos);
+
+    int t = 0;
+    for (int i = 0; i < GameManager::GetInstance()->GetInventory()->GetLastItemIndex(); i++)
+    {
+        if (GameManager::GetInstance()->GetInventory()->GetItem()->GetIndex() == 0)
+            return;
+        
+        t = i;
+
+        // 아이템 범위안에 마우스 커서가 들어간 경우
+        if (mousePos.x >=
+            (INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((t % INVEN_SIZE_X) * TILE_SIZE) + ((t % INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx) &&
+            mousePos.x <= (INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((t % INVEN_SIZE_X) * TILE_SIZE) + ((t % INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx) + TILE_SIZE &&
+            mousePos.y >= (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (t / INVEN_SIZE_X * TILE_SIZE) + ((t / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy) &&
+            mousePos.y <= (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (t / INVEN_SIZE_X * TILE_SIZE) + ((t / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy) + TILE_SIZE)
+        {
+            // 설명 바탕 (글을 담을 테두리 배경 출력)
+            Rectangle(memDC, 
+                mousePos.x - EXPLAIN_ITEM_PANEL_SIZE.cx, mousePos.y + EXPLAIN_ITEM_PANEL_SIZE.cy,
+                mousePos.x, mousePos.y);
+            // 아이템 제목 출력
+            TextOut(memDC, 
+                mousePos.x - EXPLAIN_ITEM_PANEL_SIZE.cx + ITEM_TITLE_TEXT_RETOUCH_POS.x,
+                mousePos.y + ITEM_TITLE_TEXT_RETOUCH_POS.y, 
+                (GameManager::GetInstance()->GetInventory()->GetItem())[i].GetTitle().c_str(),
+                strlen((GameManager::GetInstance()->GetInventory()->GetItem())[i].GetTitle().c_str()));
+            // 아이템 설명 출력
+            TextOut(memDC,
+                mousePos.x - EXPLAIN_ITEM_PANEL_SIZE.cx + ITEM_EXPLAIN_TEXT_RETOUCH_POS.x,
+                mousePos.y + ITEM_EXPLAIN_TEXT_RETOUCH_POS.y, (GameManager::GetInstance()->GetInventory()->GetItem())[i].GetExplain().c_str(),
+                strlen((GameManager::GetInstance()->GetInventory()->GetItem())[i].GetExplain().c_str()));
+        }
+    }
 }
 
 void RenderManager::DrawPlayer(Player* player)
