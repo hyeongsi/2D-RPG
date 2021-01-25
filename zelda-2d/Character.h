@@ -31,7 +31,11 @@ public:
 	void SetPos(const DPOINT pos);
 
 	const int GetHp();
+	void SetHp(const int hp);
+
 	const int GetDamage();
+	void SetDamage(const int damage);
+
 	const int GetState();
 	void SetState(const int state);
 

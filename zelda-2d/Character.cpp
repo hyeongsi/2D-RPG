@@ -52,9 +52,22 @@ const int Character::GetHp()
 	return hp;
 }
 
+void Character::SetHp(const int hp)
+{
+	if (hp >= maxHp)
+		this->hp = maxHp;
+	else
+		this->hp = hp;
+}
+
 const int Character::GetDamage()
 {
 	return damage;
+}
+
+void Character::SetDamage(const int damage)
+{
+	this->damage = damage;
 }
 
 const int Character::GetState()

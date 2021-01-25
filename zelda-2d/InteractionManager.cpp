@@ -4,6 +4,7 @@
 #include "MapEdittor.h"
 #include "GameManager.h"
 #include "ItemManager.h"
+#include "RenderManager.h"
 #include <fstream>
 #include <string>
 #include <stdio.h>
@@ -195,6 +196,51 @@ void InteractionManager::DropItem(const POINT pos)
 			// 아이템 스폰
 			ItemManager::GetInstance()->AddFieldItem({ tempPos.x,tempPos.y},
 				static_cast<int>(rand() % (ItemManager::GetInstance()->GetItemData()->size()+1)));
+			return;
+		}
+	}
+}
+void InteractionManager::UseItem()
+{
+	if (!GameManager::GetInstance()->GetInventory()->IsOpen())	// 인벤창 활성화 x 상태면 리턴
+		return;
+
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+	ScreenToClient(g_hWnd, &mousePos);
+
+	int t = 0;
+	for (int i = 0; i < GameManager::GetInstance()->GetInventory()->GetLastItemIndex(); i++)
+	{
+		if (GameManager::GetInstance()->GetInventory()->GetItem()->GetIndex() == 0)
+			return;
+
+		t = i;
+
+		// 아이템 범위안에 마우스 커서가 들어간 경우
+		if (mousePos.x >=
+			(INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((t % INVEN_SIZE_X) * TILE_SIZE) + ((t % INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx) &&
+			mousePos.x <= (INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((t % INVEN_SIZE_X) * TILE_SIZE) + ((t % INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx) + TILE_SIZE &&
+			mousePos.y >= (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (t / INVEN_SIZE_X * TILE_SIZE) + ((t / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy) &&
+			mousePos.y <= (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (t / INVEN_SIZE_X * TILE_SIZE) + ((t / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy) + TILE_SIZE)
+		{
+
+			switch (GameManager::GetInstance()->GetInventory()->GetItem()->GetIndex())
+			{
+			case 1:
+				GameManager::GetInstance()->GetPlayer()->SetHp(GameManager::GetInstance()->GetPlayer()->GetHp() + 1);
+				break;
+			case 2:
+				GameManager::GetInstance()->GetPlayer()->SetHp(GameManager::GetInstance()->GetPlayer()->GetHp() + 2);
+				break;
+			case 3:
+				GameManager::GetInstance()->GetPlayer()->SetDamage(GameManager::GetInstance()->GetPlayer()->GetDamage() + 1);
+				break;
+			case 4:
+				break;
+			}
+
+			GameManager::GetInstance()->GetInventory()->DeleteItem(i);
 			return;
 		}
 	}

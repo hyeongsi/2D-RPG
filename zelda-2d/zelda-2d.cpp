@@ -36,6 +36,7 @@ ImageManager* imageManager;                     // 이미지 매니저
 RenderManager* renderManager;                   // 랜더 매니저
 WorldMapManager* worldMapManager;               // 월드맵 매니저
 ItemManager* itemManager;                       // 아이템 매니저
+InteractionManager* interactionManager;         // 상호작용 매니저
 
 Player* character;                            // 캐릭터 클래스
 
@@ -85,6 +86,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     renderManager = RenderManager::GetInstance();
     worldMapManager = WorldMapManager::GetInstance();
     itemManager = ItemManager::GetInstance();
+    interactionManager = InteractionManager::GetInstance();
 
     // 기본 메시지 루프입니다:
     while (true)
@@ -128,7 +130,7 @@ ATOM MyRegisterClass(HINSTANCE hInstance)
 
     wcex.cbSize = sizeof(WNDCLASSEX);
 
-    wcex.style          = CS_HREDRAW | CS_VREDRAW;
+    wcex.style          = CS_HREDRAW | CS_VREDRAW | CS_DBLCLKS;
     wcex.lpfnWndProc    = WndProc;
     wcex.cbClsExtra     = 0;
     wcex.cbWndExtra     = 0;
@@ -238,6 +240,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             }
         }
         break;
+    case WM_LBUTTONDBLCLK:
+        if (GameState::INGAME == gameManager->GetState())    // 인게임 상태
+        {
+            interactionManager->UseItem();
+        }
+        break;
     case WM_LBUTTONDOWN:
         if (GameState::MAPEDITTOR == gameManager->GetState())    // 맵 에디터 상태
         {
@@ -284,6 +292,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         ImageManager::ReleaseInstance();
         RenderManager::ReleaseInstance();
         WorldMapManager::ReleaseInstance();
+        ItemManager::ReleaseInstance();
+        InteractionManager::ReleaseInstance();
         PostQuitMessage(0);
         break;
     default:

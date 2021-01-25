@@ -2,7 +2,6 @@
 #include "DataStruct.h"
 #include "WorldMap.h"
 #include <vector>
-#include <functional>
 
 using namespace std;
 
@@ -13,6 +12,7 @@ private:
 
 	InteractionManager();
 	~InteractionManager();
+
 public:
 	static InteractionManager* GetInstance();
 	static void ReleaseInstance();
@@ -24,4 +24,6 @@ public:
 	void OpenWoodHouseDoor(const POINT pos);	// 오두막 문여는 이벤트
 	void CloseWoodHouseDoor(const POINT pos);	// 오두막 문닫는 이벤트
 	void DropItem(const POINT pos);	// 아이템 드랍 이벤트
+
+	void UseItem();					// 아이템 사용 이벤트
 };
