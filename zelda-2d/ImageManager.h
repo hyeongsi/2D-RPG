@@ -8,6 +8,7 @@
 
 constexpr const char UI_BITMAP_PATH[] = { "data/bitmapinfo/UIBitmapInfo.txt" };
 constexpr const char ITEM_BITMAP_PATH[] = { "data/bitmapinfo/Item/ItemBitmapInfo.txt" };
+constexpr const char NPC_BITMAP_PATH[] = { "data/bitmapinfo/NPCBitmapInfo.txt" };
 
 class ImageManager
 {
@@ -18,6 +19,7 @@ private:
 	map<int, HBITMAP> objectBitmapData;			// 비트맵 데이터
 	map<int, HBITMAP> uiBitmapData;				// 비트맵 데이터
 	map<int, HBITMAP> itemBitmapData;			// 비트맵 데이터
+	map<int, HBITMAP> npcBitmapData;			// 비트맵 데이터
 
 	map<int, string> backgroundStringData;		// 문자열 데이터
 	map<int, string> objectStringData;			// 문자열 데이터

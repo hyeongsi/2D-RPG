@@ -120,25 +120,16 @@ void RenderManager::MapEdittorDataRender()
     Render();                   // 출력
 }
 
-void RenderManager::InGameDataRender(Player* character, ShopNPC* npc)
+void RenderManager::InGameDataRender()
 {
     RenderInitSetting();        // 출력 전 초기화 작업
 
-    DrawWorldMapData(GameState::INGAME);        // 맵 출력
+    DrawWorldMapData(GameState::INGAME);     // 맵 출력
+    DrawFieldItem();                         // 필드 아이템 출력
 
-    DrawFieldItem();    // 필드 아이템 출력
-
-    if (character->GetPos().y <= npc->GetPos().y)
-    {
-        DrawPlayer(character);              // 캐릭터 출력
-        DrawNPC(npc);                       // NPC 출력
-    }
-    else
-    {
-        DrawNPC(npc);                       // NPC 출력                          
-        DrawPlayer(character);              // 캐릭터 출력
-    }
-
+    DrawPlayer();           // 캐릭터 출력
+    DrawNpcOrderPos();      // NPC와 캐릭터의 출력 순서 보정
+         
     if (GameManager::GetInstance()->GetInventory()->IsOpen())    // 인벤 창 활성화 ->
     {
         DrawInventoryItem();    // 인벤 창 출력
@@ -149,7 +140,7 @@ void RenderManager::InGameDataRender(Player* character, ShopNPC* npc)
     DrawCharUIData(TextureName::Char_Info, { 10,10 });
     DrawCharUIData(TextureName::Money_Info, { 11,110 });
 
-    int money = character->GetMoney();
+    int money = GameManager::GetInstance()->GetPlayer()->GetMoney();
     if(0 == money)
         DrawCharUIData(TextureName::ZERO, { 105,125 });
     else
@@ -167,7 +158,7 @@ void RenderManager::InGameDataRender(Player* character, ShopNPC* npc)
 
     // HP에 따라 출력되는 HP UI 설정 부분   /   ex)(0이면 빈하트 3개 출력) , (2이면 빈하트 2개, 꽉찬하트 1개 출력)
     int hp[3] = { TextureName::HP_Full, TextureName::HP_Full , TextureName::HP_Full };
-    int tempCharacterHp = character->GetHp();
+    int tempCharacterHp = GameManager::GetInstance()->GetPlayer()->GetHp();
     for (int index = HP_UI_COUNT; index > 0; index--)               // 3,2,1 루프
     {
         for (int count = 0; count < (TextureName::HP_Full - TextureName::HP_Empty); count++)    // 2번 루프
@@ -205,10 +196,10 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
     {
         for (int x = 0; x < MAP_MAX_X; x++)
         {
-            if (0 != tempWorldMap.GetData(MapEdittorSelectState::BACKGROUND, { x,y }))
+            if (0 != tempWorldMap.GetData(SelectMapState::BACKGROUND, { x,y }))
             {
                 HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::BACKGROUND,
-                    tempWorldMap.GetData(MapEdittorSelectState::BACKGROUND, { x,y }));
+                    tempWorldMap.GetData(SelectMapState::BACKGROUND, { x,y }));
 
                 BITMAP bit;
                 SelectObject(backMemDC, bitmap);
@@ -223,10 +214,10 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
     {
         for (int x = 0; x < MAP_MAX_X; x++)
         {
-            if (0 != tempWorldMap.GetData(MapEdittorSelectState::OBJECT, { x,y }))
+            if (0 != tempWorldMap.GetData(SelectMapState::OBJECT, { x,y }))
             {
                 HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::OBJECT,
-                    tempWorldMap.GetData(MapEdittorSelectState::OBJECT, { x,y }));
+                    tempWorldMap.GetData(SelectMapState::OBJECT, { x,y }));
 
                 BITMAP bit;
                 SelectObject(backMemDC, bitmap);
@@ -235,6 +226,9 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
             }
         }
     }
+
+    // NPC 위치 출력
+    DrawNPC();
 
     // 포탈 위치 출력
     for (const auto& iterator : WorldMapManager::GetInstance()->GetProtalData())
@@ -257,7 +251,7 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
         {
             for (int x = 0; x < MAP_MAX_X; x++)
             {
-                if (0 != tempWorldMap.GetData(MapEdittorSelectState::COLLIDER, { x,y }))
+                if (0 != tempWorldMap.GetData(SelectMapState::COLLIDER, { x,y }))
                 {
                     HBRUSH myBrush = (HBRUSH)GetStockObject(NULL_BRUSH);
                     HBRUSH oldBrush = (HBRUSH)SelectObject(memDC, myBrush);
@@ -374,21 +368,22 @@ void RenderManager::DrawInvenItemExplain()
     }
 }
 
-void RenderManager::DrawPlayer(Player* player)
+void RenderManager::DrawPlayer()
 {
+    Player* player = GameManager::GetInstance()->GetPlayer();
     AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::PLAYER_WALK);
     AnimationObject* attackAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::PLAYER_ATTACK);
 
     switch (player->GetState())
     {
     case CharacterInfo::WALK:
-        InitPlayerAnimation(CharacterInfo::WALK, player);
+        InitPlayerAnimation(CharacterInfo::WALK);
 
         DrawAnimation(TextureName::PLAYER_WALK, player->GetPos());
         walkAnimationObject->NextSelectBitmapIndex();                               // 출력 이미지 위치 변경
         break;
     case CharacterInfo::ATTACK:
-        InitPlayerAnimation(CharacterInfo::ATTACK, player);
+        InitPlayerAnimation(CharacterInfo::ATTACK);
 
         DrawAnimation(TextureName::PLAYER_ATTACK, player->GetPos());
         if (attackAnimationObject->NextSelectBitmapIndex())      // 출력 이미지 위치 변경
@@ -397,7 +392,7 @@ void RenderManager::DrawPlayer(Player* player)
         break;
     case CharacterInfo::IDLE:
     default:
-        InitPlayerAnimation(CharacterInfo::IDLE, player);
+        InitPlayerAnimation(CharacterInfo::IDLE);
 
         walkAnimationObject->SetSelectBitmapIndex(CharacterInfo::IDLE);             // 초기 이미지로 변경
         DrawAnimation(TextureName::PLAYER_WALK, player->GetPos());
@@ -405,23 +400,40 @@ void RenderManager::DrawPlayer(Player* player)
     }
 }
 
-void RenderManager::DrawNPC(ShopNPC* npc)
+void RenderManager::DrawNPC()
 {
-    AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::NPC_WALK);
-    walkAnimationObject->SetSelectAnimationBitmapIndex(npc->GetDir());       // 방향에 따른 방향 애니메이션 설정
-
-    switch (npc->GetState())
+    // NPC 출력
+    for (const auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetNPCData()))
     {
-    case CharacterInfo::WALK:
-        DrawAnimation(TextureName::NPC_WALK, npc->GetPos());
-        walkAnimationObject->NextSelectBitmapIndex();                               // 출력 이미지 위치 변경
-        break;
-  
-    case CharacterInfo::IDLE:
-    default:
-        walkAnimationObject->SetSelectBitmapIndex(CharacterInfo::IDLE);             // 초기 이미지로 변경
-        DrawAnimation(TextureName::NPC_WALK, npc->GetPos());
-        break;
+        HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::NPC, iterator.imageIndex);
+
+        BITMAP bit;
+        SelectObject(backMemDC, bitmap);
+        GetObject(bitmap, sizeof(bit), &bit);
+        TransparentBlt(memDC,
+            iterator.pos.x * TILE_SIZE, iterator.pos.y * TILE_SIZE,
+            bit.bmWidth, bit.bmHeight,
+            backMemDC, 0, 0, bit.bmWidth, bit.bmHeight, RGB(215, 123, 186));
+    }
+}
+
+void RenderManager::DrawNpcOrderPos()
+{
+    for (const auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetNPCData()))
+    {
+        if (!(((iterator.pos.y)*static_cast<long>(TILE_SIZE) + PLAYER_PIVOT_POS.y) > static_cast<long>(
+            (GameManager::GetInstance()->GetPlayer()->GetPos().y) + PLAYER_PIVOT_POS.y)))
+            continue;
+
+        HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::NPC, iterator.imageIndex);
+
+        BITMAP bit;
+        SelectObject(backMemDC, bitmap);
+        GetObject(bitmap, sizeof(bit), &bit);
+        TransparentBlt(memDC,
+            iterator.pos.x * TILE_SIZE, iterator.pos.y * TILE_SIZE,
+            bit.bmWidth, bit.bmHeight,
+            backMemDC, 0, 0, bit.bmWidth, bit.bmHeight, RGB(215, 123, 186));
     }
 }
 
@@ -455,15 +467,15 @@ void RenderManager::DrawCheckPattern(HDC hdc, const SIZE size)
 void RenderManager::DrawCursorFollowBitmap()
 {
     MapEdittor* mapEdittor = MapEdittor::GetInstance();
-    MapEdittorSelectState selectState = mapEdittor->GetSelectState();
+    SelectMapState selectState = mapEdittor->GetSelectState();
 
     BitmapKind kind;
     switch (selectState)
     {
-    case MapEdittorSelectState::BACKGROUND:
+    case SelectMapState::BACKGROUND:
         kind = BitmapKind::BACKGROUND;
         break;
-    case MapEdittorSelectState::OBJECT:
+    case SelectMapState::OBJECT:
         kind = BitmapKind::OBJECT;
         break;
     default:
@@ -504,7 +516,7 @@ void RenderManager::DrawAnimation(const int uiName, const DPOINT pos)
         bit.bmHeight, RGB(215, 123, 186));
 }
 
-void RenderManager::InitPlayerAnimation(const int state, Player * player)
+void RenderManager::InitPlayerAnimation(const int state)
 {
     AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::PLAYER_WALK);
     AnimationObject* attackAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::PLAYER_ATTACK);
@@ -514,11 +526,13 @@ void RenderManager::InitPlayerAnimation(const int state, Player * player)
     case CharacterInfo::IDLE:
     case CharacterInfo::WALK:
         attackAnimationObject->SetSelectBitmapIndex(0);                 // 다른 애니메이션 초기화
-        walkAnimationObject->SetSelectAnimationBitmapIndex(player->GetDir());       // 방향에 따른 방향 애니메이션 설정
+        walkAnimationObject->SetSelectAnimationBitmapIndex(
+            GameManager::GetInstance()->GetPlayer()->GetDir());       // 방향에 따른 방향 애니메이션 설정
         break;
     case CharacterInfo::ATTACK:
         walkAnimationObject->SetSelectBitmapIndex(0);                 // 다른 애니메이션 초기화
-        attackAnimationObject->SetSelectAnimationBitmapIndex(player->GetDir());       // 방향에 따른 방향 애니메이션 설정
+        attackAnimationObject->SetSelectAnimationBitmapIndex(
+            GameManager::GetInstance()->GetPlayer()->GetDir());       // 방향에 따른 방향 애니메이션 설정
         break;
     }
 }

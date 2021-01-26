@@ -1,0 +1,1 @@
+0		images/NPC/npc_front.bmp

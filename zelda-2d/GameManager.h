@@ -23,7 +23,6 @@ private:
 
 	Player* player;
 	Inventory* inventory;
-	ShopNPC* npc;
 
 	Time* time;
 
@@ -61,8 +60,5 @@ public:
 
 	void SetInventory(Inventory* inventory);
 	Inventory* GetInventory();
-
-	void SetNPC(ShopNPC* npc);
-	ShopNPC* GetNPC();
 };
 

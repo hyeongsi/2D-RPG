@@ -46,7 +46,7 @@ public:
 public:
 	void MainFrameDataRender();
 	void MapEdittorDataRender();
-	void InGameDataRender(Player* character, ShopNPC* npc);
+	void InGameDataRender();
 
 public:
 	void DrawWorldMapData(const GameState gameState);
@@ -54,8 +54,9 @@ public:
 	void DrawInventoryItem();	// 인벤토리 아이템 그리기
 	void DrawInvenItemExplain();	// 인벤 창 아이템 설명 그리기
 
-	void DrawPlayer(Player* character);
-	void DrawNPC(ShopNPC* npc);
+	void DrawPlayer();
+	void DrawNPC();
+	void DrawNpcOrderPos();		// 출력 순서에 따른 NPC 출력
 	void DrawCharUIData(const int uiName, const POINT pos);
 
 	void DrawCheckPattern(HDC hdc, const SIZE size);
@@ -64,7 +65,7 @@ public:
 public:
 	void DrawAnimation(const int uiName, const DPOINT pos);
 
-	void InitPlayerAnimation(const int state, Player* player);
+	void InitPlayerAnimation(const int state);
 
 };
 

@@ -19,6 +19,7 @@
 #define IDC_rCOLLIDER                   1007
 #define IDC_rOBJECT                     1008
 #define IDC_rBACKGROUND                 1009
+#define IDC_rNPC                        1010
 #define IDC_lOBJECT                     1011
 #define IDC_lBACKGROUND                 1013
 #define IDC_STATIC                      -1

@@ -121,12 +121,13 @@ namespace TextureName
 	};
 }
 
-enum class MapEdittorSelectState
+enum class SelectMapState
 {
 	BACKGROUND,
 	OBJECT,
 	COLLIDER,
 	EVENT,
+	NPC,
 };
 
 constexpr const int STAGE_SIZE = 2;
@@ -159,6 +160,7 @@ enum class BitmapKind
 	OBJECT,
 	UI,
 	ITEM,
+	NPC,
 };
 
 enum class ClickLR
@@ -205,3 +207,11 @@ namespace ItemInfo
 		MONEY,
 	};
 }
+
+typedef struct FieldNPC
+{
+	POINT pos;	// 위치
+	int imageIndex;	// npc 이미지 종류
+	int kind;	// npc 종류
+	int index;	// 인덱스
+}FieldNPC;

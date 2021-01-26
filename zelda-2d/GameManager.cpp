@@ -15,7 +15,6 @@ GameManager::GameManager()
 	state = GameState::MAIN;
 	player = nullptr;
 	inventory = nullptr;
-	npc = nullptr;
 	time = Time::GetInstance();
 	interactionManager = InteractionManager::GetInstance();
 }
@@ -28,9 +27,6 @@ GameManager::~GameManager()
 	if (inventory != nullptr)
 		delete inventory;
 	inventory = nullptr;
-	if (npc != nullptr)
-		delete npc;
-	npc = nullptr;
 
 	time->ReleaseInstance();
 	time = nullptr;
@@ -146,7 +142,7 @@ void GameManager::LimitMoveMent(const DPOINT prevDPos)
 	{
 		mapColliderPos[i] = WorldMapManager::GetInstance()->ChangePosToMapPoint(colliderPos[i]);	// 맵상의 좌표로 변환 후
 
-		if (0 != WorldMapManager::GetInstance()->GetWorldMap()->GetData(MapEdittorSelectState::COLLIDER, mapColliderPos[i]))	// 콜라이더 위에 위치하고 있는 경우
+		if (0 != WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::COLLIDER, mapColliderPos[i]))	// 콜라이더 위에 위치하고 있는 경우
 		{
 			player->SetPos(prevDPos);
 
@@ -240,7 +236,7 @@ void GameManager::RetouchMoveMent(POINT colliderPos[4])
 		else		// x값 비교, left, right 일 경우
 			colliderPos[posIndex[i]].y -= fixValue;
 
-		if (0 == WorldMapManager::GetInstance()->GetWorldMap()->GetData(MapEdittorSelectState::COLLIDER, WorldMapManager::GetInstance()->ChangePosToMapPoint(colliderPos[posIndex[i]])))	// 콜라이더를 벗어난 경우
+		if (0 == WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::COLLIDER, WorldMapManager::GetInstance()->ChangePosToMapPoint(colliderPos[posIndex[i]])))	// 콜라이더를 벗어난 경우
 		{
 			// 왼 -> 오,  위 -> 아래
 			if (moveX && i == 0)	// 양옆방향, y+ 방향이 콜라이더를 벗어나는 것과 가까울 경우									
@@ -296,14 +292,4 @@ void GameManager::SetInventory(Inventory* inventory)
 Inventory* GameManager::GetInventory()
 {
 	return inventory;
-}
-
-void GameManager::SetNPC(ShopNPC* npc)
-{
-	this->npc = npc;
-}
-
-ShopNPC* GameManager::GetNPC()
-{
-	return npc;
 }

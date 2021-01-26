@@ -122,7 +122,7 @@ void WorldMapManager::LoadMapData(const GameState state, const int stage)
 	ifstream readFile;
 	int value[2];       // 처음 값 2개를 받을 변수
 	WorldMap mapData;   // 불러온 맵의 값 저장할 변수
-	MapEdittorSelectState selectState;
+	SelectMapState selectState;
 	string str;
 
 	const int DATA_KIND = 3;
@@ -146,11 +146,11 @@ void WorldMapManager::LoadMapData(const GameState state, const int stage)
 				switch (i)
 				{
 				case 0:
-					selectState = MapEdittorSelectState::BACKGROUND;     break;
+					selectState = SelectMapState::BACKGROUND;     break;
 				case 1:
-					selectState = MapEdittorSelectState::OBJECT;         break;
+					selectState = SelectMapState::OBJECT;         break;
 				case 2:
-					selectState = MapEdittorSelectState::COLLIDER;      break;
+					selectState = SelectMapState::COLLIDER;      break;
 				}
 
 				for (int y = 0; y < value[0]; y++)
@@ -199,7 +199,7 @@ void WorldMapManager::LoadMapData(const GameState state, const char* filePath)
 	ifstream readFile;
 	int value[2];       // 처음 값 2개를 받을 변수
 	WorldMap mapData;   // 불러온 맵의 값 저장할 변수
-	MapEdittorSelectState selectState;
+	SelectMapState selectState;
 	string str;
 
 	const int DATA_KIND = 3;
@@ -223,11 +223,11 @@ void WorldMapManager::LoadMapData(const GameState state, const char* filePath)
 				switch (i)
 				{
 				case 0:
-					selectState = MapEdittorSelectState::BACKGROUND;     break;
+					selectState = SelectMapState::BACKGROUND;     break;
 				case 1:
-					selectState = MapEdittorSelectState::OBJECT;         break;
+					selectState = SelectMapState::OBJECT;         break;
 				case 2:
-					selectState = MapEdittorSelectState::COLLIDER;      break;
+					selectState = SelectMapState::COLLIDER;      break;
 				}
 
 				for (int y = 0; y < value[0]; y++)
@@ -266,6 +266,7 @@ void WorldMapManager::LoadEventData(const int stage)
 	ifstream readFile;
 	int value[2];       // 처음 값 2개를 받을 변수
 	string str;
+	string number;
 
 	try
 	{
@@ -286,15 +287,17 @@ void WorldMapManager::LoadEventData(const int stage)
 				for (int x = 0; x < value[1]; x++)
 				{
 					readFile >> str;
-					worldMap.SetData(MapEdittorSelectState::EVENT, { x,y }, stoi(str));
+					worldMap.SetData(SelectMapState::EVENT, { x,y }, stoi(str));
 				}
 			}
 			
 			readFile >> str;	// protalPosition 구분 문자열 제거
+			readFile >> number;	// 포탈 숫자
+
 			// 포탈 세팅 코드
 			protalData.clear();
 			
-			while (!readFile.eof())
+			for (int i = 0; i < stoi(number); i++)
 			{
 				readFile >> str;
 				value[0] = stoi(str);	// x 좌표
@@ -313,6 +316,31 @@ void WorldMapManager::LoadEventData(const int stage)
 				portal.spawnPos = { value[1], value[0] };
 
 				protalData.emplace_back(portal);
+			}
+
+			readFile >> str;	// npc 구분 문자열 제거
+			for (int i = 0; i < 5; i++)
+			{
+				readFile >> str;	// npcImage, x, y, kind, index 구분 문자열 제거
+			}
+
+			readFile >> number;	// 반복 수
+			FieldNPC fieldNPC;
+
+			worldMap.GetNPCData()->clear();	// npc 데이터 초기화
+			for (int i = 0; i < stoi(number); i++)
+			{
+				readFile >> str;			// imageIndex
+				fieldNPC.imageIndex = stoi(str);
+				readFile >> value[0];		// x pos
+				readFile >> value[1];		// y pos
+				fieldNPC.pos = { value[0],value[1] };
+				readFile >> str;			// kind
+				fieldNPC.kind = stoi(str);
+				readFile >> str;			// index
+				fieldNPC.index = stoi(str);
+
+				worldMap.SetNPCData(fieldNPC);
 			}
 		}
 	}

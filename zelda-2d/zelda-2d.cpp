@@ -45,8 +45,8 @@ Player* character;                            // 캐릭터 클래스
 void SetMapEdittorData();                       // 함수 선언
 void SaveTextMapData(const char* filePath);           // 맵 정보 저장
 void SetMapEdittorDlgData();                                // mapEdittorDlg 데이터 설정
-void GetSelectListBoxData(const MapEdittorSelectState state);     // mapEdittorDlg 리스트박스 데이터 가져오기
-void SelectListBoxSetting(const MapEdittorSelectState state);     // mapEdittorDlg 리스트박스, 버튼 선택 시 설정
+void GetSelectListBoxData(const SelectMapState state);     // mapEdittorDlg 리스트박스 데이터 가져오기
+void SelectListBoxSetting(const SelectMapState state);     // mapEdittorDlg 리스트박스, 버튼 선택 시 설정
 void ShowMainFrameButton();                                 // 버튼 출력
 void HideMainFrameButton();                                 // 버튼 숨기기
 
@@ -116,8 +116,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         case GameState::INGAME:
             gameManager->Input();
             gameManager->Run();
-            renderManager->InGameDataRender(
-                gameManager->GetPlayer(), gameManager->GetNPC());
+            renderManager->InGameDataRender();
             break;
         default:
             break;
@@ -196,7 +195,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 gameManager->SetState(GameState::INGAME);            // 인게임 실행
                 gameManager->SetPlayer(new Player());           // 플레이어 생성
                 gameManager->SetInventory(new Inventory());     // 인벤토리 생성
-                gameManager->SetNPC(new ShopNPC());                 // npc 생성
 
                 imageManager->LoadMapBitmapData();                      // 인게임에서 사용할 맵 관련 비트맵 로드
                 imageManager->LoadAnimationBitmapData(PLAYER_ANIMATION_PATH);    // 인게임에서 사용할 플레이어 애니메이션 로드
@@ -205,6 +203,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 imageManager->LoadAnimationBitmapData(MONEY_ANIMATION_PATH);    // 인게임에서 돈 UI 애니메이션 로드
                 imageManager->LoadBitmapPathData(BitmapKind::UI, UI_BITMAP_PATH);   // 인게임에서 사용할 UI 비트맵 로드
                 imageManager->LoadBitmapPathData(BitmapKind::ITEM, ITEM_BITMAP_PATH);   // 인게임에서 사용할 아이템 비트맵 로드
+                imageManager->LoadBitmapPathData(BitmapKind::NPC, NPC_BITMAP_PATH);   // 인게임에서 사용할 NPC 비트맵 로드
 
                 itemManager->LoadItemData();         // 인게임에서 사용할 아이템 정보 로드
                 itemManager->AddFieldItem({ 10, 10 }, 2);
@@ -323,14 +322,14 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
         {
         case IDC_lBACKGROUND:
         case IDC_rBACKGROUND:
-            SelectListBoxSetting(MapEdittorSelectState::BACKGROUND);
+            SelectListBoxSetting(SelectMapState::BACKGROUND);
             return (INT_PTR)TRUE;
         case IDC_lOBJECT:
         case IDC_rOBJECT:
-            SelectListBoxSetting(MapEdittorSelectState::OBJECT);
+            SelectListBoxSetting(SelectMapState::OBJECT);
             return (INT_PTR)TRUE;
         case IDC_rCOLLIDER:
-            mapEdittor->SetSelectState(MapEdittorSelectState::COLLIDER);   
+            mapEdittor->SetSelectState(SelectMapState::COLLIDER);   
             return (INT_PTR)TRUE;
         case IDC_bSAVE: 
             GetCurrentDirectory(256, curDirectoryPath);         // GetOpenFileName 호출하면 기본 경로명이 바뀌기 때문에 기본 경로명 미리 저장
@@ -428,7 +427,7 @@ void SaveTextMapData(const char* filePath)
     ofstream writeFile;
     int value[2] = { MAP_MAX_Y , MAP_MAX_X };   // 상단 맵 크기 저장할 변수
     WorldMap mapData = mapEdittor->GetWorldMapData();   // 저장할 맵 에디터의 맵 데이터
-    MapEdittorSelectState selectState;
+    SelectMapState selectState;
     string str;
     try
     {
@@ -448,13 +447,13 @@ void SaveTextMapData(const char* filePath)
                 switch (i)
                 {
                 case 0:
-                    selectState = MapEdittorSelectState::BACKGROUND;
+                    selectState = SelectMapState::BACKGROUND;
                     str = "background";                         break;
                 case 1:
-                    selectState = MapEdittorSelectState::OBJECT;
+                    selectState = SelectMapState::OBJECT;
                     str = "objects";                            break;
                 case 2:
-                    selectState = MapEdittorSelectState::COLLIDER;
+                    selectState = SelectMapState::COLLIDER;
                     str = "collider";                           break;
                 }
                 writeFile << str<<'\n';    // background, objects, colider 구분 문자열
@@ -508,15 +507,15 @@ void SetMapEdittorDlgData()
     SendMessage(GetDlgItem(g_hMapEdittorDlg, IDC_lOBJECT), LB_SETCURSEL, 0, 0);         // 리스트박스 선택 초기화
 }
 
-void GetSelectListBoxData(const MapEdittorSelectState state)
+void GetSelectListBoxData(const SelectMapState state)
 {
     HWND hwndList;
 
     switch (state)
     {
-    case MapEdittorSelectState::BACKGROUND:
+    case SelectMapState::BACKGROUND:
         hwndList = GetDlgItem(g_hMapEdittorDlg, IDC_lBACKGROUND);       break;
-    case MapEdittorSelectState::OBJECT:
+    case SelectMapState::OBJECT:
         hwndList = GetDlgItem(g_hMapEdittorDlg, IDC_lOBJECT);           break;
     default :
         return;
@@ -528,7 +527,7 @@ void GetSelectListBoxData(const MapEdittorSelectState state)
     MapEdittor::GetInstance()->SetSelectIndex(selectListBoxItemIndex);
 }
 
-void SelectListBoxSetting(const MapEdittorSelectState state)
+void SelectListBoxSetting(const SelectMapState state)
 {
     int unCheckButton;
     int unCheckButton2;
@@ -536,12 +535,12 @@ void SelectListBoxSetting(const MapEdittorSelectState state)
 
     switch (state)
     {
-    case MapEdittorSelectState::BACKGROUND:
+    case SelectMapState::BACKGROUND:
         unCheckButton = IDC_rOBJECT;
         unCheckButton2 = IDC_rCOLLIDER;
         checkButton = IDC_rBACKGROUND;
         break;
-    case MapEdittorSelectState::OBJECT:
+    case SelectMapState::OBJECT:
         unCheckButton = IDC_rBACKGROUND;
         unCheckButton2 = IDC_rCOLLIDER;
         checkButton = IDC_rOBJECT; 

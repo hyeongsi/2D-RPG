@@ -65,6 +65,9 @@ void ImageManager::LoadBitmapPathData(const BitmapKind kind, const string str)
 				case BitmapKind::ITEM:
 					itemBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
 					break;
+				case BitmapKind::NPC:
+					npcBitmapData[stoi(number)] = (HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+					break;
 				}
 			}
 		}
@@ -143,6 +146,8 @@ const HBITMAP ImageManager::GetBitmapData(const BitmapKind kind,const int select
 			return uiBitmapData[selectNumber];
 		case BitmapKind::ITEM:
 			return itemBitmapData[selectNumber];
+		case BitmapKind::NPC:
+			return npcBitmapData[selectNumber];
 		default:
 			return NULL;
 		}

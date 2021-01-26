@@ -45,7 +45,7 @@ void MapEdittor::Init()
     mapData = new WorldMap();
 
     selectIndex = TextureName::grass;
-    selectState = MapEdittorSelectState::BACKGROUND;
+    selectState = SelectMapState::BACKGROUND;
 }
 
 void MapEdittor::SetMapData(const POINT pos, const bool isLbutton)
@@ -63,13 +63,13 @@ void MapEdittor::SetMapData(const POINT pos, const bool isLbutton)
     {
         switch (selectState)
         {
-        case MapEdittorSelectState::BACKGROUND:
+        case SelectMapState::BACKGROUND:
             mapData->backgroundData[mapPos.y][mapPos.x] = selectIndex;
             break;
-        case MapEdittorSelectState::OBJECT:
+        case SelectMapState::OBJECT:
             mapData->objectData[mapPos.y][mapPos.x] = selectIndex;
             break;
-        case MapEdittorSelectState::COLLIDER:
+        case SelectMapState::COLLIDER:
             mapData->coliderData[mapPos.y][mapPos.x] = true;
             break;
         default:
@@ -80,13 +80,13 @@ void MapEdittor::SetMapData(const POINT pos, const bool isLbutton)
     {
         switch (selectState)
         {
-        case MapEdittorSelectState::BACKGROUND:
+        case SelectMapState::BACKGROUND:
             mapData->backgroundData[mapPos.y][mapPos.x] = 0;
             break;
-        case MapEdittorSelectState::OBJECT:
+        case SelectMapState::OBJECT:
             mapData->objectData[mapPos.y][mapPos.x] = 0;
             break;
-        case MapEdittorSelectState::COLLIDER:
+        case SelectMapState::COLLIDER:
             mapData->coliderData[mapPos.y][mapPos.x] = false;
             break;
         default:
@@ -95,12 +95,12 @@ void MapEdittor::SetMapData(const POINT pos, const bool isLbutton)
     }
 }
 
-const MapEdittorSelectState MapEdittor::GetSelectState()
+const SelectMapState MapEdittor::GetSelectState()
 {
     return selectState;
 }
 
-void MapEdittor::SetSelectState(const MapEdittorSelectState state)
+void MapEdittor::SetSelectState(const SelectMapState state)
 {
     selectState = state;
 }

@@ -20,8 +20,8 @@ public:
 	static void ReleaseInstance();
 
 public:
-	void LoadNPCData();
-	void LoadShopNPCData(const string path);
+	void LoadNPCData();			// npc 데이터 파일 불러오기
+	void LoadShopNPCData(const string path);	//shopNPc 데이터 설정
 
 };
 

@@ -49,16 +49,16 @@ void InteractionManager::ChangeMapData(POINT pos)
 	if (!(0 <= pos.y && MAP_MAX_Y > pos.y))
 		return;
 
-	switch (worldMap->GetData(MapEdittorSelectState::OBJECT, pos))
+	switch (worldMap->GetData(SelectMapState::OBJECT, pos))
 	{
 	case TextureName::lever_off:		// 레버 on 상태로 변경
-		worldMap->SetData(MapEdittorSelectState::OBJECT, pos, TextureName::lever_on);
+		worldMap->SetData(SelectMapState::OBJECT, pos, TextureName::lever_on);
 		break;
 	case TextureName::lever_on:			// 레버 off 상태로 변경
-		worldMap->SetData(MapEdittorSelectState::OBJECT, pos, TextureName::lever_off);
+		worldMap->SetData(SelectMapState::OBJECT, pos, TextureName::lever_off);
 		break;
 	case TextureName::box_off:			// 상자 on 상태로 변경
-		worldMap->SetData(MapEdittorSelectState::OBJECT, pos, TextureName::box_on);
+		worldMap->SetData(SelectMapState::OBJECT, pos, TextureName::box_on);
 		break;
 	default:
 		return;
@@ -69,7 +69,7 @@ void InteractionManager::ActionEvent(const POINT pos)
 {
 	WorldMap * worldMap = WorldMapManager::GetInstance()->GetWorldMap();
 
-	switch (worldMap->GetData(MapEdittorSelectState::EVENT, pos))
+	switch (worldMap->GetData(SelectMapState::EVENT, pos))
 	{
 	case Event::OPEN_WOOD_HOUSE_DOOR:			// 오두막 문 열기,
 		OpenWoodHouseDoor(pos);
@@ -91,15 +91,15 @@ void InteractionManager::OpenWoodHouseDoor(const POINT pos)
 	{
 		for (int x = 0; x < MAP_MAX_X; x++)
 		{
-			if (TextureName::wood_house_close == WorldMapManager::GetInstance()->GetWorldMap()->GetData(MapEdittorSelectState::OBJECT, { x,y }))
+			if (TextureName::wood_house_close == WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::OBJECT, { x,y }))
 			{
-				WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::OBJECT, { x,y }, TextureName::wood_house);		// 오두막 문 열기
-				WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::EVENT, pos, Event::CLOSE_WOOD_HOUSE_DOOR);		// 오두막 문닫히는 이벤트 등록
+				WorldMapManager::GetInstance()->GetWorldMap()->SetData(SelectMapState::OBJECT, { x,y }, TextureName::wood_house);		// 오두막 문 열기
+				WorldMapManager::GetInstance()->GetWorldMap()->SetData(SelectMapState::EVENT, pos, Event::CLOSE_WOOD_HOUSE_DOOR);		// 오두막 문닫히는 이벤트 등록
 
-				WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::COLLIDER,		// 문 쪽 콜라이더 제거
+				WorldMapManager::GetInstance()->GetWorldMap()->SetData(SelectMapState::COLLIDER,		// 문 쪽 콜라이더 제거
 					{ x + RETOUCH_WOOD_DOOR_POS.x, y + RETOUCH_WOOD_DOOR_POS.y }, 0);
 
-				WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::COLLIDER,		// 문 뒤쪽 콜라이더 생성
+				WorldMapManager::GetInstance()->GetWorldMap()->SetData(SelectMapState::COLLIDER,		// 문 뒤쪽 콜라이더 생성
 					{ x + RETOUCH_WOOD_DOOR_POS.x, y + RETOUCH_WOOD_DOOR_POS.y - 1 }, 1);
 
 				Portal protal;
@@ -119,10 +119,10 @@ void InteractionManager::CloseWoodHouseDoor(const POINT pos)
 	{
 		for (int x = 0; x < MAP_MAX_X; x++)
 		{
-			if (TextureName::wood_house == WorldMapManager::GetInstance()->GetWorldMap()->GetData(MapEdittorSelectState::OBJECT, { x,y }))
+			if (TextureName::wood_house == WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::OBJECT, { x,y }))
 			{
-				WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::OBJECT, { x,y }, TextureName::wood_house_close);	// 오두막 문 닫기
-				WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::EVENT, pos, Event::OPEN_WOOD_HOUSE_DOOR);	// 오두막 문열리는 이벤트 등록
+				WorldMapManager::GetInstance()->GetWorldMap()->SetData(SelectMapState::OBJECT, { x,y }, TextureName::wood_house_close);	// 오두막 문 닫기
+				WorldMapManager::GetInstance()->GetWorldMap()->SetData(SelectMapState::EVENT, pos, Event::OPEN_WOOD_HOUSE_DOOR);	// 오두막 문열리는 이벤트 등록
 
 				int count = 0;
 				for (const auto& iterator : WorldMapManager::GetInstance()->GetProtalData())
@@ -182,8 +182,8 @@ void InteractionManager::DropItem(const POINT pos)
 			break;
 		}
 
-		if (0 == WorldMapManager::GetInstance()->GetWorldMap()->GetData(MapEdittorSelectState::OBJECT, { tempPos.x,tempPos.y}) &&
-			0 == WorldMapManager::GetInstance()->GetWorldMap()->GetData(MapEdittorSelectState::COLLIDER, { tempPos.x,tempPos.y}))
+		if (0 == WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::OBJECT, { tempPos.x,tempPos.y}) &&
+			0 == WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::COLLIDER, { tempPos.x,tempPos.y}))
 		{
 			for (const auto& iterator : (*ItemManager::GetInstance()->GetFieldItem()))
 			{
@@ -191,7 +191,7 @@ void InteractionManager::DropItem(const POINT pos)
 					return;
 			}
 			// 드랍 이벤트 삭제
-			WorldMapManager::GetInstance()->GetWorldMap()->SetData(MapEdittorSelectState::EVENT, pos, Event::NONE);		
+			WorldMapManager::GetInstance()->GetWorldMap()->SetData(SelectMapState::EVENT, pos, Event::NONE);		
 
 			// 아이템 스폰
 			ItemManager::GetInstance()->AddFieldItem({ tempPos.x,tempPos.y},
