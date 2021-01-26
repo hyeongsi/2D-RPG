@@ -51,27 +51,3 @@ void WorldMap::SetData(MapEdittorSelectState state, POINT pos, int data)
 		return;
 	}
 }
-
-//void WorldMap::LoadMap(const char* mapFilePath)
-//{
-//
-//	PortalSetCallBack(LoadMap, 3, 3);
-//
-//	mapFilePath read
-//
-//		switch (map)
-//		{
-//		case normal:
-//
-//		case bossMap:
-//
-//		case cutsceneMap:
-//
-//	}
-//
-//	if (3, 3 tile = > portal)
-//	{
-//		portalData[3][3] = LoadMap;
-//		mapfilename[3][3] = "블라블라";
-//	}
-//}

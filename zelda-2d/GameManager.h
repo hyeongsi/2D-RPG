@@ -3,7 +3,7 @@
 #include "WorldMap.h"
 #include "Player.h"
 #include "Time.h"
-#include "NPC.h"
+#include "ShopNPC.h"
 #include "Item.h"
 #include "Inventory.h"
 #include <vector>
@@ -23,7 +23,7 @@ private:
 
 	Player* player;
 	Inventory* inventory;
-	NPC* npc;
+	ShopNPC* npc;
 
 	Time* time;
 
@@ -62,7 +62,7 @@ public:
 	void SetInventory(Inventory* inventory);
 	Inventory* GetInventory();
 
-	void SetNPC(NPC* npc);
-	NPC* GetNPC();
+	void SetNPC(ShopNPC* npc);
+	ShopNPC* GetNPC();
 };
 

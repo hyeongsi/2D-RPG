@@ -5,7 +5,7 @@
 #include "MapEdittor.h"
 #include "Item.h"
 #include "Player.h"
-#include "NPC.h"
+#include "ShopNPC.h"
 #include <vector>
 
 using namespace std;
@@ -46,7 +46,7 @@ public:
 public:
 	void MainFrameDataRender();
 	void MapEdittorDataRender();
-	void InGameDataRender(Player* character, NPC* npc);
+	void InGameDataRender(Player* character, ShopNPC* npc);
 
 public:
 	void DrawWorldMapData(const GameState gameState);
@@ -55,7 +55,7 @@ public:
 	void DrawInvenItemExplain();	// 인벤 창 아이템 설명 그리기
 
 	void DrawPlayer(Player* character);
-	void DrawNPC(NPC* npc);
+	void DrawNPC(ShopNPC* npc);
 	void DrawCharUIData(const int uiName, const POINT pos);
 
 	void DrawCheckPattern(HDC hdc, const SIZE size);

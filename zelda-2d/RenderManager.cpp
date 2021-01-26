@@ -120,28 +120,11 @@ void RenderManager::MapEdittorDataRender()
     Render();                   // 출력
 }
 
-void RenderManager::InGameDataRender(Player* character, NPC* npc)
+void RenderManager::InGameDataRender(Player* character, ShopNPC* npc)
 {
     RenderInitSetting();        // 출력 전 초기화 작업
 
     DrawWorldMapData(GameState::INGAME);        // 맵 출력
-
-    /*for (auto item : fieldItem)
-    {
-        switch (item.GetIndex())
-        {
-        case ItemInfo::HP:
-            DrawAnimation(TextureName::HEART_SPIN, 
-                { static_cast<double>(item.GetPos().x),  static_cast<double>(item.GetPos().y) });
-            ImageManager::GetInstance()->GetAnimationData(TextureName::HEART_SPIN)->NextSelectBitmapIndex();
-            break;
-        case ItemInfo::MONEY:
-            DrawAnimation(TextureName::MONEY_SPIN,
-                { static_cast<double>(item.GetPos().x),  static_cast<double>(item.GetPos().y) });
-            ImageManager::GetInstance()->GetAnimationData(TextureName::MONEY_SPIN)->NextSelectBitmapIndex();
-            break;
-        }
-    }*/
 
     DrawFieldItem();    // 필드 아이템 출력
 
@@ -422,7 +405,7 @@ void RenderManager::DrawPlayer(Player* player)
     }
 }
 
-void RenderManager::DrawNPC(NPC* npc)
+void RenderManager::DrawNPC(ShopNPC* npc)
 {
     AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::NPC_WALK);
     walkAnimationObject->SetSelectAnimationBitmapIndex(npc->GetDir());       // 방향에 따른 방향 애니메이션 설정

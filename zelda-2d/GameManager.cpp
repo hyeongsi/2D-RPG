@@ -298,12 +298,12 @@ Inventory* GameManager::GetInventory()
 	return inventory;
 }
 
-void GameManager::SetNPC(NPC* npc)
+void GameManager::SetNPC(ShopNPC* npc)
 {
 	this->npc = npc;
 }
 
-NPC* GameManager::GetNPC()
+ShopNPC* GameManager::GetNPC()
 {
 	return npc;
 }

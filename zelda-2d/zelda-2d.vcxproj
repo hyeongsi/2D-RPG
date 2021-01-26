@@ -152,6 +152,7 @@
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemManager.h" />
+    <ClInclude Include="NPCManager.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="DataStruct.h" />
     <ClInclude Include="framework.h" />
@@ -159,7 +160,7 @@
     <ClInclude Include="ImageManager.h" />
     <ClInclude Include="InteractionManager.h" />
     <ClInclude Include="MapEdittor.h" />
-    <ClInclude Include="NPC.h" />
+    <ClInclude Include="ShopNPC.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="Resource.h" />
@@ -185,6 +186,9 @@
     <ClCompile Include="ItemManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="NPCManager.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="Player.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
@@ -200,7 +204,7 @@
     <ClCompile Include="MapEdittor.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="NPC.cpp">
+    <ClCompile Include="ShopNPC.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="pch.cpp">
