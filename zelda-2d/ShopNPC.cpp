@@ -14,3 +14,8 @@ void ShopNPC::SetSellItemId(const int itemId)
 {
 	sellItemId.emplace_back(itemId);
 }
+
+vector<int>* ShopNPC::GetSellItemId()
+{
+	return &sellItemId;
+}

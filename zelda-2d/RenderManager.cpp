@@ -4,6 +4,7 @@
 #include "WorldMapManager.h"
 #include "GameManager.h"
 #include "ItemManager.h"
+#include "NPCManager.h"
 
 extern HWND g_hWnd;
 extern SIZE g_clientSize;
@@ -130,11 +131,22 @@ void RenderManager::InGameDataRender()
     DrawPlayer();           // 캐릭터 출력
     DrawNpcOrderPos();      // NPC와 캐릭터의 출력 순서 보정
          
+    switch (NPCManager::GetInstance()->GetInteractNPCData().state)
+    {
+    case InteractNPCState::SHOP_NPC:
+        DrawShop();     // 상점 창 출력
+        break;
+    default:
+        break;
+    }
+
     if (GameManager::GetInstance()->GetInventory()->IsOpen())    // 인벤 창 활성화 ->
     {
         DrawInventoryItem();    // 인벤 창 출력
         DrawInvenItemExplain();
     }
+
+    
 
     //UI 출력
     DrawCharUIData(TextureName::Char_Info, { 10,10 });
@@ -435,6 +447,59 @@ void RenderManager::DrawNpcOrderPos()
             bit.bmWidth, bit.bmHeight,
             backMemDC, 0, 0, bit.bmWidth, bit.bmHeight, RGB(215, 123, 186));
     }
+}
+
+void RenderManager::DrawShop()
+{
+    const int sellItemSize = 5;
+    //  상점 창 출력
+    Rectangle(memDC, SHOP_SPAWN_POS.x, SHOP_SPAWN_POS.y, SHOP_SPAWN_POS.x + SHOP_SIZE.cx, SHOP_SPAWN_POS.y + SHOP_SIZE.cy);
+
+    // 아이템 칸 출력
+    for (int i = 0; i < sellItemSize; i++)
+    {
+        Rectangle(memDC, SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx,
+            SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + (SHOP_ITEMBOX_SIZE.cy * i) + (SHOP_INTERVAL_SIZE.cy * i),
+            SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx + SHOP_ITEMBOX_SIZE.cx,
+            SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + SHOP_ITEMBOX_SIZE.cy + (SHOP_ITEMBOX_SIZE.cy * i) + (SHOP_INTERVAL_SIZE.cy * i));
+    }
+
+    // 아이템 출력
+    int t = 0;
+    for (const auto& iterator: (*(*NPCManager::GetInstance()->GetshopNPCVector())
+        [NPCManager::GetInstance()->GetInteractNPCData().index].GetSellItemId()))
+    {
+        HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::ITEM, iterator);
+
+        BITMAP bit;
+        SelectObject(backMemDC, bitmap);
+        GetObject(bitmap, sizeof(bit), &bit);
+        BitBlt(memDC, SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx + SHOP_INTERVAL_SIZE.cy,
+            SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + (SHOP_ITEMBOX_SIZE.cy * t) + (SHOP_INTERVAL_SIZE.cy * t) + SHOP_INTERVAL_SIZE.cy,
+            bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, SRCCOPY);
+
+        // 아이템 제목 출력
+        TextOut(memDC,
+            SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx + SHOP_INTERVAL_SIZE.cy + TILE_SIZE + SHOP_INTERVAL_SIZE.cy,
+            SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + (SHOP_ITEMBOX_SIZE.cy * t) + (SHOP_INTERVAL_SIZE.cy * t) + SHOP_INTERVAL_SIZE.cy,
+            (*ItemManager::GetInstance()->GetItemData())[iterator-1].GetTitle().c_str(),
+            strlen((*ItemManager::GetInstance()->GetItemData())[iterator-1].GetTitle().c_str()));
+        // 아이템 설명 출력
+        TextOut(memDC,
+            SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx + SHOP_INTERVAL_SIZE.cy + TILE_SIZE + SHOP_INTERVAL_SIZE.cy,
+            SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + (SHOP_ITEMBOX_SIZE.cy * t) + (SHOP_INTERVAL_SIZE.cy * t) + SHOP_INTERVAL_SIZE.cy + (TILE_SIZE / 2),
+            (*ItemManager::GetInstance()->GetItemData())[iterator-1].GetExplain().c_str(),
+            strlen((*ItemManager::GetInstance()->GetItemData())[iterator-1].GetExplain().c_str()));
+        // 가격 출력
+        TextOut(memDC,
+            SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx + SHOP_ITEMBOX_SIZE.cx - TILE_SIZE,
+            SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + (SHOP_ITEMBOX_SIZE.cy * t) + (SHOP_INTERVAL_SIZE.cy * t) + SHOP_INTERVAL_SIZE.cy,
+            to_string((*ItemManager::GetInstance()->GetItemData())[iterator - 1].GetPrice()).c_str(),
+            strlen(to_string((*ItemManager::GetInstance()->GetItemData())[iterator - 1].GetPrice()).c_str()));
+
+        t++;
+    }  
+  
 }
 
 void RenderManager::DrawCharUIData(const int uiName, const POINT pos)

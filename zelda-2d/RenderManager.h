@@ -14,6 +14,10 @@ using namespace std;
 
 constexpr POINT INVENTORY_SPAWN_POS = { 600,170 };
 constexpr SIZE INVENTORY_interval_SIZE = { 8,8 };
+constexpr POINT SHOP_SPAWN_POS = { 200,170 };
+constexpr SIZE SHOP_SIZE = { 230,260 };
+constexpr SIZE SHOP_ITEMBOX_SIZE = { 200,42 };
+constexpr SIZE SHOP_INTERVAL_SIZE = { 15,5 };
 constexpr int HP_UI_COUNT = 3;
 
 class RenderManager
@@ -57,6 +61,7 @@ public:
 	void DrawPlayer();
 	void DrawNPC();
 	void DrawNpcOrderPos();		// 출력 순서에 따른 NPC 출력
+	void DrawShop();			// 상점 출력
 	void DrawCharUIData(const int uiName, const POINT pos);
 
 	void DrawCheckPattern(HDC hdc, const SIZE size);

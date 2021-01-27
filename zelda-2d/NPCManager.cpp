@@ -1,11 +1,16 @@
 ﻿#include "pch.h"
 #include "NPCManager.h"
+#include "WorldMapManager.h"
 #include <fstream>
 
 NPCManager* NPCManager::instance = nullptr;
 
 NPCManager::NPCManager()
 {
+	InteractNPCInfo interactNPCInfoData;
+	interactNPCInfoData.state = InteractNPCState::NONE;
+	interactNPCInfoData.index = 0;
+	interactNPCInfo = interactNPCInfoData;
 }
 
 NPCManager::~NPCManager()
@@ -86,8 +91,7 @@ void NPCManager::LoadShopNPCData(const string path)
 		if (readFile.is_open())
 		{	
 			for (int i = 0; i < explainStringSize; i++)
-				readFile >> str;	
-			
+				readFile >> str;			
 
 			while (!readFile.eof())
 			{
@@ -101,6 +105,8 @@ void NPCManager::LoadShopNPCData(const string path)
 					readFile >> str;
 					shopNPC.SetSellItemId(stoi(str));
 				}
+
+				shopNPCVector.emplace_back(shopNPC);
 			}
 			readFile.close();
 		}
@@ -114,4 +120,35 @@ void NPCManager::LoadShopNPCData(const string path)
 	{
 		readFile.close();
 	}
+}
+
+void NPCManager::InteractNPC(const POINT pos)
+{
+	for (const auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetNPCData()))
+	{
+		if (!(iterator.pos.x == pos.x && iterator.pos.y + 1 == pos.y))
+			continue;
+
+		// npc 위치와 이벤트 위치가 동일하다면
+		switch (iterator.kind)
+		{
+		case SHOP_NPC:
+			interactNPCInfo.state = InteractNPCState::SHOP_NPC;
+			interactNPCInfo.index = iterator.index;
+			break;
+		default:
+			interactNPCInfo.state = InteractNPCState::NONE;
+			break;
+		}	
+	}
+}
+
+vector<ShopNPC>* NPCManager::GetshopNPCVector()
+{
+	return &shopNPCVector;
+}
+
+const InteractNPCInfo NPCManager::GetInteractNPCData()
+{
+	return interactNPCInfo;
 }

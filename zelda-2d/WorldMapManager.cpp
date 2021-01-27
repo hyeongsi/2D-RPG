@@ -340,6 +340,9 @@ void WorldMapManager::LoadEventData(const int stage)
 				readFile >> str;			// index
 				fieldNPC.index = stoi(str);
 
+				// NPC 위치에 이벤트 등록
+				worldMap.SetData(SelectMapState::EVENT, { value[0],value[1]+1 }, Event::INTERACT_NPC);
+
 				worldMap.SetNPCData(fieldNPC);
 			}
 		}

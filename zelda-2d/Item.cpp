@@ -36,3 +36,8 @@ const string Item::GetExplain()
 {
 	return explain;
 }
+
+const int Item::GetPrice()
+{
+	return price;
+}

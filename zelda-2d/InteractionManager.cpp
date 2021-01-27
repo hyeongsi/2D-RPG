@@ -5,6 +5,7 @@
 #include "GameManager.h"
 #include "ItemManager.h"
 #include "RenderManager.h"
+#include "NPCManager.h"
 #include <fstream>
 #include <string>
 #include <stdio.h>
@@ -79,6 +80,9 @@ void InteractionManager::ActionEvent(const POINT pos)
 		break;
 	case Event::OPEN_BOX:						// 아이템 드랍,
 		DropItem(pos);
+		break;
+	case Event::INTERACT_NPC:
+		NPCManager::GetInstance()->InteractNPC(pos);
 		break;
 	default:
 		break;

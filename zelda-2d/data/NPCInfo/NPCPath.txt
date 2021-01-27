@@ -1,1 +1,1 @@
-data/NPCInfo/ShopNPC.txt
+data/NPCInfo/ShopNPC/ShopNPCInfo.txt

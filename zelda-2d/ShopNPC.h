@@ -16,5 +16,6 @@ public:
 	~ShopNPC();
 
 	void SetSellItemId(const int itemId);
+	vector<int>* GetSellItemId();
 };
 

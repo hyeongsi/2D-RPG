@@ -24,5 +24,6 @@ public:
 
 	const string GetTitle();
 	const string GetExplain();
+	const int GetPrice();
 };
 

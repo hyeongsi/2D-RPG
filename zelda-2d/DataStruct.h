@@ -151,6 +151,7 @@ namespace Event
 		OPEN_WOOD_HOUSE_DOOR,
 		CLOSE_WOOD_HOUSE_DOOR,
 		OPEN_BOX,
+		INTERACT_NPC,
 	};
 }
 
