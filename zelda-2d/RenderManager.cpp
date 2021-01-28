@@ -61,6 +61,14 @@ void RenderManager::Init()
     hdc = GetDC(g_hWnd);
     memDC = CreateCompatibleDC(hdc);
     backMemDC = CreateCompatibleDC(hdc);
+
+    for (int i = 0; i < SELL_ITEM_SIZE; i++)
+    {
+        SHOP_ITEM_BOX_POS[i].left = SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx;
+        SHOP_ITEM_BOX_POS[i].top = SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + (SHOP_ITEMBOX_SIZE.cy * i) + (SHOP_INTERVAL_SIZE.cy * i);
+        SHOP_ITEM_BOX_POS[i].right = SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx + SHOP_ITEMBOX_SIZE.cx;
+        SHOP_ITEM_BOX_POS[i].bottom = SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + SHOP_ITEMBOX_SIZE.cy + (SHOP_ITEMBOX_SIZE.cy * i) + (SHOP_INTERVAL_SIZE.cy * i);
+    }
 }
 
 void RenderManager::RenderInitSetting()
@@ -451,20 +459,26 @@ void RenderManager::DrawNpcOrderPos()
 
 void RenderManager::DrawShop()
 {
-    const int sellItemSize = 5;
+    
+    int left = SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx;
+    int top = SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + (SHOP_ITEMBOX_SIZE.cy * 0) + (SHOP_INTERVAL_SIZE.cy * 0);
+    int right = SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx + SHOP_ITEMBOX_SIZE.cx;
+    int bottom = SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + SHOP_ITEMBOX_SIZE.cy + (SHOP_ITEMBOX_SIZE.cy * 0) + (SHOP_INTERVAL_SIZE.cy * 0);
+
+
+
     //  상점 창 출력
     Rectangle(memDC, SHOP_SPAWN_POS.x, SHOP_SPAWN_POS.y, SHOP_SPAWN_POS.x + SHOP_SIZE.cx, SHOP_SPAWN_POS.y + SHOP_SIZE.cy);
 
     // 아이템 칸 출력
-    for (int i = 0; i < sellItemSize; i++)
+    for (int i = 0; i < SELL_ITEM_SIZE; i++)
     {
-        Rectangle(memDC, SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx,
-            SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + (SHOP_ITEMBOX_SIZE.cy * i) + (SHOP_INTERVAL_SIZE.cy * i),
-            SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx + SHOP_ITEMBOX_SIZE.cx,
-            SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + SHOP_ITEMBOX_SIZE.cy + (SHOP_ITEMBOX_SIZE.cy * i) + (SHOP_INTERVAL_SIZE.cy * i));
+        Rectangle(memDC, SHOP_ITEM_BOX_POS[i].left,
+            SHOP_ITEM_BOX_POS[i].top,
+            SHOP_ITEM_BOX_POS[i].right,
+            SHOP_ITEM_BOX_POS[i].bottom);
     }
 
-    // 아이템 출력
     int t = 0;
     for (const auto& iterator: (*(*NPCManager::GetInstance()->GetshopNPCVector())
         [NPCManager::GetInstance()->GetInteractNPCData().index].GetSellItemId()))

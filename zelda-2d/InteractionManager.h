@@ -26,4 +26,6 @@ public:
 	void DropItem(const POINT pos);	// 아이템 드랍 이벤트
 
 	void UseItem();					// 아이템 사용 이벤트
+	void BuyItem();					// 아이템 구매 이벤트
+	const int FindBuyItemId();		// 구매 아이템 인덱스 찾기
 };

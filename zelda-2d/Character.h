@@ -40,6 +40,8 @@ public:
 	void SetState(const int state);
 
 	const int GetDir();
+
 	const int GetMoney();
+	void SetMoney(const int money);
 };
 

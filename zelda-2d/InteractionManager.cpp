@@ -213,20 +213,17 @@ void InteractionManager::UseItem()
 	GetCursorPos(&mousePos);
 	ScreenToClient(g_hWnd, &mousePos);
 
-	int t = 0;
 	for (int i = 0; i < GameManager::GetInstance()->GetInventory()->GetLastItemIndex(); i++)
 	{
 		if (GameManager::GetInstance()->GetInventory()->GetItem()->GetIndex() == 0)
 			return;
 
-		t = i;
-
 		// 아이템 범위안에 마우스 커서가 들어간 경우
 		if (mousePos.x >=
-			(INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((t % INVEN_SIZE_X) * TILE_SIZE) + ((t % INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx) &&
-			mousePos.x <= (INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((t % INVEN_SIZE_X) * TILE_SIZE) + ((t % INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx) + TILE_SIZE &&
-			mousePos.y >= (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (t / INVEN_SIZE_X * TILE_SIZE) + ((t / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy) &&
-			mousePos.y <= (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (t / INVEN_SIZE_X * TILE_SIZE) + ((t / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy) + TILE_SIZE)
+			(INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((i % INVEN_SIZE_X) * TILE_SIZE) + ((i % INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx) &&
+			mousePos.x <= (INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((i % INVEN_SIZE_X) * TILE_SIZE) + ((i % INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx) + TILE_SIZE &&
+			mousePos.y >= (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (i / INVEN_SIZE_X * TILE_SIZE) + ((i / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy) &&
+			mousePos.y <= (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (i / INVEN_SIZE_X * TILE_SIZE) + ((i / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy) + TILE_SIZE)
 		{
 
 			switch (GameManager::GetInstance()->GetInventory()->GetItem()->GetIndex())
@@ -246,6 +243,61 @@ void InteractionManager::UseItem()
 
 			GameManager::GetInstance()->GetInventory()->DeleteItem(i);
 			return;
+		}
+	}
+}
+
+void InteractionManager::BuyItem()
+{
+	int findItemId = FindBuyItemId();
+	if (-1 == findItemId)
+		return;
+
+	// 아이템 아이디가 1부터 시작하기 때문에 -1 처리
+	findItemId -= 1;
+	// 아이템 가격이 소지하고 있는 돈보다 많으면
+	if ((*ItemManager::GetInstance()->GetItemData())[findItemId].GetPrice() >
+		GameManager::GetInstance()->GetPlayer()->GetMoney())
+		return;
+
+	// 구매 처리
+	GameManager::GetInstance()->GetPlayer()->SetMoney(
+		GameManager::GetInstance()->GetPlayer()->GetMoney() -
+		(*ItemManager::GetInstance()->GetItemData())[findItemId].GetPrice());
+
+	// 구매 아이템 인벤토리에 추가
+	Item buyItem;
+	buyItem = (*ItemManager::GetInstance()->GetItemData())[findItemId];
+	GameManager::GetInstance()->GetInventory()->SetItem(buyItem);
+}
+
+const int InteractionManager::FindBuyItemId()
+{
+	if (!(InteractNPCState::SHOP_NPC == NPCManager::GetInstance()->GetInteractNPCData().state))
+		return -1;
+
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+	ScreenToClient(g_hWnd, &mousePos);
+
+	for (int i = 0; i < SELL_ITEM_SIZE; i++)
+	{
+		// 아이템 범위안에 마우스 커서가 들어간 경우
+		if (mousePos.x >=(RenderManager::GetInstance()->SHOP_ITEM_BOX_POS[i].left) &&
+			mousePos.x <= (RenderManager::GetInstance()->SHOP_ITEM_BOX_POS[i].right) &&
+			mousePos.y >= (RenderManager::GetInstance()->SHOP_ITEM_BOX_POS[i].top) &&
+			mousePos.y <= (RenderManager::GetInstance()->SHOP_ITEM_BOX_POS[i].bottom))
+		{
+			int t = 0;
+			for (const auto& iterator : 
+				(*(*NPCManager::GetInstance()->GetshopNPCVector())
+					[NPCManager::GetInstance()->GetInteractNPCData().index].GetSellItemId()))
+			{
+				if (t == i)
+					return iterator;
+
+				t++;
+			}	
 		}
 	}
 }

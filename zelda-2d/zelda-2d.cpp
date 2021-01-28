@@ -246,7 +246,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_LBUTTONDBLCLK:
         if (GameState::INGAME == gameManager->GetState())    // 인게임 상태
         {
-            interactionManager->UseItem();
+            interactionManager->UseItem();      // 아이템 사용 체크
+            interactionManager->BuyItem();      // 아이템 구매 체크
         }
         break;
     case WM_LBUTTONDOWN:

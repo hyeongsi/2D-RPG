@@ -12,12 +12,14 @@ using namespace std;
 
 #pragma comment (lib, "Msimg32.lib")
 
-constexpr POINT INVENTORY_SPAWN_POS = { 600,170 };
-constexpr SIZE INVENTORY_interval_SIZE = { 8,8 };
-constexpr POINT SHOP_SPAWN_POS = { 200,170 };
-constexpr SIZE SHOP_SIZE = { 230,260 };
-constexpr SIZE SHOP_ITEMBOX_SIZE = { 200,42 };
-constexpr SIZE SHOP_INTERVAL_SIZE = { 15,5 };
+constexpr const POINT INVENTORY_SPAWN_POS = { 600,170 };
+constexpr const SIZE INVENTORY_interval_SIZE = { 8,8 };
+constexpr const POINT SHOP_SPAWN_POS = { 200,170 };
+constexpr const SIZE SHOP_SIZE = { 230,260 };
+constexpr const SIZE SHOP_ITEMBOX_SIZE = { 200,42 };
+constexpr const SIZE SHOP_INTERVAL_SIZE = { 15,5 };
+constexpr const int SELL_ITEM_SIZE = 5;
+
 constexpr int HP_UI_COUNT = 3;
 
 class RenderManager
@@ -27,13 +29,15 @@ private:
 	HDC memDC{ nullptr };
 	HDC backMemDC{ nullptr };
 	HBITMAP oldCreateBitmap{ nullptr };
-
+	
 private:
 	static RenderManager* instance;
 
 	RenderManager();
 	~RenderManager();
 public:
+	RECT SHOP_ITEM_BOX_POS[SELL_ITEM_SIZE];
+
 	static RenderManager* GetInstance();
 	static void ReleaseInstance();
 

@@ -89,3 +89,8 @@ const int Character::GetMoney()
 {
 	return money;
 }
+
+void Character::SetMoney(const int money)
+{
+	this->money = money;
+}
