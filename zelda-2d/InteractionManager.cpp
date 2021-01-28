@@ -215,8 +215,8 @@ void InteractionManager::UseItem()
 
 	for (int i = 0; i < GameManager::GetInstance()->GetInventory()->GetLastItemIndex(); i++)
 	{
-		if (GameManager::GetInstance()->GetInventory()->GetItem()->GetIndex() == 0)
-			return;
+		if (GameManager::GetInstance()->GetInventory()->GetItem()[i].GetIndex() == 0)
+			continue;
 
 		// 아이템 범위안에 마우스 커서가 들어간 경우
 		if (mousePos.x >=
@@ -225,20 +225,29 @@ void InteractionManager::UseItem()
 			mousePos.y >= (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (i / INVEN_SIZE_X * TILE_SIZE) + ((i / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy) &&
 			mousePos.y <= (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (i / INVEN_SIZE_X * TILE_SIZE) + ((i / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy) + TILE_SIZE)
 		{
-
-			switch (GameManager::GetInstance()->GetInventory()->GetItem()->GetIndex())
+			// 상점 이용 상태가 아닌 경우 - 아이템 사용
+			if (!(InteractNPCState::SHOP_NPC == NPCManager::GetInstance()->GetInteractNPCData().state))
 			{
-			case 1:
-				GameManager::GetInstance()->GetPlayer()->SetHp(GameManager::GetInstance()->GetPlayer()->GetHp() + 1);
-				break;
-			case 2:
-				GameManager::GetInstance()->GetPlayer()->SetHp(GameManager::GetInstance()->GetPlayer()->GetHp() + 2);
-				break;
-			case 3:
-				GameManager::GetInstance()->GetPlayer()->SetDamage(GameManager::GetInstance()->GetPlayer()->GetDamage() + 1);
-				break;
-			case 4:
-				break;
+				switch (GameManager::GetInstance()->GetInventory()->GetItem()[i].GetIndex())
+				{
+				case 1:
+					GameManager::GetInstance()->GetPlayer()->SetHp(GameManager::GetInstance()->GetPlayer()->GetHp() + 1);
+					break;
+				case 2:
+					GameManager::GetInstance()->GetPlayer()->SetHp(GameManager::GetInstance()->GetPlayer()->GetHp() + 2);
+					break;
+				case 3:
+					GameManager::GetInstance()->GetPlayer()->SetDamage(GameManager::GetInstance()->GetPlayer()->GetDamage() + 1);
+					break;
+				case 4:
+					break;
+				}
+			}
+			else // 상점 이용 상태 - 아이템 판매
+			{
+				GameManager::GetInstance()->GetPlayer()->SetMoney(
+					GameManager::GetInstance()->GetPlayer()->GetMoney() +
+					GameManager::GetInstance()->GetInventory()->GetItem()[i].GetPrice());
 			}
 
 			GameManager::GetInstance()->GetInventory()->DeleteItem(i);
@@ -300,4 +309,6 @@ const int InteractionManager::FindBuyItemId()
 			}	
 		}
 	}
+
+	return -1;
 }

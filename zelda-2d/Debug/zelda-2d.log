@@ -1,3 +1,2 @@
 ﻿  InteractionManager.cpp
-C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\InteractionManager.cpp(303): warning C4715: 'InteractionManager::FindBuyItemId': 모든 제어 경로에서 값을 반환하지는 않습니다.
   zelda-2d.vcxproj -> C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\zelda-2d.exe
