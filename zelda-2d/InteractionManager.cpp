@@ -66,7 +66,7 @@ void InteractionManager::ChangeMapData(POINT pos)
 	}
 }
 
-void InteractionManager::ActionEvent(const POINT pos)
+void InteractionManager::ActionEvent(POINT pos)
 {
 	WorldMap * worldMap = WorldMapManager::GetInstance()->GetWorldMap();
 
@@ -74,18 +74,23 @@ void InteractionManager::ActionEvent(const POINT pos)
 	{
 	case Event::OPEN_WOOD_HOUSE_DOOR:			// 오두막 문 열기,
 		OpenWoodHouseDoor(pos);
-		break;
+		return;
 	case Event::CLOSE_WOOD_HOUSE_DOOR:			// 오두막 문 닫기,
 		CloseWoodHouseDoor(pos);
-		break;
+		return;
 	case Event::OPEN_BOX:						// 아이템 드랍,
 		DropItem(pos);
-		break;
+		return;
 	case Event::INTERACT_NPC:
-		NPCManager::GetInstance()->InteractNPC(pos);
-		break;
-	default:
-		break;
+		NPCManager::GetInstance()->InteractNPC(pos);	// 상점 이용 상태로 변경
+		return;
+	}
+
+	switch (worldMap->GetData(SelectMapState::EVENT, GameManager::GetInstance()->GetPlayerPivotMapPoint()))
+	{
+	case Event::INTERACT_NPC:
+		NPCManager::GetInstance()->InteractNPC(GameManager::GetInstance()->GetPlayerPivotMapPoint());	// 상점 이용 상태로 변경
+		return;
 	}
 }
 
@@ -209,51 +214,37 @@ void InteractionManager::UseItem()
 	if (!GameManager::GetInstance()->GetInventory()->IsOpen())	// 인벤창 활성화 x 상태면 리턴
 		return;
 
-	POINT mousePos;
-	GetCursorPos(&mousePos);
-	ScreenToClient(g_hWnd, &mousePos);
+	int itemIndex = FindInventoryItemIndex();
+	if (-1 == itemIndex)
+		return;
 
-	for (int i = 0; i < GameManager::GetInstance()->GetInventory()->GetLastItemIndex(); i++)
+	// 상점 이용 상태가 아닌 경우 - 아이템 사용
+	if (!(InteractNPCState::SHOP_NPC == NPCManager::GetInstance()->GetInteractNPCData().state))
 	{
-		if (GameManager::GetInstance()->GetInventory()->GetItem()[i].GetIndex() == 0)
-			continue;
-
-		// 아이템 범위안에 마우스 커서가 들어간 경우
-		if (mousePos.x >=
-			(INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((i % INVEN_SIZE_X) * TILE_SIZE) + ((i % INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx) &&
-			mousePos.x <= (INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((i % INVEN_SIZE_X) * TILE_SIZE) + ((i % INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx) + TILE_SIZE &&
-			mousePos.y >= (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (i / INVEN_SIZE_X * TILE_SIZE) + ((i / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy) &&
-			mousePos.y <= (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (i / INVEN_SIZE_X * TILE_SIZE) + ((i / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy) + TILE_SIZE)
+		switch (GameManager::GetInstance()->GetInventory()->GetItem()[itemIndex].GetIndex())
 		{
-			// 상점 이용 상태가 아닌 경우 - 아이템 사용
-			if (!(InteractNPCState::SHOP_NPC == NPCManager::GetInstance()->GetInteractNPCData().state))
-			{
-				switch (GameManager::GetInstance()->GetInventory()->GetItem()[i].GetIndex())
-				{
-				case 1:
-					GameManager::GetInstance()->GetPlayer()->SetHp(GameManager::GetInstance()->GetPlayer()->GetHp() + 1);
-					break;
-				case 2:
-					GameManager::GetInstance()->GetPlayer()->SetHp(GameManager::GetInstance()->GetPlayer()->GetHp() + 2);
-					break;
-				case 3:
-					GameManager::GetInstance()->GetPlayer()->SetDamage(GameManager::GetInstance()->GetPlayer()->GetDamage() + 1);
-					break;
-				case 4:
-					break;
-				}
-			}
-			else // 상점 이용 상태 - 아이템 판매
-			{
-				GameManager::GetInstance()->GetPlayer()->SetMoney(
-					GameManager::GetInstance()->GetPlayer()->GetMoney() +
-					GameManager::GetInstance()->GetInventory()->GetItem()[i].GetPrice());
-			}
-
-			GameManager::GetInstance()->GetInventory()->DeleteItem(i);
-			return;
+		case 1:
+			GameManager::GetInstance()->GetPlayer()->SetHp(GameManager::GetInstance()->GetPlayer()->GetHp() + 1);
+			break;
+		case 2:
+			GameManager::GetInstance()->GetPlayer()->SetHp(GameManager::GetInstance()->GetPlayer()->GetHp() + 2);
+			break;
+		case 3:
+			GameManager::GetInstance()->GetPlayer()->SetDamage(GameManager::GetInstance()->GetPlayer()->GetDamage() + 1);
+			break;
+		case 4:
+			break;
 		}
 	}
+	else // 상점 이용 상태 - 아이템 판매
+	{
+		GameManager::GetInstance()->GetPlayer()->SetMoney(
+			GameManager::GetInstance()->GetPlayer()->GetMoney() +
+			GameManager::GetInstance()->GetInventory()->GetItem()[itemIndex].GetPrice());
+	}
+
+	GameManager::GetInstance()->GetInventory()->DeleteItem(itemIndex);
+	return;
 }
 
 void InteractionManager::BuyItem()
@@ -278,6 +269,30 @@ void InteractionManager::BuyItem()
 	Item buyItem;
 	buyItem = (*ItemManager::GetInstance()->GetItemData())[findItemId];
 	GameManager::GetInstance()->GetInventory()->SetItem(buyItem);
+}
+
+const int InteractionManager::FindInventoryItemIndex()
+{
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+	ScreenToClient(g_hWnd, &mousePos);
+
+	for (int i = 0; i < GameManager::GetInstance()->GetInventory()->GetLastItemIndex(); i++)
+	{
+		if (GameManager::GetInstance()->GetInventory()->GetItem()[i].GetIndex() == 0)
+			continue;
+
+		// 아이템 범위안에 마우스 커서가 들어간 경우
+		if (mousePos.x >= RenderManager::GetInstance()->INVENTORY_ITEM_POS[i].left &&
+			mousePos.x <= RenderManager::GetInstance()->INVENTORY_ITEM_POS[i].right &&
+			mousePos.y >= RenderManager::GetInstance()->INVENTORY_ITEM_POS[i].top &&
+			mousePos.y <= RenderManager::GetInstance()->INVENTORY_ITEM_POS[i].bottom)
+		{
+			return i;
+		}
+	}
+
+	return -1;
 }
 
 const int InteractionManager::FindBuyItemId()
@@ -311,4 +326,25 @@ const int InteractionManager::FindBuyItemId()
 	}
 
 	return -1;
+}
+
+void InteractionManager::SwitchInventoryItem(const int preIndex)
+{
+	if (!GameManager::GetInstance()->GetInventory()->IsOpen())	// 인벤창 활성화 x 상태면 리턴
+		return;
+
+	int itemIndex = FindInventoryItemIndex();
+	if (-1 == itemIndex)	// 해당 값을 찾지 못했을 경우
+		return;
+
+	// 소지하고 있는 아이템 이외의 범위 인덱스라면 return
+	if (itemIndex >= GameManager::GetInstance()->GetInventory()->GetLastItemIndex() ||
+		preIndex >= GameManager::GetInstance()->GetInventory()->GetLastItemIndex())
+		return;
+
+	// 바꿀려고 하는 값이 본인과 같다면 바꿀필요 없이 return
+	if (itemIndex == preIndex)
+		return;
+	
+	GameManager::GetInstance()->GetInventory()->SwitchingItem(itemIndex, preIndex);
 }

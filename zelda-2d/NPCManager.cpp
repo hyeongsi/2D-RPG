@@ -7,10 +7,7 @@ NPCManager* NPCManager::instance = nullptr;
 
 NPCManager::NPCManager()
 {
-	InteractNPCInfo interactNPCInfoData;
-	interactNPCInfoData.state = InteractNPCState::NONE;
-	interactNPCInfoData.index = 0;
-	interactNPCInfo = interactNPCInfoData;
+	InitInteractNPCInfo();
 }
 
 NPCManager::~NPCManager()
@@ -151,4 +148,17 @@ vector<ShopNPC>* NPCManager::GetshopNPCVector()
 const InteractNPCInfo NPCManager::GetInteractNPCData()
 {
 	return interactNPCInfo;
+}
+
+void NPCManager::SetInteractNPCData(const InteractNPCInfo interactNPCInfo)
+{
+	this->interactNPCInfo = interactNPCInfo;
+}
+
+void NPCManager::InitInteractNPCInfo()
+{
+	InteractNPCInfo interactNPCInfoData;
+	interactNPCInfoData.state = InteractNPCState::NONE;
+	interactNPCInfoData.index = 0;
+	interactNPCInfo = interactNPCInfoData;
 }

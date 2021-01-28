@@ -39,6 +39,15 @@ void Inventory::DeleteItem(const int index)
 	}
 }
 
+void Inventory::SwitchingItem(const int index1, const int index2)
+{
+	Item tempItem;
+	tempItem = item[index1];
+
+	item[index1] = item[index2];
+	item[index2] = tempItem;
+}
+
 Item* Inventory::GetItem()
 {
 	return item;

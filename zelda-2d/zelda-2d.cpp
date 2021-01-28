@@ -170,6 +170,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
     static LPDRAWITEMSTRUCT lpdis;
+    static int preFindItemIndex = -1;
 
     switch (message)
     {
@@ -251,18 +252,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_LBUTTONDOWN:
+        if (GameState::INGAME == gameManager->GetState() && clickLR == ClickLR::NONE)    // 인게임 상태
+        {
+            preFindItemIndex = interactionManager->FindInventoryItemIndex();
+        }
+
+        clickLR = ClickLR::LEFT;    // 클릭 상태 설정
+
         if (GameState::MAPEDITTOR == gameManager->GetState())    // 맵 에디터 상태
         {
-            clickLR = ClickLR::LEFT;    // 클릭 상태 설정
             SetMapEdittorData();        // 맵에디터에 데이터 추가
         }
         break;
     case WM_RBUTTONDOWN:
+        clickLR = ClickLR::RIGHT;    // 클릭 상태 설정
+      
         if (GameState::MAPEDITTOR == gameManager->GetState())    // 맵 에디터 상태
         {
-            clickLR = ClickLR::RIGHT;   // 클릭 상태 설정
             SetMapEdittorData();        // 맵에디터에 데이터 추가
         }
+
         break;
     case WM_MOUSEMOVE:
         if (GameState::MAPEDITTOR == gameManager->GetState())    // 맵 에디터 상태
@@ -271,16 +280,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         }
         break;
     case WM_LBUTTONUP:
-        if (GameState::MAPEDITTOR == gameManager->GetState())    // 맵 에디터 상태
+        clickLR = ClickLR::NONE;    // 클릭 상태 설정 
+
+        if (!(-1 == preFindItemIndex))
         {
-            clickLR = ClickLR::NONE;    // 클릭 상태 설정
-        } 
+            interactionManager->SwitchInventoryItem(preFindItemIndex);
+            preFindItemIndex = -1;
+        }
         break;
     case WM_RBUTTONUP:
-        if (GameState::MAPEDITTOR == gameManager->GetState())
-        {
-            clickLR = ClickLR::NONE;    // 클릭 상태 설정
-        }
+        clickLR = ClickLR::NONE;    // 클릭 상태 설정
         break;
     case WM_PAINT:
         {

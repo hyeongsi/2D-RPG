@@ -22,6 +22,8 @@ public:
 	void SetItem(Item item);
 	void DeleteItem(const int index);
 
+	void SwitchingItem(const int index1, const int index2);	// 1과 2 저장 위치 상호변환 
+
 	Item* GetItem();
 
 	int GetLastItemIndex();

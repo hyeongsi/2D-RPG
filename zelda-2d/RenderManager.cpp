@@ -2,7 +2,6 @@
 
 #include "RenderManager.h"
 #include "WorldMapManager.h"
-#include "GameManager.h"
 #include "ItemManager.h"
 #include "NPCManager.h"
 
@@ -62,12 +61,21 @@ void RenderManager::Init()
     memDC = CreateCompatibleDC(hdc);
     backMemDC = CreateCompatibleDC(hdc);
 
+    // 상점 크기 설정
     for (int i = 0; i < SELL_ITEM_SIZE; i++)
     {
         SHOP_ITEM_BOX_POS[i].left = SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx;
         SHOP_ITEM_BOX_POS[i].top = SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + (SHOP_ITEMBOX_SIZE.cy * i) + (SHOP_INTERVAL_SIZE.cy * i);
         SHOP_ITEM_BOX_POS[i].right = SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx + SHOP_ITEMBOX_SIZE.cx;
         SHOP_ITEM_BOX_POS[i].bottom = SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + SHOP_ITEMBOX_SIZE.cy + (SHOP_ITEMBOX_SIZE.cy * i) + (SHOP_INTERVAL_SIZE.cy * i);
+    }
+    // 인벤 크기 설정
+    for (int i = 0; i < INVEN_SIZE; i++)
+    {
+        INVENTORY_ITEM_POS[i].left = (INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((i % INVEN_SIZE_X) * TILE_SIZE) + ((i % INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx);
+        INVENTORY_ITEM_POS[i].top = (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (i / INVEN_SIZE_X * TILE_SIZE) + ((i / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy);
+        INVENTORY_ITEM_POS[i].right = (INVENTORY_SPAWN_POS.x + INVENTORY_interval_SIZE.cx) + ((i % INVEN_SIZE_X) * TILE_SIZE) + ((i % INVEN_SIZE_X) * INVENTORY_interval_SIZE.cx) + TILE_SIZE;
+        INVENTORY_ITEM_POS[i].bottom = (INVENTORY_SPAWN_POS.y + INVENTORY_interval_SIZE.cy) + (i / INVEN_SIZE_X * TILE_SIZE) + ((i / INVEN_SIZE_X) * INVENTORY_interval_SIZE.cy) + TILE_SIZE;
     }
 }
 
@@ -459,13 +467,10 @@ void RenderManager::DrawNpcOrderPos()
 
 void RenderManager::DrawShop()
 {
-    
     int left = SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx;
     int top = SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + (SHOP_ITEMBOX_SIZE.cy * 0) + (SHOP_INTERVAL_SIZE.cy * 0);
     int right = SHOP_SPAWN_POS.x + SHOP_INTERVAL_SIZE.cx + SHOP_ITEMBOX_SIZE.cx;
     int bottom = SHOP_SPAWN_POS.y + SHOP_INTERVAL_SIZE.cx + SHOP_ITEMBOX_SIZE.cy + (SHOP_ITEMBOX_SIZE.cy * 0) + (SHOP_INTERVAL_SIZE.cy * 0);
-
-
 
     //  상점 창 출력
     Rectangle(memDC, SHOP_SPAWN_POS.x, SHOP_SPAWN_POS.y, SHOP_SPAWN_POS.x + SHOP_SIZE.cx, SHOP_SPAWN_POS.y + SHOP_SIZE.cy);

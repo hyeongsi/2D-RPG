@@ -19,7 +19,7 @@ public:
 
 public:
 	void ChangeMapData(POINT pos);
-	void ActionEvent(const POINT pos);
+	void ActionEvent(POINT pos);
 
 	void OpenWoodHouseDoor(const POINT pos);	// 오두막 문여는 이벤트
 	void CloseWoodHouseDoor(const POINT pos);	// 오두막 문닫는 이벤트
@@ -27,5 +27,8 @@ public:
 
 	void UseItem();					// 아이템 사용 이벤트
 	void BuyItem();					// 아이템 구매 이벤트
+	const int FindInventoryItemIndex();	// 인벤 아이템 인덱스 찾기
 	const int FindBuyItemId();		// 구매 아이템 인덱스 찾기
+
+	void SwitchInventoryItem(const int preIndex);		// 인벤 아이템 스위칭 이벤트
 };

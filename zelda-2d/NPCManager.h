@@ -46,5 +46,8 @@ public:
 public:
 	vector<ShopNPC>* GetshopNPCVector();
 	const InteractNPCInfo GetInteractNPCData();
+	void SetInteractNPCData(const InteractNPCInfo interactNPCInfo);
+
+	void InitInteractNPCInfo();
 };
 

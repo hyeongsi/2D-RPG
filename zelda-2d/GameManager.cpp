@@ -4,6 +4,7 @@
 #include "resource.h"
 #include "WorldMapManager.h"
 #include "ItemManager.h"
+#include "NPCManager.h"
 
 GameManager* GameManager::instance = nullptr;
 
@@ -73,6 +74,7 @@ void GameManager::Run()
 	switch (player->GetState())
 	{
 	case CharacterInfo::WALK:
+		NPCManager::GetInstance()->InitInteractNPCInfo();	// 상점 이용 중이라면 취소
 		LimitMoveMent(prevPos);						// 맵 외곽 및 콜라이더 위치 이동 제한
 		PickUpItem();								// 아이템 파밍
 		UsePortal();								// 포탈 이동 관련 코드

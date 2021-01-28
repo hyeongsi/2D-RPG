@@ -3,6 +3,7 @@
 #include "DataStruct.h"
 #include "ImageManager.h"
 #include "MapEdittor.h"
+#include "GameManager.h"
 #include "Item.h"
 #include "Player.h"
 #include "ShopNPC.h"
@@ -37,6 +38,7 @@ private:
 	~RenderManager();
 public:
 	RECT SHOP_ITEM_BOX_POS[SELL_ITEM_SIZE];
+	RECT INVENTORY_ITEM_POS[INVEN_SIZE];
 
 	static RenderManager* GetInstance();
 	static void ReleaseInstance();
