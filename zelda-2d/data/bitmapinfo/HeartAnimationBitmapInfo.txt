@@ -1,3 +1,0 @@
-1
-1	
-images/objectAnimation/heart_spin.bmp		4	200

@@ -5,6 +5,7 @@ class Player : public Character
 {
 private:
 	int level;			// level
+	int exp;
 
 public:
 	Player();

@@ -1,0 +1,6 @@
+1
+4	
+images/monster/monster_walk/redlog_front_walk.bmp		4	200
+images/monster/monster_walk/redlog_right_walk.bmp		4	200
+images/monster/monster_walk/redlog_back_walk.bmp		4	200
+images/monster/monster_walk/redlog_left_walk.bmp		4	200

@@ -14,6 +14,7 @@
 #include "WorldMapManager.h"
 #include "ItemManager.h"
 #include "NPCManager.h"
+#include "MonsterManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -39,6 +40,7 @@ WorldMapManager* worldMapManager;               // 월드맵 매니저
 ItemManager* itemManager;                       // 아이템 매니저
 InteractionManager* interactionManager;         // 상호작용 매니저
 NPCManager* npcManager;                         // NPC 매니저
+MonsterManager* monsterManager;                  // 몬스터 매니저
 
 Player* character;                            // 캐릭터 클래스
 
@@ -90,6 +92,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     itemManager = ItemManager::GetInstance();
     interactionManager = InteractionManager::GetInstance();
     npcManager = NPCManager::GetInstance();
+    monsterManager = MonsterManager::GetInstance();
 
     // 기본 메시지 루프입니다:
     while (true)
@@ -207,6 +210,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 itemManager->LoadItemData();         // 인게임에서 사용할 아이템 정보 로드
                 itemManager->AddFieldItem({ 10, 10 }, 2);
 
+                monsterManager->LoadMonsterData();  // 인게임에서 사용할 몬스터 정보 로드
                 npcManager->LoadNPCData();          // 인게임에서 사용할 npc 정보 로드
 
                 worldMapManager->LoadMapData(GameState::INGAME, worldMapManager->GetCurrentStage());
@@ -306,6 +310,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         ItemManager::ReleaseInstance();
         InteractionManager::ReleaseInstance();
         NPCManager::ReleaseInstance();
+        MonsterManager::ReleaseInstance();
         PostQuitMessage(0);
         break;
     default:

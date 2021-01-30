@@ -1,0 +1,3 @@
+id	maxHp	speed 	damage	exp	money
+0	3	130	1	10	10
+1	6	150	2	20	20

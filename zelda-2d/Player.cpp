@@ -4,7 +4,7 @@
 Player::Player() : Character()
 {
 	level = 1;
-
+	exp = 0;
 	money = 123;
 }
 
@@ -12,7 +12,7 @@ Player::Player(const DPOINT pos, const int hp, const int level, const int speed,
 	: Character(pos, hp, speed, damage)
 {
 	this->level = level;
-
+	exp = 0;
 	money = 123;
 }
 

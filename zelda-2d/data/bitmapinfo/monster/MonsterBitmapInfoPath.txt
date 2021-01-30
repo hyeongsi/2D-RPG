@@ -1,0 +1,2 @@
+0		data/bitmapinfo/monster/LogAnimationBitmapInfo.txt
+1		data/bitmapinfo/monster/LogAnimationBitmapInfo.txt
