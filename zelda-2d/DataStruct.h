@@ -20,10 +20,6 @@ constexpr const char BACKGROUND_BITMAP_PATH[] = { "data/bitmapinfo/BackgroundBit
 constexpr const char OBJECT_BITMAP_PATH[] = { "data/bitmapinfo/ObjectBitmapInfo.txt" };
 
 constexpr const char PLAYER_ANIMATION_PATH[] = { "data/bitmapinfo/CharacterAnimationBitmapInfo.txt" };
-constexpr const char NPC_ANIMATION_PATH[] = { "data/bitmapinfo/NPCAnimationBitmapInfo.txt" };
-
-constexpr const char HEART_ANIMATION_PATH[] = { "data/bitmapinfo/HeartAnimationBitmapInfo.txt" };
-constexpr const char MONEY_ANIMATION_PATH[] = { "data/bitmapinfo/MoneyAnimationBitmapInfo.txt" };
 
 namespace ClientSize
 {
@@ -115,9 +111,6 @@ namespace TextureName
 		PLAYER_WALK,
 		PLAYER_ATTACK,
 		PLAYER_HOLD_WALK,
-		NPC_WALK,
-		HEART_SPIN,
-		MONEY_SPIN,
 	};
 }
 
@@ -129,9 +122,6 @@ enum class SelectMapState
 	EVENT,
 	NPC,
 };
-
-constexpr const int STAGE_SIZE = 2;
-constexpr const POINT STAGE2_SPAWN_POINT = {400,400};	// 추후에 수정
 
 namespace MapInfo
 {
@@ -197,15 +187,6 @@ namespace CharacterInfo
 		ATTACK,
 		INTERACTION,	// 상호작용
 		HIT,
-	};
-}
-
-namespace ItemInfo
-{
-	enum INDEX
-	{
-		HP,
-		MONEY,
 	};
 }
 

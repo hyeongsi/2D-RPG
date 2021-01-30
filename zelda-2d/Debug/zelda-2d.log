@@ -1,7 +1,13 @@
-﻿  GameManager.cpp
+﻿  Character.cpp
+  GameManager.cpp
+  ImageManager.cpp
   InteractionManager.cpp
-  Inventory.cpp
+  MapEdittor.cpp
+  NPCManager.cpp
+  Player.cpp
   RenderManager.cpp
+  ShopNPC.cpp
+  WorldMap.cpp
   WorldMapManager.cpp
   zelda-2d.cpp
   코드를 생성하고 있습니다...

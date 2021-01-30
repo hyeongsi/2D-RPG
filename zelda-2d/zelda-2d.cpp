@@ -199,9 +199,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
                 imageManager->LoadMapBitmapData();                      // 인게임에서 사용할 맵 관련 비트맵 로드
                 imageManager->LoadAnimationBitmapData(PLAYER_ANIMATION_PATH);    // 인게임에서 사용할 플레이어 애니메이션 로드
-                imageManager->LoadAnimationBitmapData(NPC_ANIMATION_PATH);    // 인게임에서 사용할 NPC 애니메이션 로드
-                imageManager->LoadAnimationBitmapData(HEART_ANIMATION_PATH);    // 인게임에서 하트 UI 애니메이션 로드
-                imageManager->LoadAnimationBitmapData(MONEY_ANIMATION_PATH);    // 인게임에서 돈 UI 애니메이션 로드
+
                 imageManager->LoadBitmapPathData(BitmapKind::UI, UI_BITMAP_PATH);   // 인게임에서 사용할 UI 비트맵 로드
                 imageManager->LoadBitmapPathData(BitmapKind::ITEM, ITEM_BITMAP_PATH);   // 인게임에서 사용할 아이템 비트맵 로드
                 imageManager->LoadBitmapPathData(BitmapKind::NPC, NPC_BITMAP_PATH);   // 인게임에서 사용할 NPC 비트맵 로드
