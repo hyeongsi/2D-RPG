@@ -25,6 +25,11 @@ const int Player::GetLevel()
 	return level;
 }
 
+void Player::SetExp(const int exp)
+{
+	this->exp = exp;
+}
+
 void Player::Input(const double deltaTime)
 {
 	if ((GetAsyncKeyState(VK_UP) & 0x8000) && state != CharacterInfo::ATTACK)			// 상

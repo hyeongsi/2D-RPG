@@ -451,19 +451,18 @@ void RenderManager::DrawMonster()
     for (int i = 0; i < static_cast<int>(ImageManager::GetInstance()->GetMonsterAnimation()->size()); i++)
     {
         AnimationObject* animationObject = &(*ImageManager::GetInstance()->GetMonsterAnimation())[i];
+        if (i >= static_cast<int>(WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->size()) || i < 0)
+            return;
+
         switch ((*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetDir())
         {
         case CharacterInfo::WALK:
+        case CharacterInfo::ATTACK:
             animationObject->SetSelectAnimationBitmapIndex(
                 (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetDir());       // 방향에 따른 방향 애니메이션 설정
 
             DrawMonsterAnimation(i);
             animationObject->NextSelectBitmapIndex();                               // 출력 이미지 위치 변경
-            break;
-        case CharacterInfo::ATTACK:
-            //DrawMonsterAnimation(i);
-            //if (animationObject->NextSelectBitmapIndex())      // 출력 이미지 위치 변경
-            //    (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].SetState(CharacterInfo::IDLE);
             break;
         case CharacterInfo::IDLE:
             animationObject->SetSelectAnimationBitmapIndex(
@@ -668,7 +667,8 @@ void RenderManager::InitPlayerAnimation(const int state)
 
 void RenderManager::DrawMonsterAnimation(const int index)
 {
-    AnimationObject* animationObject = &(*ImageManager::GetInstance()->GetMonsterAnimation())[index];
+    AnimationObject* animationObject = &(*ImageManager::GetInstance()->GetMonsterAnimation())[
+        (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[index].GetIndex()];
 
     if (nullptr == animationObject)
         return;

@@ -18,6 +18,11 @@ Monster::Monster(const DPOINT pos, const int hp, const int speed, const int dama
 	this->exp = exp;
 }
 
+const int Monster::GetIndex()
+{
+	return index;
+}
+
 void Monster::SetIndex(const int index)
 {
 	this->index = index;

@@ -199,6 +199,7 @@ namespace CharacterInfo
 		ATTACK,
 		INTERACTION,	// 상호작용
 		HIT,
+		DIE,
 	};
 }
 

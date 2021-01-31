@@ -5,6 +5,7 @@
 #include "WorldMapManager.h"
 #include "ItemManager.h"
 #include "NPCManager.h"
+#include "ImageManager.h"
 
 GameManager* GameManager::instance = nullptr;
 
@@ -12,6 +13,7 @@ GameManager::GameManager()
 {
 	inputTick = GetTickCount64();
 	eventTick = GetTickCount64();
+	attackTick = GetTickCount64();
 
 	state = GameState::MAIN;
 	player = nullptr;
@@ -108,6 +110,11 @@ void GameManager::Run()
 
 		interactionManager->ChangeMapData(pivotPos);		// 오브젝트 애니메이션 변경
 		interactionManager->ActionEvent(pivotPos);			// 연결 이벤트 발생
+
+		break;
+	case CharacterInfo::ATTACK:
+		AttackMonster();	// 몬스터 피격 처리
+		DieMonster();		// 몬스터 죽음 처리
 
 		break;
 	}
@@ -252,6 +259,128 @@ void GameManager::RetouchMoveMent(POINT colliderPos[4])
 		}
 
 		fixValue *= -1;
+	}
+}
+
+void GameManager::AttackMonster()
+{
+	AnimationObject* attackAnimationObject = ImageManager::GetInstance()->GetPlayerAnimationData(TextureName::PLAYER_ATTACK);
+	const int hitDamageDelay = 300;
+
+	// 마지막 전 애니메이션 에서만 공격으로 인정
+	if (attackAnimationObject->GetSelectBitmapIndex() != 
+		(attackAnimationObject->GetBitmapCount(attackAnimationObject->GetSelectAnimationBitmapIndex()) - 1))
+	{
+		return;
+	}
+
+	if (GetTickCount64() > attackTick + hitDamageDelay)
+	{
+		attackTick = GetTickCount64();
+	}
+	else
+		return;
+
+	const int attackColliderSize = 26;	// 공격 범위
+	const int pushedOutSize = 30;		// 피격 시 밀려나는 크기
+	RECT colliderRect;
+	DPOINT pushOutPos;
+	DPOINT pushCorrectionPos;	// 콜라이더 접근 시 이동 보정 수치
+	switch (player->GetDir())
+	{
+	case CharacterInfo::DOWN:
+		colliderRect.left = static_cast<LONG>(player->GetPos().x + PLAYER_PIVOT_POS.x - attackColliderSize);
+		colliderRect.top = static_cast<LONG>(player->GetPos().y + PLAYER_PIVOT_POS.y);
+		colliderRect.right = static_cast<LONG>(player->GetPos().x + PLAYER_PIVOT_POS.x + attackColliderSize);
+		colliderRect.bottom = static_cast<LONG>(player->GetPos().y + PLAYER_PIVOT_POS.y + (static_cast<double>(attackColliderSize)*2));
+
+		pushOutPos = { 0,pushedOutSize };	// 밀려날 크기 설정
+		pushCorrectionPos = { 0 , -1 };
+		break;
+	case CharacterInfo::RIGHT:
+		colliderRect.left = static_cast<LONG>(player->GetPos().x + PLAYER_PIVOT_POS.x);
+		colliderRect.top = static_cast<LONG>(player->GetPos().y + PLAYER_PIVOT_POS.y - attackColliderSize);
+		colliderRect.right = static_cast<LONG>(player->GetPos().x + PLAYER_PIVOT_POS.x + (static_cast<double>(attackColliderSize) * 2));
+		colliderRect.bottom = static_cast<LONG>(player->GetPos().y + PLAYER_PIVOT_POS.y + attackColliderSize);
+
+		pushOutPos = { pushedOutSize,0 };	// 밀려날 크기 설정
+		pushCorrectionPos = { -1 ,0 };
+		break;
+	case CharacterInfo::UP:
+		colliderRect.left = static_cast<LONG>(player->GetPos().x + PLAYER_PIVOT_POS.x - attackColliderSize);
+		colliderRect.top = 	static_cast<LONG>(player->GetPos().y + PLAYER_PIVOT_POS.y - (static_cast<double>(attackColliderSize) * 2));
+		colliderRect.right = static_cast<LONG>(player->GetPos().x + PLAYER_PIVOT_POS.x + attackColliderSize);
+		colliderRect.bottom = static_cast<LONG>(player->GetPos().y + PLAYER_PIVOT_POS.y);
+
+		pushOutPos = { 0, -pushedOutSize };	// 밀려날 크기 설정
+		pushCorrectionPos = { 0 , 1 };
+		break;
+	case CharacterInfo::LEFT:
+		colliderRect.left = static_cast<LONG>(player->GetPos().x + PLAYER_PIVOT_POS.x - (static_cast<double>(attackColliderSize) * 2));
+		colliderRect.top = static_cast<LONG>(player->GetPos().y + PLAYER_PIVOT_POS.y - attackColliderSize);
+		colliderRect.right = static_cast<LONG>(player->GetPos().x + PLAYER_PIVOT_POS.x );
+		colliderRect.bottom = static_cast<LONG>(player->GetPos().y + PLAYER_PIVOT_POS.y + attackColliderSize);
+
+		pushOutPos = { -pushedOutSize,0 };	// 밀려날 크기 설정
+		pushCorrectionPos = { 1 ,0 };
+		break;
+	default:
+		return;
+	}
+
+	for (auto& iterator: (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()))
+	{
+		if (colliderRect.left <= iterator.GetPos().x + MONSTER1_PIVOT_POS.x &&
+			colliderRect.right >= iterator.GetPos().x + MONSTER1_PIVOT_POS.x &&
+			colliderRect.top <= iterator.GetPos().y + MONSTER1_PIVOT_POS.y &&
+			colliderRect.bottom >= iterator.GetPos().y + MONSTER1_PIVOT_POS.y )
+		{
+			iterator.SetHp(iterator.GetHp() - player->GetDamage());		// 몬스터 hp -- 처리
+			iterator.SetPos({ iterator.GetPos().x + pushOutPos.x , iterator.GetPos().y + pushOutPos.y });	// 밀려남 처리
+
+			// 밀려남 처리 (맵 나가는거 보정)
+			constexpr const int LIMIT_MAP_X_CORRECTION = 32;	// 맵 밖으로 나가는 경우 보정 크기
+			constexpr const int LIMIT_MAP_Y_CORRECTION = 46;	// 맵 밖으로 나가는 경우 보정 크기
+
+			if (0 > static_cast<int>(iterator.GetPos().x) || ClientSize::width - LIMIT_MAP_X_CORRECTION < static_cast<int>(iterator.GetPos().x))
+			{
+				iterator.SetPos({ static_cast<double>(ClientSize::width - LIMIT_MAP_X_CORRECTION) , iterator.GetPos().y});	// 밀려남 처리
+				break;
+			}
+			if (0 > static_cast<int>(iterator.GetPos().y) || ClientSize::height - LIMIT_MAP_Y_CORRECTION < static_cast<int>(iterator.GetPos().y))
+			{
+				iterator.SetPos({ iterator.GetPos().x , static_cast<double>(ClientSize::height - LIMIT_MAP_Y_CORRECTION) });	// 밀려남 처리
+				break;
+			}
+
+			// 맵 콜라이더 나가는거 보정
+			POINT monsterMapPos;
+			monsterMapPos.x = ((static_cast<int>(iterator.GetPos().x) + MONSTER1_PIVOT_POS.x)) / TILE_SIZE;
+			monsterMapPos.y = ((static_cast<int>(iterator.GetPos().y) + MONSTER1_PIVOT_POS.y)) / TILE_SIZE;
+
+			while (0 != WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::COLLIDER, monsterMapPos))
+			{
+				iterator.SetPos({ iterator.GetPos().x  + pushCorrectionPos.x, iterator.GetPos().y  + pushCorrectionPos .y});	// 밀려남 처리
+				monsterMapPos.x = ((static_cast<int>(iterator.GetPos().x) + MONSTER1_PIVOT_POS.x)) / TILE_SIZE;
+				monsterMapPos.y = ((static_cast<int>(iterator.GetPos().y) + MONSTER1_PIVOT_POS.y)) / TILE_SIZE;
+			}
+		}
+	}
+}
+
+void GameManager::DieMonster()
+{
+	for (auto iterator = WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->begin();
+		iterator != WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->end();)
+	{
+		if ((*iterator).GetHp() <= 0)
+		{
+			player->SetMoney(player->GetMoney() + (*iterator).GetMoney());
+			player->SetExp((*iterator).GetExp());
+			iterator = WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->erase(iterator);
+		}
+		else
+			iterator++;
 	}
 }
 

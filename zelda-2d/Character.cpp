@@ -9,7 +9,7 @@ Character::Character()
 	dir = CharacterInfo::DOWN;
 
 	maxHp = INIT_HP;
-	hp = INIT_HP;
+	hp = maxHp;
 
 	speed = INIT_SPEED;
 	damage = INIT_DAMAGE;

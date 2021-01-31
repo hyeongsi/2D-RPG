@@ -79,8 +79,10 @@ void MonsterManager::LoadMonsterData()
 			while (!readFile.eof())
 			{
 				readFile >> str;	// id
+				monster.index = stoi(str);	// index
 				readFile >> str;	// maxHp
 				monster.maxHp = stoi(str);
+				monster.hp = monster.maxHp;
 				readFile >> str;	// speed
 				monster.speed = stoi(str);
 				readFile >> str;	// damage

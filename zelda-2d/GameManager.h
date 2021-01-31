@@ -36,6 +36,7 @@ private:
 private:
 	ULONGLONG inputTick;
 	ULONGLONG eventTick;
+	ULONGLONG attackTick;
 
 public:
 	static GameManager* GetInstance();
@@ -49,6 +50,9 @@ public:
 	void PickUpItem();							// 아이템 파밍
 	void UsePortal();							// 포탈 사용
 	void RetouchMoveMent(POINT colliderPos[4]);	// 이동 보정
+
+	void AttackMonster();						// 공격
+	void DieMonster();							// 몬스터 죽음 처리
 
 	POINT GetPlayerPivotMapPoint();
 public:

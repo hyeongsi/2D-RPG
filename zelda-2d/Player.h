@@ -15,6 +15,7 @@ public:
 public:
 	const int GetLevel();
 
+	void SetExp(const int exp);
 public:
 	void Input(const double deltaTime);
 	void Update();
