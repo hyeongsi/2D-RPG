@@ -146,7 +146,8 @@ void RenderManager::InGameDataRender()
 
     DrawPlayer();           // 캐릭터 출력
     DrawNpcOrderPos();      // NPC와 캐릭터의 출력 순서 보정
-         
+    DrawMonsterOrderPos();  // Monster와 캐릭터의 출력 순서 보정
+
     switch (NPCManager::GetInstance()->GetInteractNPCData().state)
     {
     case InteractNPCState::SHOP_NPC:
@@ -161,8 +162,6 @@ void RenderManager::InGameDataRender()
         DrawInventoryItem();    // 인벤 창 출력
         DrawInvenItemExplain();
     }
-
-    
 
     //UI 출력
     DrawCharUIData(TextureName::Char_Info, { 10,10 });
@@ -257,6 +256,8 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
 
     // NPC 위치 출력
     DrawNPC();
+    // monster 출력
+    DrawMonster();
 
     // 포탈 위치 출력
     for (const auto& iterator : WorldMapManager::GetInstance()->GetProtalData())
@@ -399,21 +400,21 @@ void RenderManager::DrawInvenItemExplain()
 void RenderManager::DrawPlayer()
 {
     Player* player = GameManager::GetInstance()->GetPlayer();
-    AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::PLAYER_WALK);
-    AnimationObject* attackAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::PLAYER_ATTACK);
+    AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetPlayerAnimationData(TextureName::PLAYER_WALK);
+    AnimationObject* attackAnimationObject = ImageManager::GetInstance()->GetPlayerAnimationData(TextureName::PLAYER_ATTACK);
 
     switch (player->GetState())
     {
     case CharacterInfo::WALK:
         InitPlayerAnimation(CharacterInfo::WALK);
 
-        DrawAnimation(TextureName::PLAYER_WALK, player->GetPos());
+        DrawPlayerAnimation(TextureName::PLAYER_WALK, player->GetPos());
         walkAnimationObject->NextSelectBitmapIndex();                               // 출력 이미지 위치 변경
         break;
     case CharacterInfo::ATTACK:
         InitPlayerAnimation(CharacterInfo::ATTACK);
 
-        DrawAnimation(TextureName::PLAYER_ATTACK, player->GetPos());
+        DrawPlayerAnimation(TextureName::PLAYER_ATTACK, player->GetPos());
         if (attackAnimationObject->NextSelectBitmapIndex())      // 출력 이미지 위치 변경
             player->SetState(CharacterInfo::IDLE);
 
@@ -423,7 +424,7 @@ void RenderManager::DrawPlayer()
         InitPlayerAnimation(CharacterInfo::IDLE);
 
         walkAnimationObject->SetSelectBitmapIndex(CharacterInfo::IDLE);             // 초기 이미지로 변경
-        DrawAnimation(TextureName::PLAYER_WALK, player->GetPos());
+        DrawPlayerAnimation(TextureName::PLAYER_WALK, player->GetPos());
         break;
     }
 }
@@ -445,6 +446,37 @@ void RenderManager::DrawNPC()
     }
 }
 
+void RenderManager::DrawMonster()
+{
+    for (int i = 0; i < static_cast<int>(ImageManager::GetInstance()->GetMonsterAnimation()->size()); i++)
+    {
+        AnimationObject* animationObject = &(*ImageManager::GetInstance()->GetMonsterAnimation())[i];
+        switch ((*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetDir())
+        {
+        case CharacterInfo::WALK:
+            animationObject->SetSelectAnimationBitmapIndex(
+                (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetDir());       // 방향에 따른 방향 애니메이션 설정
+
+            DrawMonsterAnimation(i);
+            animationObject->NextSelectBitmapIndex();                               // 출력 이미지 위치 변경
+            break;
+        case CharacterInfo::ATTACK:
+            //DrawMonsterAnimation(i);
+            //if (animationObject->NextSelectBitmapIndex())      // 출력 이미지 위치 변경
+            //    (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].SetState(CharacterInfo::IDLE);
+            break;
+        case CharacterInfo::IDLE:
+            animationObject->SetSelectAnimationBitmapIndex(
+                (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetDir());       // 방향에 따른 방향 애니메이션 설정
+
+            animationObject->SetSelectBitmapIndex(CharacterInfo::IDLE);             // 초기 이미지로 변경
+            DrawMonsterAnimation(i);
+        default:
+            break;
+        }
+    } 
+}
+
 void RenderManager::DrawNpcOrderPos()
 {
     for (const auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetNPCData()))
@@ -462,6 +494,19 @@ void RenderManager::DrawNpcOrderPos()
             iterator.pos.x * TILE_SIZE, iterator.pos.y * TILE_SIZE,
             bit.bmWidth, bit.bmHeight,
             backMemDC, 0, 0, bit.bmWidth, bit.bmHeight, RGB(215, 123, 186));
+    }
+}
+
+void RenderManager::DrawMonsterOrderPos()
+{
+    for (int i = 0; i < static_cast<int>((*WorldMapManager::GetInstance()
+        ->GetWorldMap()->GetMonsterData()).size()); i++)
+    {
+        if (!((*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetPos().y + MONSTER1_PIVOT_POS.y > static_cast<long>(
+            (GameManager::GetInstance()->GetPlayer()->GetPos().y) + PLAYER_PIVOT_POS.y)))
+            continue;
+
+        DrawMonsterAnimation(i);
     }
 }
 
@@ -580,9 +625,9 @@ void RenderManager::DrawCursorFollowBitmap()
     BitBlt(memDC, mousePoint.x, mousePoint.y, bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, SRCCOPY);
 }
 
-void RenderManager::DrawAnimation(const int uiName, const DPOINT pos)
+void RenderManager::DrawPlayerAnimation(const int uiName, const DPOINT pos)
 {
-    AnimationObject* animationObject = ImageManager::GetInstance()->GetAnimationData(uiName);
+    AnimationObject* animationObject = ImageManager::GetInstance()->GetPlayerAnimationData(uiName);
 
     if (nullptr == animationObject)
         return;
@@ -602,8 +647,8 @@ void RenderManager::DrawAnimation(const int uiName, const DPOINT pos)
 
 void RenderManager::InitPlayerAnimation(const int state)
 {
-    AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::PLAYER_WALK);
-    AnimationObject* attackAnimationObject = ImageManager::GetInstance()->GetAnimationData(TextureName::PLAYER_ATTACK);
+    AnimationObject* walkAnimationObject = ImageManager::GetInstance()->GetPlayerAnimationData(TextureName::PLAYER_WALK);
+    AnimationObject* attackAnimationObject = ImageManager::GetInstance()->GetPlayerAnimationData(TextureName::PLAYER_ATTACK);
 
     switch (state)
     {
@@ -619,4 +664,28 @@ void RenderManager::InitPlayerAnimation(const int state)
             GameManager::GetInstance()->GetPlayer()->GetDir());       // 방향에 따른 방향 애니메이션 설정
         break;
     }
+}
+
+void RenderManager::DrawMonsterAnimation(const int index)
+{
+    AnimationObject* animationObject = &(*ImageManager::GetInstance()->GetMonsterAnimation())[index];
+
+    if (nullptr == animationObject)
+        return;
+
+    int animationIndex = animationObject->GetSelectAnimationBitmapIndex();
+    int selectBitmapIndex = animationObject->GetSelectBitmapIndex();
+    int count = animationObject->GetBitmapCount(animationIndex);
+
+    HBITMAP bitmap = animationObject->GetAnimationBitmap(animationIndex);
+    BITMAP bit;
+    SelectObject(backMemDC, bitmap);
+    GetObject(bitmap, sizeof(bit), &bit);
+    
+    TransparentBlt(memDC, 
+        static_cast<int>((*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[index].GetPos().x), 
+        static_cast<int>((*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[index].GetPos().y),
+        bit.bmWidth / count, bit.bmHeight,
+        backMemDC, selectBitmapIndex * (bit.bmWidth / count), 0, bit.bmWidth / count,
+        bit.bmHeight, RGB(215, 123, 186));
 }

@@ -61,3 +61,13 @@ void WorldMap::SetNPCData(const FieldNPC fieldNPC)
 {
 	npcData.emplace_back(fieldNPC);
 }
+
+vector<Monster>* WorldMap::GetMonsterData()
+{
+	return &fieldMonster;
+}
+
+void WorldMap::SetMonsterData(const Monster monster)
+{
+	fieldMonster.emplace_back(monster);
+}

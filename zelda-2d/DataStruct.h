@@ -8,6 +8,7 @@ constexpr const int MAP_MAX_X = 25;	// 행의 개수
 constexpr const int MAP_MAX_Y = 19;	// 열의 개수
 
 constexpr const POINT PLAYER_PIVOT_POS = { 16,47 };	// 캐릭터 콜라이더 기준 좌표 
+constexpr const POINT MONSTER1_PIVOT_POS = { 32,53 };	// 몬스터1 콜라이더 기준 좌표 
 
 constexpr const POINT STAGE2_SPAWN_POS = { 642, 115 };	// 오두막 집 문의 위치, 기준 위치로 부터 + alpah 값
 constexpr const POINT WOOD_HOUSE_DOOR_POS = {2, 4};	// 오두막 집 문의 위치, 기준 위치로 부터 + alpah 값
@@ -106,13 +107,24 @@ namespace TextureName
 		NINE,
 	};
 
-	enum Animation
+	enum PlayerAnimation
 	{
 		PLAYER_WALK,
 		PLAYER_ATTACK,
 		PLAYER_HOLD_WALK,
 	};
+
+	enum MonsterAnimation
+	{
+		MONSTER_WALK,
+	};
 }
+
+enum class AnimationKind
+{
+	PLAYER,
+	MONSTER,
+};
 
 enum class SelectMapState
 {

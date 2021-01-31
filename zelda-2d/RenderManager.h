@@ -64,9 +64,11 @@ public:
 	void DrawInventoryItem();	// 인벤토리 아이템 그리기
 	void DrawInvenItemExplain();	// 인벤 창 아이템 설명 그리기
 
-	void DrawPlayer();
-	void DrawNPC();
+	void DrawPlayer();			
+	void DrawNPC();				// NPC 출력
+	void DrawMonster();			// 적 출력
 	void DrawNpcOrderPos();		// 출력 순서에 따른 NPC 출력
+	void DrawMonsterOrderPos();	// 출력 순서에 따른 NPC 출력
 	void DrawShop();			// 상점 출력
 	void DrawCharUIData(const int uiName, const POINT pos);
 
@@ -74,9 +76,10 @@ public:
 	void DrawCursorFollowBitmap();
 
 public:
-	void DrawAnimation(const int uiName, const DPOINT pos);
-
+	void DrawPlayerAnimation(const int uiName, const DPOINT pos);
 	void InitPlayerAnimation(const int state);
+
+	void DrawMonsterAnimation(const int index);
 
 };
 

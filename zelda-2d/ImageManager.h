@@ -24,8 +24,8 @@ private:
 	map<int, string> backgroundStringData;		// 문자열 데이터
 	map<int, string> objectStringData;			// 문자열 데이터
 
-	vector<AnimationObject> animationData;	// 애니메이션 데이터
-
+	vector<AnimationObject> playerAnimationData;	// 플레이어 애니메이션 데이터
+	vector<AnimationObject> MonsterAnimationData;	// 몬스터 애니메이션 데이터
 private:
 	static ImageManager* instance;
 
@@ -40,12 +40,13 @@ public:
 	void LoadBitmapPathData(const BitmapKind kind, const string str);
 	void LoadMapBitmapData();
 
-	void LoadAnimationBitmapData(const string str);
+	void LoadAnimationBitmapData(const AnimationKind kind, const string str);
 public:
 	const HBITMAP GetMainFrameBitmap();
 	
 	const HBITMAP GetBitmapData(const BitmapKind kind, const int selectNumber);
 	const string GetStringData(const BitmapKind kind, const int selectNumber);
 
-	AnimationObject* GetAnimationData(const int uiName);
+	AnimationObject* GetPlayerAnimationData(const int uiName);
+	vector<AnimationObject>* GetMonsterAnimation();
 };

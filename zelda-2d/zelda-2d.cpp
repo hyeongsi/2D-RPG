@@ -201,7 +201,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 gameManager->SetInventory(new Inventory());     // 인벤토리 생성
 
                 imageManager->LoadMapBitmapData();                      // 인게임에서 사용할 맵 관련 비트맵 로드
-                imageManager->LoadAnimationBitmapData(PLAYER_ANIMATION_PATH);    // 인게임에서 사용할 플레이어 애니메이션 로드
+                imageManager->LoadAnimationBitmapData(AnimationKind::PLAYER, PLAYER_ANIMATION_PATH);    // 인게임에서 사용할 플레이어 애니메이션 로드
+                
+                monsterManager->LoadBitmapPath();   // 몬스터 이미지 경로 로드
+                for (const auto iterator : (*monsterManager->GetbitmapPath()))
+                {
+                    imageManager->LoadAnimationBitmapData(AnimationKind::MONSTER, iterator);    // 인게임에서 사용할 몬스터 애니메이션 로드
+                }
 
                 imageManager->LoadBitmapPathData(BitmapKind::UI, UI_BITMAP_PATH);   // 인게임에서 사용할 UI 비트맵 로드
                 imageManager->LoadBitmapPathData(BitmapKind::ITEM, ITEM_BITMAP_PATH);   // 인게임에서 사용할 아이템 비트맵 로드

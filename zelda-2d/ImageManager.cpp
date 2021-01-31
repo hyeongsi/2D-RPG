@@ -85,7 +85,7 @@ void ImageManager::LoadMapBitmapData()
 	LoadBitmapPathData(BitmapKind::OBJECT, OBJECT_BITMAP_PATH);
 }
 
-void ImageManager::LoadAnimationBitmapData(const string str)
+void ImageManager::LoadAnimationBitmapData(const AnimationKind kind, const string str)
 {
 	ifstream readFile;
 	string animationCount;
@@ -93,6 +93,20 @@ void ImageManager::LoadAnimationBitmapData(const string str)
 	string path;
 	string bitmapCount;
 	string delay;
+
+	vector<AnimationObject>* animationData = nullptr;
+
+	switch (kind)
+	{
+	case AnimationKind::PLAYER:
+		animationData = &playerAnimationData;
+		break;
+	case AnimationKind::MONSTER:
+		animationData = &MonsterAnimationData;
+		break;
+	default:
+		return;
+	}
 
 	try
 	{
@@ -105,17 +119,17 @@ void ImageManager::LoadAnimationBitmapData(const string str)
 				readFile >> size;
 
 				AnimationObject animationObject;
-				animationData.emplace_back(animationObject);
+				animationData->emplace_back(animationObject);
 				for (int i = 0; i < stoi(size); i++)
 				{
 					readFile >> path;
-					animationData.back().AddAnimationBitmap((HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION));
+					animationData->back().AddAnimationBitmap((HBITMAP)LoadImageA(hInst, path.c_str(), IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION));
 
 					readFile >> bitmapCount;
-					animationData.back().AddBitmapCount(stoi(bitmapCount));
+					animationData->back().AddBitmapCount(stoi(bitmapCount));
 
 					readFile >> delay;
-					animationData.back().AddDelay(stoi(delay));
+					animationData->back().AddDelay(stoi(delay));
 				}
 			}		
 		}
@@ -178,10 +192,15 @@ const string ImageManager::GetStringData(const BitmapKind kind, const int select
 	}
 }
 
-AnimationObject* ImageManager::GetAnimationData(const int uiName)
+AnimationObject* ImageManager::GetPlayerAnimationData(const int uiName)
 {
-	if (0 <= uiName && uiName < static_cast<int>(animationData.size()))
-		return &animationData[uiName];
+	if (0 <= uiName && uiName < static_cast<int>(playerAnimationData.size()))
+		return &playerAnimationData[uiName];
 	else
 		return nullptr;
+}
+
+vector<AnimationObject>* ImageManager::GetMonsterAnimation()
+{
+	return &MonsterAnimationData;
 }

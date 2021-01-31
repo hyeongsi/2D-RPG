@@ -24,3 +24,7 @@ protalPosition
 npc 
 npcImage x y kind index
 0
+monster
+2
+0 19 8
+1 19 10

@@ -2,6 +2,7 @@
 #include "WorldMapManager.h"
 #include "MapEdittor.h"
 #include "GameManager.h"
+#include "MonsterManager.h"
 #include <fstream>
 
 WorldMapManager* WorldMapManager::instance = nullptr;
@@ -344,6 +345,32 @@ void WorldMapManager::LoadEventData(const int stage)
 				worldMap.SetData(SelectMapState::EVENT, { value[0],value[1]+1 }, Event::INTERACT_NPC);
 
 				worldMap.SetNPCData(fieldNPC);
+			}
+
+			readFile >> str;	// 구분 문자열 제거
+			readFile >> number;	// 반복 수
+			Monster monster;
+
+			worldMap.GetMonsterData()->clear();	// monster 데이터 초기화
+			for (int i = 0; i < stoi(number); i++)
+			{
+				readFile >> str;	// index
+
+				if (stoi(str) >= 0 &&
+					stoi(str) < static_cast<int>(MonsterManager::GetInstance()->GetMonsterData().size()))
+				{
+					monster = MonsterManager::GetInstance()->GetMonsterData()[stoi(str)];
+					monster.SetIndex(stoi(str));	// index
+				}
+				
+				DPOINT pos;
+				readFile >> str;	// x
+				pos.x = stod(str) * TILE_SIZE;
+				readFile >> str;	// y
+				pos.y = stod(str) * TILE_SIZE;
+
+				monster.SetPos(pos);
+				worldMap.SetMonsterData(monster);
 			}
 		}
 	}

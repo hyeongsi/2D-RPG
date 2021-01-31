@@ -27,6 +27,37 @@ void MonsterManager::ReleaseInstance()
 	instance = nullptr;
 }
 
+vector<Monster> MonsterManager::GetMonsterData()
+{
+	return monsterData;
+}
+
+void MonsterManager::LoadBitmapPath()
+{
+	ifstream readFile;
+	string str;
+
+	try
+	{
+		readFile.open(MONSTER_BITMAP_PATH);
+
+		if (readFile.is_open())
+		{
+			while (!readFile.eof())
+			{
+				readFile >> str;	// index
+				readFile >> str;	// path
+				monsterBitmapPath.emplace_back(str);
+			}
+		}
+	}
+	catch (const std::exception&)
+	{
+	}
+
+	readFile.close();
+}
+
 void MonsterManager::LoadMonsterData()
 {
 	const int explainTextSize = 6;
@@ -68,4 +99,9 @@ void MonsterManager::LoadMonsterData()
 	}
 
 	readFile.close();
+}
+
+const vector<string>* MonsterManager::GetbitmapPath()
+{
+	return &monsterBitmapPath;
 }

@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "DataStruct.h"
 #include <vector>
+#include "Monster.h"
 
 using namespace std;
 
@@ -12,7 +13,9 @@ private:
 	int coliderData[MAP_MAX_Y][MAP_MAX_X]{ 0 };		// 콜라이더 정보
 	int eventData[MAP_MAX_Y][MAP_MAX_X]{ 0 };		// 이벤트 정보
 
-	vector<FieldNPC> npcData;		// npc 정보
+	vector<FieldNPC> npcData;		// npc
+	vector<Monster> fieldMonster;	// monster
+
 public:
 	friend class MapEdittor;
 
@@ -21,5 +24,8 @@ public:
 
 	vector<FieldNPC>* GetNPCData();
 	void SetNPCData(const FieldNPC fieldNPC);
+
+	vector<Monster>* GetMonsterData();
+	void SetMonsterData(const Monster monster);
 };
 
