@@ -33,6 +33,8 @@ public:
 	const int GetHp();
 	void SetHp(const int hp);
 
+	const int GetSpeed();
+
 	const int GetDamage();
 	void SetDamage(const int damage);
 
@@ -40,6 +42,7 @@ public:
 	void SetState(const int state);
 
 	const int GetDir();
+	void SetDir(const int dir);
 
 	const int GetMoney();
 	void SetMoney(const int money);

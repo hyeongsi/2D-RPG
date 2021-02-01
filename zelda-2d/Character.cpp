@@ -60,6 +60,11 @@ void Character::SetHp(const int hp)
 		this->hp = hp;
 }
 
+const int Character::GetSpeed()
+{
+	return speed;
+}
+
 const int Character::GetDamage()
 {
 	return damage;
@@ -83,6 +88,11 @@ void Character::SetState(const int state)
 const int Character::GetDir()
 {
 	return dir;
+}
+
+void Character::SetDir(const int dir)
+{
+	this->dir = dir;
 }
 
 const int Character::GetMoney()

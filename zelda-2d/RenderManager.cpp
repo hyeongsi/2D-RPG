@@ -450,7 +450,9 @@ void RenderManager::DrawMonster()
 {
     for (int i = 0; i < static_cast<int>(ImageManager::GetInstance()->GetMonsterAnimation()->size()); i++)
     {
-        AnimationObject* animationObject = &(*ImageManager::GetInstance()->GetMonsterAnimation())[i];
+        AnimationObject* animationObject = &(*ImageManager::GetInstance()->GetMonsterAnimation())[
+            (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetIndex()];
+       
         if (i >= static_cast<int>(WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->size()) || i < 0)
             return;
 
@@ -676,6 +678,8 @@ void RenderManager::DrawMonsterAnimation(const int index)
     int animationIndex = animationObject->GetSelectAnimationBitmapIndex();
     int selectBitmapIndex = animationObject->GetSelectBitmapIndex();
     int count = animationObject->GetBitmapCount(animationIndex);
+    if ((*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[index].GetDir() == CharacterInfo::RIGHT)
+        animationObject->GetBitmapCount(animationIndex);
 
     HBITMAP bitmap = animationObject->GetAnimationBitmap(animationIndex);
     BITMAP bit;

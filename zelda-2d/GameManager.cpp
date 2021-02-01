@@ -14,6 +14,8 @@ GameManager::GameManager()
 	inputTick = GetTickCount64();
 	eventTick = GetTickCount64();
 	attackTick = GetTickCount64();
+	playerHitTick = GetTickCount64();
+	monsterHitTick = GetTickCount64();
 
 	state = GameState::MAIN;
 	player = nullptr;
@@ -70,7 +72,8 @@ void GameManager::Input()
 void GameManager::Run()
 {
 	DPOINT prevPos = player->GetPos();	
-	player->Input(time->Update());
+	double deltaTime = time->Update();
+	player->Input(deltaTime);
 	POINT pivotPos;
 
 	switch (player->GetState())
@@ -117,6 +120,30 @@ void GameManager::Run()
 		DieMonster();		// 몬스터 죽음 처리
 
 		break;
+	}
+
+	// 몬스터 처리
+	const int hitDelay = 150;
+	for (auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()))
+	{
+		switch (iterator.GetState())
+		{
+		case CharacterInfo::IDLE:
+			FindPlayer(&iterator);
+			break;
+		case CharacterInfo::WALK:
+			FindPlayer(&iterator);
+			break;
+		case CharacterInfo::ATTACK:
+			AttackPlayer(&iterator, deltaTime);
+			break;
+		case CharacterInfo::HIT:
+			if (GetTickCount64() > monsterHitTick + hitDelay)
+				iterator.SetState(CharacterInfo::ATTACK);
+			break;
+		default:
+			break;
+		}
 	}
 }
 
@@ -337,6 +364,8 @@ void GameManager::AttackMonster()
 		{
 			iterator.SetHp(iterator.GetHp() - player->GetDamage());		// 몬스터 hp -- 처리
 			iterator.SetPos({ iterator.GetPos().x + pushOutPos.x , iterator.GetPos().y + pushOutPos.y });	// 밀려남 처리
+			monsterHitTick = GetTickCount64();
+			iterator.SetState(CharacterInfo::HIT);
 
 			// 밀려남 처리 (맵 나가는거 보정)
 			constexpr const int LIMIT_MAP_X_CORRECTION = 32;	// 맵 밖으로 나가는 경우 보정 크기
@@ -381,6 +410,137 @@ void GameManager::DieMonster()
 		}
 		else
 			iterator++;
+	}
+}
+
+void GameManager::FindPlayer(Monster* monster)
+{
+	const int detectSize = 100;
+	RECT findRect = { {static_cast<LONG>(monster->GetPos().x + MONSTER1_PIVOT_POS.x - detectSize)},
+		{static_cast<LONG>(monster->GetPos().y + MONSTER1_PIVOT_POS.y - detectSize)},
+		{static_cast<LONG>(monster->GetPos().x + MONSTER1_PIVOT_POS.x + detectSize)},
+		{static_cast<LONG>(monster->GetPos().y + MONSTER1_PIVOT_POS.y + detectSize)}};
+
+	// 플레이어의 위치가 감지범위 내에 왔을경우
+	if (findRect.left <= player->GetPos().x + PLAYER_PIVOT_POS.x &&
+		findRect.top <= player->GetPos().y + PLAYER_PIVOT_POS.y &&
+		findRect.right >= player->GetPos().x + PLAYER_PIVOT_POS.x &&
+		findRect.bottom >= player->GetPos().y + PLAYER_PIVOT_POS.y)
+	{
+		monster->SetState(CharacterInfo::ATTACK);
+	}
+}
+
+void GameManager::AttackPlayer(Monster* monster, const double deltaTime)
+{
+	const int attackColliderSize = 13;
+	// 공격 범위 안에 플레이어 접촉 상태
+	if (monster->GetPos().x + MONSTER1_PIVOT_POS.x - attackColliderSize <= player->GetPos().x + PLAYER_PIVOT_POS.x &&
+		monster->GetPos().x + MONSTER1_PIVOT_POS.x + attackColliderSize >= player->GetPos().x + PLAYER_PIVOT_POS.x &&
+		monster->GetPos().y + MONSTER1_PIVOT_POS.y - attackColliderSize <= player->GetPos().y + PLAYER_PIVOT_POS.y &&
+		monster->GetPos().y + MONSTER1_PIVOT_POS.y + attackColliderSize >= player->GetPos().y + PLAYER_PIVOT_POS.y)
+	{
+		if (GetTickCount64() > playerHitTick + 1000)
+		{
+			playerHitTick = GetTickCount64();
+			player->SetState(CharacterInfo::HIT);
+			player->SetHp(player->GetHp() - monster->GetDamage());
+
+			PushOutPlayer(monster->GetDir());
+		}
+
+		return;
+	}
+
+	const int retouchPivotPos = 6;
+	POINT diffPos;
+	// x 값 비교
+	if (static_cast<int>(player->GetPos().x) + PLAYER_PIVOT_POS.x > static_cast<int>(monster->GetPos().x) + MONSTER1_PIVOT_POS.x)
+		diffPos.x = 1;
+	else if (static_cast<int>(player->GetPos().x) + PLAYER_PIVOT_POS.x < static_cast<int>(monster->GetPos().x) + MONSTER1_PIVOT_POS.x)
+		diffPos.x = -1;
+	else
+		diffPos.x = 0;
+
+	// y 값 비교
+	if (static_cast<int>(player->GetPos().y) + PLAYER_PIVOT_POS.y + retouchPivotPos > static_cast<int>(monster->GetPos().y) + MONSTER1_PIVOT_POS.y)
+		diffPos.y = 1;
+	else if (static_cast<int>(player->GetPos().y) + PLAYER_PIVOT_POS.y + retouchPivotPos < static_cast<int>(monster->GetPos().y) + MONSTER1_PIVOT_POS.y)
+		diffPos.y = -1;
+	else
+		diffPos.y = 0;
+
+	// 대각선 이동 보정
+	if (diffPos.x == 0 && diffPos.y == 0)
+	{
+		monster->SetPos({ monster->GetPos().x + ((monster->GetSpeed() * deltaTime /2) * diffPos.x) ,
+		monster->GetPos().y });
+
+		monster->SetPos({ monster->GetPos().x,
+		monster->GetPos().y + ((monster->GetSpeed() * deltaTime /2) * diffPos.y )});
+	}
+	else
+	{
+		monster->SetPos({ monster->GetPos().x + ((monster->GetSpeed() * deltaTime) * diffPos.x) ,
+		monster->GetPos().y + ((monster->GetSpeed() * deltaTime) * diffPos.y) });
+	}
+
+	// 방향 설정
+	if (diffPos.x > 0)
+		monster->SetDir(CharacterInfo::RIGHT);
+	else if (diffPos.x < 0)
+		monster->SetDir(CharacterInfo::LEFT);
+	else if (diffPos.y > 0)
+		monster->SetDir(CharacterInfo::DOWN);
+	else if (diffPos.y < 0)
+		monster->SetDir(CharacterInfo::UP);
+}
+
+void GameManager::PushOutPlayer(const int dir)
+{
+	const int pushedOutSize = 30;		// 피격 시 밀려나는 크기
+	DPOINT pushCorrectionPos = { 0,0 };	// 콜라이더 접근 시 이동 보정 수치
+	switch (dir)
+	{
+	case CharacterInfo::DOWN:
+		player->SetPos({ player->GetPos().x , player->GetPos().y + pushedOutSize });
+		pushCorrectionPos = { 0 , -1 };
+		break;
+	case CharacterInfo::RIGHT:
+		player->SetPos({ player->GetPos().x + pushedOutSize, player->GetPos().y });
+		pushCorrectionPos = { +1 , 0 };
+		break;
+	case CharacterInfo::UP:
+		player->SetPos({ player->GetPos().x , player->GetPos().y - pushedOutSize });
+		pushCorrectionPos = { 0 , +1 };
+		break;
+	case CharacterInfo::LEFT:
+		player->SetPos({ player->GetPos().x - pushedOutSize, player->GetPos().y });
+		pushCorrectionPos = { -1 , 0 };
+		break;
+	}
+
+	// 밀려남 처리 (맵 나가는거 보정)
+	constexpr const int LIMIT_MAP_X_CORRECTION = 32;	// 맵 밖으로 나가는 경우 보정 크기
+	constexpr const int LIMIT_MAP_Y_CORRECTION = 46;	// 맵 밖으로 나가는 경우 보정 크기
+
+	if (0 > static_cast<int>(player->GetPos().x) || ClientSize::width - LIMIT_MAP_X_CORRECTION < static_cast<int>(player->GetPos().x))
+	{
+		player->SetPos({ static_cast<double>(ClientSize::width - LIMIT_MAP_X_CORRECTION) , player->GetPos().y });	// 밀려남 처리
+	}
+	if (0 > static_cast<int>(player->GetPos().y) || ClientSize::height - LIMIT_MAP_Y_CORRECTION < static_cast<int>(player->GetPos().y))
+	{
+		player->SetPos({ player->GetPos().x , static_cast<double>(ClientSize::height - LIMIT_MAP_Y_CORRECTION) });	// 밀려남 처리
+	}
+
+	// 맵 콜라이더 나가는거 보정
+	POINT monsterMapPos = GetPlayerPivotMapPoint();
+
+	while (0 != WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::COLLIDER, monsterMapPos))
+	{
+		player->SetPos({ player->GetPos().x + pushCorrectionPos.x, player->GetPos().y + pushCorrectionPos.y });	// 밀려남 처리
+		monsterMapPos.x = ((static_cast<int>(player->GetPos().x) + PLAYER_PIVOT_POS.x)) / TILE_SIZE;
+		monsterMapPos.y = ((static_cast<int>(player->GetPos().y) + PLAYER_PIVOT_POS.y)) / TILE_SIZE;
 	}
 }
 
