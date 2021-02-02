@@ -473,8 +473,8 @@ void GameManager::AttackPlayer(Monster* monster, const double deltaTime)
 	// 대각선 이동 보정
 	if (diffPos.x == 0 && diffPos.y == 0)
 	{
-		monster->SetPos({ monster->GetPos().x + ((monster->GetSpeed() * deltaTime ) * diffPos.x) / sqrt(2) ,
-		monster->GetPos().y + ((monster->GetSpeed() * deltaTime) * diffPos.y) / sqrt(2) });
+		monster->SetPos({ monster->GetPos().x + ((monster->GetSpeed() * deltaTime ) * diffPos.x) * sqrt(2) / 2 ,
+		monster->GetPos().y + ((monster->GetSpeed() * deltaTime) * diffPos.y) * sqrt(2) / 2 });
 	}
 	else
 	{
@@ -495,7 +495,7 @@ void GameManager::AttackPlayer(Monster* monster, const double deltaTime)
 
 void GameManager::PushOutPlayer(const int dir)
 {
-	const int pushedOutSize = 30;		// 피격 시 밀려나는 크기
+	const int pushedOutSize = 25;		// 피격 시 밀려나는 크기
 	DPOINT pushCorrectionPos = { 0,0 };	// 콜라이더 접근 시 이동 보정 수치
 	switch (dir)
 	{
@@ -505,7 +505,7 @@ void GameManager::PushOutPlayer(const int dir)
 		break;
 	case CharacterInfo::RIGHT:
 		player->SetPos({ player->GetPos().x + pushedOutSize, player->GetPos().y });
-		pushCorrectionPos = { +1 , 0 };
+		pushCorrectionPos = { -1 , 0 };
 		break;
 	case CharacterInfo::UP:
 		player->SetPos({ player->GetPos().x , player->GetPos().y - pushedOutSize });
@@ -513,7 +513,7 @@ void GameManager::PushOutPlayer(const int dir)
 		break;
 	case CharacterInfo::LEFT:
 		player->SetPos({ player->GetPos().x - pushedOutSize, player->GetPos().y });
-		pushCorrectionPos = { -1 , 0 };
+		pushCorrectionPos = { +1 , 0 };
 		break;
 	}
 
@@ -521,23 +521,27 @@ void GameManager::PushOutPlayer(const int dir)
 	constexpr const int LIMIT_MAP_X_CORRECTION = 32;	// 맵 밖으로 나가는 경우 보정 크기
 	constexpr const int LIMIT_MAP_Y_CORRECTION = 46;	// 맵 밖으로 나가는 경우 보정 크기
 
-	if (0 > static_cast<int>(player->GetPos().x) || ClientSize::width - LIMIT_MAP_X_CORRECTION < static_cast<int>(player->GetPos().x))
+	if (0 > static_cast<int>(player->GetPos().x))	// x 왼벽 이탈
 	{
-		player->SetPos({ static_cast<double>(ClientSize::width - LIMIT_MAP_X_CORRECTION) , player->GetPos().y });	// 밀려남 처리
+		player->SetPos({ 0, player->GetPos().y });
 	}
-	if (0 > static_cast<int>(player->GetPos().y) || ClientSize::height - LIMIT_MAP_Y_CORRECTION < static_cast<int>(player->GetPos().y))
+	else if(ClientSize::width - LIMIT_MAP_X_CORRECTION < static_cast<int>(player->GetPos().x))	// x 오른벽 이탈
 	{
-		player->SetPos({ player->GetPos().x , static_cast<double>(ClientSize::height - LIMIT_MAP_Y_CORRECTION) });	// 밀려남 처리
+		player->SetPos({ static_cast<double>(ClientSize::width - LIMIT_MAP_X_CORRECTION) , player->GetPos().y });
+	}
+	else if (0 > static_cast<int>(player->GetPos().y))	// y 윗벽 이탈
+	{
+		player->SetPos({ player->GetPos().x, 0 });	
+	}
+	else if (ClientSize::height - LIMIT_MAP_Y_CORRECTION < static_cast<int>(player->GetPos().y)) // y 아래벽 이탈
+	{
+		player->SetPos({ player->GetPos().x , static_cast<double>(ClientSize::height - LIMIT_MAP_Y_CORRECTION) });
 	}
 
 	// 맵 콜라이더 나가는거 보정
-	POINT monsterMapPos = GetPlayerPivotMapPoint();
-
-	while (0 != WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::COLLIDER, monsterMapPos))
+	while (0 != WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::COLLIDER, { GetPlayerPivotMapPoint().x, GetPlayerPivotMapPoint().y}))
 	{
 		player->SetPos({ player->GetPos().x + pushCorrectionPos.x, player->GetPos().y + pushCorrectionPos.y });	// 밀려남 처리
-		monsterMapPos.x = ((static_cast<int>(player->GetPos().x) + PLAYER_PIVOT_POS.x)) / TILE_SIZE;
-		monsterMapPos.y = ((static_cast<int>(player->GetPos().y) + PLAYER_PIVOT_POS.y)) / TILE_SIZE;
 	}
 }
 

@@ -146,7 +146,7 @@ void RenderManager::InGameDataRender()
 
     DrawPlayer();           // 캐릭터 출력
     DrawNpcOrderPos();      // NPC와 캐릭터의 출력 순서 보정
-    //DrawMonsterOrderPos();  // Monster와 캐릭터의 출력 순서 보정
+    DrawMonsterOrderPos();  // Monster와 캐릭터의 출력 순서 보정
 
     switch (NPCManager::GetInstance()->GetInteractNPCData().state)
     {
@@ -467,6 +467,7 @@ void RenderManager::DrawMonster()
             animationObject->NextSelectBitmapIndex();                               // 출력 이미지 위치 변경
             break;
         case CharacterInfo::IDLE:
+        case CharacterInfo::HIT:
             animationObject->SetSelectAnimationBitmapIndex(
                 (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetDir());       // 방향에 따른 방향 애니메이션 설정
 

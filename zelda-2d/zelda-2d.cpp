@@ -117,7 +117,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             renderManager->MapEdittorDataRender();
             break;
         case GameState::INGAME:
-            if (gameManager->GetPlayer()->GetHp() < 0)
+            if (gameManager->GetPlayer()->GetHp() <= 0)
             {
                 gameManager->SetState(GameState::MAIN); // 게임오버, 초기화 처리 해야함
             }
