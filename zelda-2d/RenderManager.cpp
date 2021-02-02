@@ -146,7 +146,7 @@ void RenderManager::InGameDataRender()
 
     DrawPlayer();           // 캐릭터 출력
     DrawNpcOrderPos();      // NPC와 캐릭터의 출력 순서 보정
-    DrawMonsterOrderPos();  // Monster와 캐릭터의 출력 순서 보정
+    //DrawMonsterOrderPos();  // Monster와 캐릭터의 출력 순서 보정
 
     switch (NPCManager::GetInstance()->GetInteractNPCData().state)
     {
@@ -450,13 +450,13 @@ void RenderManager::DrawMonster()
 {
     for (int i = 0; i < static_cast<int>(ImageManager::GetInstance()->GetMonsterAnimation()->size()); i++)
     {
-        AnimationObject* animationObject = &(*ImageManager::GetInstance()->GetMonsterAnimation())[
-            (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetIndex()];
-       
         if (i >= static_cast<int>(WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->size()) || i < 0)
             return;
 
-        switch ((*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetDir())
+        AnimationObject* animationObject = &(*ImageManager::GetInstance()->GetMonsterAnimation())[
+            (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetIndex()];
+
+        switch ((*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetState())
         {
         case CharacterInfo::WALK:
         case CharacterInfo::ATTACK:

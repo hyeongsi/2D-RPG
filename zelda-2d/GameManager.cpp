@@ -473,11 +473,8 @@ void GameManager::AttackPlayer(Monster* monster, const double deltaTime)
 	// 대각선 이동 보정
 	if (diffPos.x == 0 && diffPos.y == 0)
 	{
-		monster->SetPos({ monster->GetPos().x + ((monster->GetSpeed() * deltaTime /2) * diffPos.x) ,
-		monster->GetPos().y });
-
-		monster->SetPos({ monster->GetPos().x,
-		monster->GetPos().y + ((monster->GetSpeed() * deltaTime /2) * diffPos.y )});
+		monster->SetPos({ monster->GetPos().x + ((monster->GetSpeed() * deltaTime ) * diffPos.x) / sqrt(2) ,
+		monster->GetPos().y + ((monster->GetSpeed() * deltaTime) * diffPos.y) / sqrt(2) });
 	}
 	else
 	{
