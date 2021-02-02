@@ -1,5 +1,7 @@
 ﻿#include "pch.h"
 #include "MonsterManager.h"
+#include "WorldMapManager.h"
+#include "GameManager.h"
 #include <fstream>
 #include <string>
 
@@ -106,4 +108,106 @@ void MonsterManager::LoadMonsterData()
 const vector<string>* MonsterManager::GetbitmapPath()
 {
 	return &monsterBitmapPath;
+}
+
+void MonsterManager::FindPlayer(Monster* monster)
+{
+	const int detectSize = 100;
+	RECT findRect = { {static_cast<LONG>(monster->GetPos().x + MONSTER1_PIVOT_POS.x - detectSize)},
+		{static_cast<LONG>(monster->GetPos().y + MONSTER1_PIVOT_POS.y - detectSize)},
+		{static_cast<LONG>(monster->GetPos().x + MONSTER1_PIVOT_POS.x + detectSize)},
+		{static_cast<LONG>(monster->GetPos().y + MONSTER1_PIVOT_POS.y + detectSize)} };
+
+	// 플레이어의 위치가 감지범위 내에 왔을경우
+	if (findRect.left <= GameManager::GetInstance()->GetPlayer()->GetPos().x + PLAYER_PIVOT_POS.x &&
+		findRect.top <= GameManager::GetInstance()->GetPlayer()->GetPos().y + PLAYER_PIVOT_POS.y &&
+		findRect.right >= GameManager::GetInstance()->GetPlayer()->GetPos().x + PLAYER_PIVOT_POS.x &&
+		findRect.bottom >= GameManager::GetInstance()->GetPlayer()->GetPos().y + PLAYER_PIVOT_POS.y)
+	{
+		monster->SetState(CharacterInfo::ATTACK);
+	}
+}
+
+void MonsterManager::AttackPlayer(Monster* monster, const double deltaTime)
+{
+	const int attackColliderSize = 13;
+	// 공격 범위 안에 플레이어 접촉 상태
+	if (monster->GetPos().x + MONSTER1_PIVOT_POS.x - attackColliderSize <= GameManager::GetInstance()->GetPlayer()->GetPos().x + PLAYER_PIVOT_POS.x &&
+		monster->GetPos().x + MONSTER1_PIVOT_POS.x + attackColliderSize >= GameManager::GetInstance()->GetPlayer()->GetPos().x + PLAYER_PIVOT_POS.x &&
+		monster->GetPos().y + MONSTER1_PIVOT_POS.y - attackColliderSize <= GameManager::GetInstance()->GetPlayer()->GetPos().y + PLAYER_PIVOT_POS.y &&
+		monster->GetPos().y + MONSTER1_PIVOT_POS.y + attackColliderSize >= GameManager::GetInstance()->GetPlayer()->GetPos().y + PLAYER_PIVOT_POS.y)
+	{
+		if (GetTickCount64() > GameManager::GetInstance()->playerHitTick + 1000)
+		{
+			GameManager::GetInstance()->playerHitTick = GetTickCount64();
+			GameManager::GetInstance()->GetPlayer()->SetState(CharacterInfo::HIT);
+			GameManager::GetInstance()->GetPlayer()->SetHp(
+				GameManager::GetInstance()->GetPlayer()->GetHp() - monster->GetDamage());
+
+			GameManager::GetInstance()->PushOutPlayer(monster->GetDir());
+		}
+	}
+}
+
+void MonsterManager::ChasePlayer(Monster* monster, const double deltaTime)
+{
+	const int retouchPivotPos = 6;
+	POINT diffPos;
+	// x 값 비교
+	if (static_cast<int>(GameManager::GetInstance()->GetPlayer()->GetPos().x) + PLAYER_PIVOT_POS.x >
+		static_cast<int>(monster->GetPos().x) + MONSTER1_PIVOT_POS.x)
+		diffPos.x = 1;
+	else if (static_cast<int>(GameManager::GetInstance()->GetPlayer()->GetPos().x) + PLAYER_PIVOT_POS.x <
+		static_cast<int>(monster->GetPos().x) + MONSTER1_PIVOT_POS.x)
+		diffPos.x = -1;
+	else
+		diffPos.x = 0;
+
+	// y 값 비교
+	if (static_cast<int>(GameManager::GetInstance()->GetPlayer()->GetPos().y) + PLAYER_PIVOT_POS.y + retouchPivotPos >
+		static_cast<int>(monster->GetPos().y) + MONSTER1_PIVOT_POS.y)
+		diffPos.y = 1;
+	else if (static_cast<int>(GameManager::GetInstance()->GetPlayer()->GetPos().y) + PLAYER_PIVOT_POS.y + retouchPivotPos <
+		static_cast<int>(monster->GetPos().y) + MONSTER1_PIVOT_POS.y)
+		diffPos.y = -1;
+	else
+		diffPos.y = 0;
+
+	// 대각선 이동 보정
+	if (diffPos.x == 0 && diffPos.y == 0)
+	{
+		monster->SetPos({ monster->GetPos().x + ((monster->GetSpeed() * deltaTime) * diffPos.x) * sqrt(2) / 2 ,
+		monster->GetPos().y + ((monster->GetSpeed() * deltaTime) * diffPos.y) * sqrt(2) / 2 });
+	}
+	else
+	{
+		monster->SetPos({ monster->GetPos().x + ((monster->GetSpeed() * deltaTime) * diffPos.x) ,
+		monster->GetPos().y + ((monster->GetSpeed() * deltaTime) * diffPos.y) });
+	}
+
+	// 방향 설정
+	if (diffPos.x > 0)
+		monster->SetDir(CharacterInfo::RIGHT);
+	else if (diffPos.x < 0)
+		monster->SetDir(CharacterInfo::LEFT);
+	else if (diffPos.y > 0)
+		monster->SetDir(CharacterInfo::DOWN);
+	else if (diffPos.y < 0)
+		monster->SetDir(CharacterInfo::UP);
+}
+
+void MonsterManager::DieMonster()
+{
+	for (auto iterator = WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->begin();
+		iterator != WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->end();)
+	{
+		if ((*iterator).GetHp() <= 0)
+		{
+			GameManager::GetInstance()->GetPlayer()->SetMoney(GameManager::GetInstance()->GetPlayer()->GetMoney() + (*iterator).GetMoney());
+			GameManager::GetInstance()->GetPlayer()->SetExp((*iterator).GetExp());
+			iterator = WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->erase(iterator);
+		}
+		else
+			iterator++;
+	}
 }

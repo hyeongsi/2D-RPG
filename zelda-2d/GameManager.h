@@ -37,12 +37,12 @@ private:
 	ULONGLONG inputTick;
 	ULONGLONG eventTick;
 	ULONGLONG attackTick;
-	ULONGLONG playerHitTick;
 	ULONGLONG monsterHitTick;
 public:
 	static GameManager* GetInstance();
 	static void ReleaseInstance();
 
+	ULONGLONG playerHitTick;
 public:
 	void Input();
 	void Run();
@@ -53,10 +53,6 @@ public:
 	void RetouchMoveMent(POINT colliderPos[4]);	// 이동 보정
 
 	void AttackMonster();						// 공격
-	void DieMonster();							// 몬스터 죽음 처리
-
-	void FindPlayer(Monster* monster);			// 플레이어 감지
-	void AttackPlayer(Monster* monster, const double deltaTime); // 플레이어를 공격
 
 	void PushOutPlayer(const int dir);	// 플레이어 밀려남 처리
 
