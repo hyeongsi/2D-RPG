@@ -17,7 +17,7 @@ public:
 
 	void SetExp(const int exp);
 public:
-	void Input(const double deltaTime);
+	void Input();
 	void Update();
 };
 

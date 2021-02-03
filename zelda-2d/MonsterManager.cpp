@@ -2,6 +2,7 @@
 #include "MonsterManager.h"
 #include "WorldMapManager.h"
 #include "GameManager.h"
+#include "RenderManager.h"
 #include <fstream>
 #include <string>
 
@@ -128,7 +129,7 @@ void MonsterManager::FindPlayer(Monster* monster)
 	}
 }
 
-void MonsterManager::AttackPlayer(Monster* monster, const double deltaTime)
+void MonsterManager::AttackPlayer(Monster* monster)
 {
 	const int attackColliderSize = 13;
 	// 공격 범위 안에 플레이어 접촉 상태
@@ -144,12 +145,20 @@ void MonsterManager::AttackPlayer(Monster* monster, const double deltaTime)
 			GameManager::GetInstance()->GetPlayer()->SetHp(
 				GameManager::GetInstance()->GetPlayer()->GetHp() - monster->GetDamage());
 
+			// hud 출력 관련 데이터 세팅
+			hudData huddata;
+			huddata.pos = { GameManager::GetInstance()->GetPlayer()->GetPos().x, 
+				GameManager::GetInstance()->GetPlayer()->GetPos().y - 10 };
+			huddata.msg = to_string(GameManager::GetInstance()->GetPlayer()->GetDamage());
+			huddata.color = 0xff0000;
+			RenderManager::GetInstance()->AddHudStringVector(huddata);
+
 			GameManager::GetInstance()->PushOutPlayer(monster->GetDir());
 		}
 	}
 }
 
-void MonsterManager::ChasePlayer(Monster* monster, const double deltaTime)
+void MonsterManager::ChasePlayer(Monster* monster)
 {
 	const int retouchPivotPos = 6;
 	POINT diffPos;
@@ -176,13 +185,13 @@ void MonsterManager::ChasePlayer(Monster* monster, const double deltaTime)
 	// 대각선 이동 보정
 	if (diffPos.x == 0 && diffPos.y == 0)
 	{
-		monster->SetPos({ monster->GetPos().x + ((monster->GetSpeed() * deltaTime) * diffPos.x) * sqrt(2) / 2 ,
-		monster->GetPos().y + ((monster->GetSpeed() * deltaTime) * diffPos.y) * sqrt(2) / 2 });
+		monster->SetPos({ monster->GetPos().x + ((monster->GetSpeed() * Timmer::GetInstance()->deltaTime) * diffPos.x) * sqrt(2) / 2 ,
+		monster->GetPos().y + ((monster->GetSpeed() * Timmer::GetInstance()->deltaTime) * diffPos.y) * sqrt(2) / 2 });
 	}
 	else
 	{
-		monster->SetPos({ monster->GetPos().x + ((monster->GetSpeed() * deltaTime) * diffPos.x) ,
-		monster->GetPos().y + ((monster->GetSpeed() * deltaTime) * diffPos.y) });
+		monster->SetPos({ monster->GetPos().x + ((monster->GetSpeed() * Timmer::GetInstance()->deltaTime) * diffPos.x) ,
+		monster->GetPos().y + ((monster->GetSpeed() * Timmer::GetInstance()->deltaTime) * diffPos.y) });
 	}
 
 	// 방향 설정
@@ -205,6 +214,14 @@ void MonsterManager::DieMonster()
 		{
 			GameManager::GetInstance()->GetPlayer()->SetMoney(GameManager::GetInstance()->GetPlayer()->GetMoney() + (*iterator).GetMoney());
 			GameManager::GetInstance()->GetPlayer()->SetExp((*iterator).GetExp());
+
+			// hud 출력 관련 데이터 세팅
+			hudData huddata;
+			huddata.pos = { static_cast<double>(DRAW_MONEYINFO_UI_POS.x) + 100,
+				static_cast<double>(DRAW_MONEYINFO_UI_POS.y) + 20 };
+			huddata.msg = "+ " + to_string((*iterator).GetMoney());
+			RenderManager::GetInstance()->AddHudStringVector(huddata);
+
 			iterator = WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->erase(iterator);
 		}
 		else

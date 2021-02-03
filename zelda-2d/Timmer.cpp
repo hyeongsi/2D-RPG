@@ -1,25 +1,25 @@
 ﻿#include "pch.h"
-#include "Time.h"
+#include "Timmer.h"
 
-Time* Time::instance = nullptr;
+Timmer* Timmer::instance = nullptr;
 
-Time::Time()
+Timmer::Timmer()
 {
 	Reset();
 }
 
-Time::~Time()
+Timmer::~Timmer()
 {
 }
 
-void Time::Reset()
+void Timmer::Reset()
 {
 	QueryPerformanceFrequency(&countTime);
 	QueryPerformanceCounter(&curTime);
 	QueryPerformanceCounter(&prevTime);
 }
 
-const double Time::Update()
+const double Timmer::Update()
 {
 	QueryPerformanceCounter(&curTime);
 
@@ -31,15 +31,15 @@ const double Time::Update()
 	return deltaTime;
 }
 
-Time* Time::GetInstance()
+Timmer* Timmer::GetInstance()
 {
 	if (nullptr == instance)
-		instance = new Time();
+		instance = new Timmer();
 
 	return instance;
 }
 
-void Time::ReleaseInstance()
+void Timmer::ReleaseInstance()
 {
 	delete instance;
 	instance = nullptr;

@@ -2,7 +2,7 @@
 #include "DataStruct.h"
 #include "WorldMap.h"
 #include "Player.h"
-#include "Time.h"
+#include "Timmer.h"
 #include "ShopNPC.h"
 #include "Item.h"
 #include "Inventory.h"
@@ -24,7 +24,7 @@ private:
 	Player* player;
 	Inventory* inventory;
 
-	Time* time;
+	Timmer* time;
 
 	InteractionManager* interactionManager;
 

@@ -1,5 +1,6 @@
 ﻿#include "pch.h"
 #include "Player.h"
+#include "Timmer.h"
 
 Player::Player() : Character()
 {
@@ -30,29 +31,29 @@ void Player::SetExp(const int exp)
 	this->exp = exp;
 }
 
-void Player::Input(const double deltaTime)
+void Player::Input()
 {
 	if ((GetAsyncKeyState(VK_UP) & 0x8000) && state != CharacterInfo::ATTACK)			// 상
 	{
-		pos.y -= speed * deltaTime;
+		pos.y -= speed * Timmer::GetInstance()->deltaTime;
 		state = CharacterInfo::WALK;
 		dir = CharacterInfo::UP;
 	}
 	else if ((GetAsyncKeyState(VK_DOWN) & 0x8000) && state != CharacterInfo::ATTACK)	// 하
 	{
-		pos.y += speed * deltaTime;
+		pos.y += speed * Timmer::GetInstance()->deltaTime;
 		state = CharacterInfo::WALK;
 		dir = CharacterInfo::DOWN;
 	}
 	else if ((GetAsyncKeyState(VK_LEFT) & 0x8000) && state != CharacterInfo::ATTACK)	// 좌
 	{
-		pos.x -= speed * deltaTime;
+		pos.x -= speed * Timmer::GetInstance()->deltaTime;
 		state = CharacterInfo::WALK;
 		dir = CharacterInfo::LEFT;
 	}
 	else if ((GetAsyncKeyState(VK_RIGHT) & 0x8000) && state != CharacterInfo::ATTACK)	// 우
 	{
-		pos.x += speed * deltaTime;
+		pos.x += speed * Timmer::GetInstance()->deltaTime;
 		state = CharacterInfo::WALK;
 		dir = CharacterInfo::RIGHT;
 	}

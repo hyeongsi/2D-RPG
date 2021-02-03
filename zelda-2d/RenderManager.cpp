@@ -4,6 +4,7 @@
 #include "WorldMapManager.h"
 #include "ItemManager.h"
 #include "NPCManager.h"
+#include "Time.h"
 
 extern HWND g_hWnd;
 extern SIZE g_clientSize;
@@ -56,10 +57,16 @@ void RenderManager::Init()
         DeleteObject(backMemDC);
         backMemDC = nullptr;
     }
-
+    
     hdc = GetDC(g_hWnd);
     memDC = CreateCompatibleDC(hdc);
     backMemDC = CreateCompatibleDC(hdc);
+
+    if (memDC != nullptr)
+    {
+        SetBkMode(memDC, TRANSPARENT);    // 글자 출력 시 배경 색 투명으로 설정
+        SetTextColor(memDC, RGB(255, 0, 0));    // 글자 빨간색으로 설정
+    }
 
     // 상점 크기 설정
     for (int i = 0; i < SELL_ITEM_SIZE; i++)
@@ -90,6 +97,44 @@ void RenderManager::RenderInitSetting()
     oldCreateBitmap = (HBITMAP)SelectObject(memDC, CreateCompatibleBitmap(hdc, ClientSize::width, ClientSize::height));
     RECT windowRect{ 0,0,ClientSize::width,ClientSize::height };
     FillRect(memDC, &windowRect, (HBRUSH)GetStockObject(WHITE_BRUSH));      // 바탕 흰색으로 초기화
+}
+
+void RenderManager::InitHudStringVector()
+{
+    hudStringVector.clear();
+}
+
+void RenderManager::AddHudStringVector(hudData data)
+{
+    if (data.color == NULL)
+        data.color = 0x0000FF;
+
+    data.tick = GetTickCount64();
+    hudStringVector.emplace_back(data);
+}
+
+void RenderManager::DeleteEndHud()
+{
+    for (auto iterator = hudStringVector.begin(); iterator != hudStringVector.end();)
+    {
+        if (GetTickCount64() > (*iterator).tick + PRINT_HUD_TIME)
+        {
+            iterator = hudStringVector.erase(iterator);
+        }
+        else
+        {
+            iterator++;
+            return;
+        }
+    }
+}
+
+void RenderManager::RisingHud()
+{
+    for (auto& iterator : hudStringVector)
+    {
+        iterator.pos = { iterator.pos.x ,  iterator.pos.y - (HUD_SPEED * Timmer::GetInstance()->deltaTime) };
+    }
 }
 
 void RenderManager::SaveMemDcData(const HWND itemHwnd, POINT pos)
@@ -164,8 +209,8 @@ void RenderManager::InGameDataRender()
     }
 
     //UI 출력
-    DrawCharUIData(TextureName::Char_Info, { 10,10 });
-    DrawCharUIData(TextureName::Money_Info, { 11,110 });
+    DrawCharUIData(TextureName::Char_Info, { DRAW_PLAYERINFO_UI_POS.x,DRAW_PLAYERINFO_UI_POS.y });
+    DrawCharUIData(TextureName::Money_Info, { DRAW_MONEYINFO_UI_POS.x, DRAW_MONEYINFO_UI_POS.y});
 
     int money = GameManager::GetInstance()->GetPlayer()->GetMoney();
     if(0 == money)
@@ -199,7 +244,12 @@ void RenderManager::InGameDataRender()
         DrawCharUIData(hp[index - 1], { 70 + (30 * (index - 1)),52 });     // 배열이 0부터 시작하여 i에 -1을 해줌
     }
 
+    DrawHudVector();    // hudData 출력 부분
+
     Render();                   // 출력
+
+    DeleteEndHud();     // hudData 삭제 부분
+    RisingHud();        // hud 상승 부분
 }
 
 void RenderManager::DrawWorldMapData(const GameState gameState)
@@ -576,6 +626,20 @@ void RenderManager::DrawCharUIData(const int uiName, const POINT pos)
     SelectObject(backMemDC, bitmap);
     GetObject(bitmap, sizeof(bit), &bit);
     TransparentBlt(memDC, pos.x, pos.y, bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, bit.bmWidth, bit.bmHeight, RGB(215, 123, 186));
+}
+
+void RenderManager::DrawHud(const DPOINT pos, const string msg)
+{
+    TextOut(memDC, static_cast<int>(pos.x), static_cast<int>(pos.y), msg.c_str(), strlen(msg.c_str()));
+}
+
+void RenderManager::DrawHudVector()
+{
+    for (const auto& iterator : hudStringVector)
+    {
+        SetTextColor(memDC, iterator.color);
+        DrawHud(iterator.pos, iterator.msg);
+    }
 }
 
 void RenderManager::DrawCheckPattern(HDC hdc, const SIZE size)

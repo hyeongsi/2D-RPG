@@ -35,8 +35,8 @@ public:
 
 public:
 	void FindPlayer(Monster* monster);			// 플레이어 감지
-	void AttackPlayer(Monster* monster, const double deltaTime); // 플레이어를 공격
-	void ChasePlayer(Monster* monster, const double deltaTime);	// 플레이어 추격
+	void AttackPlayer(Monster* monster);	// 플레이어를 공격
+	void ChasePlayer(Monster* monster);		// 플레이어 추격
 
 	void DieMonster();							// 몬스터 죽음 처리
 	

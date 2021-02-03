@@ -7,6 +7,7 @@
 #include "NPCManager.h"
 #include "ImageManager.h"
 #include "MonsterManager.h"
+#include "RenderManager.h"
 
 GameManager* GameManager::instance = nullptr;
 
@@ -21,7 +22,7 @@ GameManager::GameManager()
 	state = GameState::MAIN;
 	player = nullptr;
 	inventory = nullptr;
-	time = Time::GetInstance();
+	time = Timmer::GetInstance();
 	interactionManager = InteractionManager::GetInstance();
 }
 
@@ -73,8 +74,8 @@ void GameManager::Input()
 void GameManager::Run()
 {
 	DPOINT prevPos = player->GetPos();	
-	double deltaTime = time->Update();
-	player->Input(deltaTime);
+	time->Update();	// deltaTime 연산
+	player->Input();
 	POINT pivotPos;
 
 	switch (player->GetState())
@@ -136,8 +137,8 @@ void GameManager::Run()
 			MonsterManager::GetInstance()->FindPlayer(&iterator);
 			break;
 		case CharacterInfo::ATTACK:
-			MonsterManager::GetInstance()->ChasePlayer(&iterator, deltaTime);
-			MonsterManager::GetInstance()->AttackPlayer(&iterator, deltaTime);
+			MonsterManager::GetInstance()->ChasePlayer(&iterator);
+			MonsterManager::GetInstance()->AttackPlayer(&iterator);
 			break;
 		case CharacterInfo::HIT:
 			if (GetTickCount64() > monsterHitTick + hitDelay)
@@ -201,7 +202,13 @@ void GameManager::PickUpItem()
 			if (inventory->GetLastItemIndex() == INVEN_SIZE)		// 인벤토리 풀이면 아이템 파밍 X
 				return;
 
-			inventory->SetItem((*ItemManager::GetInstance()->GetItemData())[(*iterator).index-1]);	// (아이템 매니저의 정보를 가지고) 인벤토리에 아이템 추가 
+			// hud 추가
+			hudData huddata;
+			huddata.pos = player->GetPos();
+			huddata.msg = (*ItemManager::GetInstance()->GetItemData())[(*iterator).index - 1].GetTitle() + " 획득";
+			RenderManager::GetInstance()->AddHudStringVector(huddata);
+
+			inventory->SetItem((*ItemManager::GetInstance()->GetItemData())[(*iterator).index - 1]);	// (아이템 매니저의 정보를 가지고) 인벤토리에 아이템 추가 
 			(*ItemManager::GetInstance()->GetFieldItem()).erase(iterator);			// 필드 아이템은 삭제 처리
 			return;
 		}
@@ -366,8 +373,15 @@ void GameManager::AttackMonster()
 		{
 			iterator.SetHp(iterator.GetHp() - player->GetDamage());		// 몬스터 hp -- 처리
 			iterator.SetPos({ iterator.GetPos().x + pushOutPos.x , iterator.GetPos().y + pushOutPos.y });	// 밀려남 처리
+
 			monsterHitTick = GetTickCount64();
 			iterator.SetState(CharacterInfo::HIT);
+
+			// hud 출력 관련 데이터 세팅
+			hudData huddata;
+			huddata.pos = { iterator.GetPos().x, iterator.GetPos().y - 10 };
+			huddata.msg = to_string(player->GetDamage());
+			RenderManager::GetInstance()->AddHudStringVector(huddata);
 
 			// 밀려남 처리 (맵 나가는거 보정)
 			constexpr const int LIMIT_MAP_X_CORRECTION = 32;	// 맵 밖으로 나가는 경우 보정 크기

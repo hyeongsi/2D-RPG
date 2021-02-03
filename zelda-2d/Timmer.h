@@ -1,25 +1,25 @@
 ﻿#pragma once
-class Time
+class Timmer
 {
 private:
-	static Time* instance;
+	static Timmer* instance;
 
-	Time();
-	~Time();
+	Timmer();
+	~Timmer();
 
 private:
 	LARGE_INTEGER countTime;
 	LARGE_INTEGER curTime;
 	LARGE_INTEGER prevTime;
 
+public:
 	double deltaTime;
 
-public:
 	void Reset();
 	const double Update();
 
 public:
-	static Time* GetInstance();
+	static Timmer* GetInstance();
 	static void ReleaseInstance();
 
 };
