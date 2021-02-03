@@ -47,6 +47,11 @@ void Character::SetPos(const DPOINT pos)
 	this->pos = pos;
 }
 
+const int Character::GetMaxHp()
+{
+	return maxHp;
+}
+
 const int Character::GetHp()
 {
 	return hp;

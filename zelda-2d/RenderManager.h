@@ -7,6 +7,7 @@
 #include "Item.h"
 #include "Player.h"
 #include "ShopNPC.h"
+#include "HUD.h"
 #include <vector>
 #include <string>
 
@@ -28,14 +29,6 @@ constexpr const SIZE SHOP_INTERVAL_SIZE = { 15,5 };
 constexpr const int SELL_ITEM_SIZE = 5;
 constexpr const int HP_UI_COUNT = 3;
 
-typedef struct HUDData
-{
-	DPOINT pos;
-	string msg;
-	ULONGLONG tick;
-	COLORREF color = NULL;
-}hudData;
-
 class RenderManager
 {
 private:
@@ -44,11 +37,8 @@ private:
 	HDC backMemDC{ nullptr };
 	HBITMAP oldCreateBitmap{ nullptr };
 	
-	vector<hudData> hudStringVector;	// hud 출력 문자열 저장 변수
+	HUD hud;
 
-private:
-	const int PRINT_HUD_TIME = 1000;
-	const int HUD_SPEED = 20;
 private:
 	static RenderManager* instance;
 
@@ -65,10 +55,8 @@ public:
 	void Init();
 	void RenderInitSetting();
 
-	void InitHudStringVector();	// hud 초기화
-	void AddHudStringVector(hudData data);	// hud 추가
-	void DeleteEndHud();	// hud 삭제
-	void RisingHud();	// hud 이동
+	HUD* GetHud();
+
 public:
 	void SaveMemDcData(const HWND itemHwnd, POINT pos);
 	void SaveMemDcData(const HBITMAP hbitmap, POINT pos);
@@ -93,8 +81,8 @@ public:
 	void DrawShop();			// 상점 출력
 	void DrawCharUIData(const int uiName, const POINT pos);
 
-	void DrawHud(const DPOINT pos, const string msg);
-	void DrawHudVector();
+	void DrawTextHud(const DPOINT pos, const string msg);	// textHud 그리기
+	void DrawHudVector();	// 모든 hud 그리기
 
 	void DrawCheckPattern(HDC hdc, const SIZE size);
 	void DrawCursorFollowBitmap();

@@ -203,10 +203,10 @@ void GameManager::PickUpItem()
 				return;
 
 			// hud 추가
-			hudData huddata;
+			textHudData huddata;
 			huddata.pos = player->GetPos();
 			huddata.msg = (*ItemManager::GetInstance()->GetItemData())[(*iterator).index - 1].GetTitle() + " 획득";
-			RenderManager::GetInstance()->AddHudStringVector(huddata);
+			RenderManager::GetInstance()->GetHud()->GetStringHud()->emplace_back(huddata);
 
 			inventory->SetItem((*ItemManager::GetInstance()->GetItemData())[(*iterator).index - 1]);	// (아이템 매니저의 정보를 가지고) 인벤토리에 아이템 추가 
 			(*ItemManager::GetInstance()->GetFieldItem()).erase(iterator);			// 필드 아이템은 삭제 처리
@@ -378,10 +378,10 @@ void GameManager::AttackMonster()
 			iterator.SetState(CharacterInfo::HIT);
 
 			// hud 출력 관련 데이터 세팅
-			hudData huddata;
+			textHudData huddata;
 			huddata.pos = { iterator.GetPos().x, iterator.GetPos().y - 10 };
 			huddata.msg = to_string(player->GetDamage());
-			RenderManager::GetInstance()->AddHudStringVector(huddata);
+			RenderManager::GetInstance()->GetHud()->GetStringHud()->emplace_back(huddata);
 
 			// 밀려남 처리 (맵 나가는거 보정)
 			constexpr const int LIMIT_MAP_X_CORRECTION = 32;	// 맵 밖으로 나가는 경우 보정 크기

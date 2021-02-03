@@ -99,42 +99,9 @@ void RenderManager::RenderInitSetting()
     FillRect(memDC, &windowRect, (HBRUSH)GetStockObject(WHITE_BRUSH));      // 바탕 흰색으로 초기화
 }
 
-void RenderManager::InitHudStringVector()
+HUD* RenderManager::GetHud()
 {
-    hudStringVector.clear();
-}
-
-void RenderManager::AddHudStringVector(hudData data)
-{
-    if (data.color == NULL)
-        data.color = 0x0000FF;
-
-    data.tick = GetTickCount64();
-    hudStringVector.emplace_back(data);
-}
-
-void RenderManager::DeleteEndHud()
-{
-    for (auto iterator = hudStringVector.begin(); iterator != hudStringVector.end();)
-    {
-        if (GetTickCount64() > (*iterator).tick + PRINT_HUD_TIME)
-        {
-            iterator = hudStringVector.erase(iterator);
-        }
-        else
-        {
-            iterator++;
-            return;
-        }
-    }
-}
-
-void RenderManager::RisingHud()
-{
-    for (auto& iterator : hudStringVector)
-    {
-        iterator.pos = { iterator.pos.x ,  iterator.pos.y - (HUD_SPEED * Timmer::GetInstance()->deltaTime) };
-    }
+    return &hud;
 }
 
 void RenderManager::SaveMemDcData(const HWND itemHwnd, POINT pos)
@@ -248,8 +215,8 @@ void RenderManager::InGameDataRender()
 
     Render();                   // 출력
 
-    DeleteEndHud();     // hudData 삭제 부분
-    RisingHud();        // hud 상승 부분
+    hud.DeleteEndStringHud();   // hudStringData 삭제 부분
+    hud.RisingHud();            // hud 상승 부분
 }
 
 void RenderManager::DrawWorldMapData(const GameState gameState)
@@ -628,18 +595,42 @@ void RenderManager::DrawCharUIData(const int uiName, const POINT pos)
     TransparentBlt(memDC, pos.x, pos.y, bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, bit.bmWidth, bit.bmHeight, RGB(215, 123, 186));
 }
 
-void RenderManager::DrawHud(const DPOINT pos, const string msg)
+void RenderManager::DrawTextHud(const DPOINT pos, const string msg)
 {
     TextOut(memDC, static_cast<int>(pos.x), static_cast<int>(pos.y), msg.c_str(), strlen(msg.c_str()));
 }
 
 void RenderManager::DrawHudVector()
 {
-    for (const auto& iterator : hudStringVector)
+    float hpGauge = 0;
+    HBRUSH oldBrush;
+
+    // hp bar print
+    for (auto& iterator: (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()))
+    {
+        if (CharacterInfo::ATTACK != iterator.GetState())
+            continue;
+
+        oldBrush = (HBRUSH)SelectObject(memDC, CreateSolidBrush(RGB(255, 0, 0)));   // 빨간색 브러쉬 선택
+
+        hpGauge = static_cast<float>(iterator.GetHp()) / static_cast<float>(iterator.GetMaxHp());
+
+        Rectangle(memDC, static_cast<int>(iterator.GetPos().x + hud.HP_HUD_RECT.left),
+            static_cast<int>(iterator.GetPos().y + hud.HP_HUD_RECT.top),
+            static_cast<int>(static_cast<int>(iterator.GetPos().x) + hud.HP_HUD_RECT.left + 
+                static_cast<int>(((static_cast<float>(hud.HP_HUD_RECT.right)) * hpGauge))),
+            static_cast<int>(iterator.GetPos().y + hud.HP_HUD_RECT.bottom));
+
+        oldBrush = (HBRUSH)SelectObject(memDC, oldBrush);   // 빨간색 브러쉬 삭제
+        DeleteObject(oldBrush);
+    }
+
+    // stringHud
+    for (const auto& iterator : (*hud.GetStringHud()))
     {
         SetTextColor(memDC, iterator.color);
-        DrawHud(iterator.pos, iterator.msg);
-    }
+        DrawTextHud(iterator.pos, iterator.msg);
+    }  
 }
 
 void RenderManager::DrawCheckPattern(HDC hdc, const SIZE size)

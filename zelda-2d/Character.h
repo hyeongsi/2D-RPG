@@ -30,6 +30,8 @@ public:
 	const DPOINT GetPos();
 	void SetPos(const DPOINT pos);
 
+	const int GetMaxHp();
+
 	const int GetHp();
 	void SetHp(const int hp);
 

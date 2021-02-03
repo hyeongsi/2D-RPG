@@ -125,7 +125,7 @@ void MonsterManager::FindPlayer(Monster* monster)
 		findRect.right >= GameManager::GetInstance()->GetPlayer()->GetPos().x + PLAYER_PIVOT_POS.x &&
 		findRect.bottom >= GameManager::GetInstance()->GetPlayer()->GetPos().y + PLAYER_PIVOT_POS.y)
 	{
-		monster->SetState(CharacterInfo::ATTACK);
+		monster->SetState(CharacterInfo::ATTACK);	// 몬스터를 공격 상태로 변경
 	}
 }
 
@@ -146,12 +146,12 @@ void MonsterManager::AttackPlayer(Monster* monster)
 				GameManager::GetInstance()->GetPlayer()->GetHp() - monster->GetDamage());
 
 			// hud 출력 관련 데이터 세팅
-			hudData huddata;
-			huddata.pos = { GameManager::GetInstance()->GetPlayer()->GetPos().x, 
+			textHudData hudData;
+			hudData.pos = { GameManager::GetInstance()->GetPlayer()->GetPos().x, 
 				GameManager::GetInstance()->GetPlayer()->GetPos().y - 10 };
-			huddata.msg = to_string(GameManager::GetInstance()->GetPlayer()->GetDamage());
-			huddata.color = 0xff0000;
-			RenderManager::GetInstance()->AddHudStringVector(huddata);
+			hudData.msg = to_string(GameManager::GetInstance()->GetPlayer()->GetDamage());
+			hudData.color = 0xff0000;
+			RenderManager::GetInstance()->GetHud()->GetStringHud()->emplace_back(hudData);
 
 			GameManager::GetInstance()->PushOutPlayer(monster->GetDir());
 		}
@@ -216,11 +216,11 @@ void MonsterManager::DieMonster()
 			GameManager::GetInstance()->GetPlayer()->SetExp((*iterator).GetExp());
 
 			// hud 출력 관련 데이터 세팅
-			hudData huddata;
-			huddata.pos = { static_cast<double>(DRAW_MONEYINFO_UI_POS.x) + 100,
+			textHudData hudData;
+			hudData.pos = { static_cast<double>(DRAW_MONEYINFO_UI_POS.x) + 100,
 				static_cast<double>(DRAW_MONEYINFO_UI_POS.y) + 20 };
-			huddata.msg = "+ " + to_string((*iterator).GetMoney());
-			RenderManager::GetInstance()->AddHudStringVector(huddata);
+			hudData.msg = "+ " + to_string((*iterator).GetMoney());
+			RenderManager::GetInstance()->GetHud()->GetStringHud()->emplace_back(hudData);
 
 			iterator = WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->erase(iterator);
 		}
