@@ -611,10 +611,17 @@ void RenderManager::DrawHudVector()
         if (CharacterInfo::ATTACK != iterator.GetState())
             continue;
 
+        // 전체 hp bar 출력 (흰색)
+        Rectangle(memDC, static_cast<int>(iterator.GetPos().x + hud.HP_HUD_RECT.left),
+            static_cast<int>(iterator.GetPos().y + hud.HP_HUD_RECT.top),
+            static_cast<int>(static_cast<int>(iterator.GetPos().x) + hud.HP_HUD_RECT.left + hud.HP_HUD_RECT.right),
+            static_cast<int>(iterator.GetPos().y + hud.HP_HUD_RECT.bottom));
+
         oldBrush = (HBRUSH)SelectObject(memDC, CreateSolidBrush(RGB(255, 0, 0)));   // 빨간색 브러쉬 선택
 
-        hpGauge = static_cast<float>(iterator.GetHp()) / static_cast<float>(iterator.GetMaxHp());
+        hpGauge = static_cast<float>(iterator.GetHp()) / static_cast<float>(iterator.GetMaxHp());   // hp 에 따른 빨간 hp bar 값 계산
 
+        // 잔량 hp bar 출력 (빨간색)
         Rectangle(memDC, static_cast<int>(iterator.GetPos().x + hud.HP_HUD_RECT.left),
             static_cast<int>(iterator.GetPos().y + hud.HP_HUD_RECT.top),
             static_cast<int>(static_cast<int>(iterator.GetPos().x) + hud.HP_HUD_RECT.left + 
