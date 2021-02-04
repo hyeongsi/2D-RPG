@@ -665,6 +665,7 @@ void RenderManager::DrawHudVector()
         SetTextColor(memDC, iterator.color);
         DrawTextHud(iterator.pos, iterator.msg);
     }  
+    SetTextColor(memDC, RGB(0, 0, 0));
 }
 
 void RenderManager::DrawCheckPattern(HDC hdc, const SIZE size)

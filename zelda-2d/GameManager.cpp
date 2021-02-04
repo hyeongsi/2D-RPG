@@ -8,6 +8,7 @@
 #include "ImageManager.h"
 #include "MonsterManager.h"
 #include "RenderManager.h"
+#include "SoundManager.h"
 
 GameManager* GameManager::instance = nullptr;
 
@@ -213,6 +214,8 @@ void GameManager::PickUpItem()
 
 			inventory->SetItem((*ItemManager::GetInstance()->GetItemData())[(*iterator).index - 1]);	// (아이템 매니저의 정보를 가지고) 인벤토리에 아이템 추가 
 			(*ItemManager::GetInstance()->GetFieldItem()).erase(iterator);			// 필드 아이템은 삭제 처리
+
+			SoundManager::GetInstance()->PlayEffectSound(EFFECTSOUND::GET_ITEM);
 			return;
 		}
 		else

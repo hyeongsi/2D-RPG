@@ -10,6 +10,7 @@
 #include <string>
 #include <stdio.h>
 #include <time.h>
+#include "SoundManager.h"
 
 constexpr const POINT RETOUCH_WOOD_DOOR_POS{ 2,4 };
 constexpr const POINT SPAWN_PLAYER_STAGE1_POS{ 12,13 };
@@ -241,6 +242,8 @@ void InteractionManager::UseItem()
 		GameManager::GetInstance()->GetPlayer()->SetMoney(
 			GameManager::GetInstance()->GetPlayer()->GetMoney() +
 			GameManager::GetInstance()->GetInventory()->GetItem()[itemIndex].GetPrice());
+
+		SoundManager::GetInstance()->PlayEffectSound(EFFECTSOUND::SELL_ITEM);
 	}
 
 	GameManager::GetInstance()->GetInventory()->DeleteItem(itemIndex);
@@ -267,8 +270,10 @@ void InteractionManager::BuyItem()
 
 	// 구매 아이템 인벤토리에 추가
 	Item buyItem;
-buyItem = (*ItemManager::GetInstance()->GetItemData())[findItemId];
-GameManager::GetInstance()->GetInventory()->SetItem(buyItem);
+	buyItem = (*ItemManager::GetInstance()->GetItemData())[findItemId];
+	GameManager::GetInstance()->GetInventory()->SetItem(buyItem);
+
+	SoundManager::GetInstance()->PlayEffectSound(EFFECTSOUND::SELL_ITEM);
 }
 
 const int InteractionManager::FindInventoryItemIndex()

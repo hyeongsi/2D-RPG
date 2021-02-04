@@ -15,6 +15,7 @@
 #include "ItemManager.h"
 #include "NPCManager.h"
 #include "MonsterManager.h"
+#include "SoundManager.h"
 
 #define MAX_LOADSTRING 100
 
@@ -30,6 +31,8 @@ SIZE g_clientSize;                              // 클라이언트 사이즈
 HWND g_hStartButton;                            // 시작 버튼
 HWND g_hMapEdittorButton;                       // 맵 에디터 버튼
 
+bool g_isPause = false;                                 // 게임 중단 변수
+
 ClickLR clickLR{ ClickLR::NONE };
 
 GameManager* gameManager;                       // 게임 매니저
@@ -40,7 +43,8 @@ WorldMapManager* worldMapManager;               // 월드맵 매니저
 ItemManager* itemManager;                       // 아이템 매니저
 InteractionManager* interactionManager;         // 상호작용 매니저
 NPCManager* npcManager;                         // NPC 매니저
-MonsterManager* monsterManager;                  // 몬스터 매니저
+MonsterManager* monsterManager;                 // 몬스터 매니저
+SoundManager* soundManager;                     // 사운드 매니저
 
 Player* character;                            // 캐릭터 클래스
 
@@ -51,6 +55,8 @@ void GetSelectListBoxData(const SelectMapState state);     // mapEdittorDlg 리�
 void SelectListBoxSetting(const SelectMapState state);     // mapEdittorDlg 리스트박스, 버튼 선택 시 설정
 void ShowMainFrameButton();                                 // 버튼 출력
 void HideMainFrameButton();                                 // 버튼 숨기기
+void GoTheGame();                                           // 멈춤 상태에서 다시 게임으로 돌아가기
+void GoToMainMenu();                                        // 게임 중 메인메뉴로 이동하기
 
 // 이 코드 모듈에 포함된 함수의 선언을 전달합니다:
 ATOM                MyRegisterClass(HINSTANCE hInstance);
@@ -93,7 +99,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
     interactionManager = InteractionManager::GetInstance();
     npcManager = NPCManager::GetInstance();
     monsterManager = MonsterManager::GetInstance();
+    soundManager = SoundManager::GetInstance();
 
+    soundManager->PlaySoundTrack(BGM::MAIN_MENU);
     // 기본 메시지 루프입니다:
     while (true)
     {
@@ -118,9 +126,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             break;
         case GameState::INGAME:
             if (gameManager->GetPlayer()->GetHp() <= 0)
-            {
-                gameManager->SetState(GameState::MAIN); // 게임오버, 초기화 처리 해야함
+            { 
+                GoToMainMenu();
+                break;
             }
+
+            if (g_isPause)
+                break;
+
             gameManager->Input();
             gameManager->Run();
             renderManager->InGameDataRender();
@@ -187,8 +200,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         g_clientSize.cy = g_clientRect.bottom - g_clientRect.top;
         MoveWindow(hWnd, HWND_SPAWN_POS.x, HWND_SPAWN_POS.y, g_clientSize.cx, g_clientSize.cy, true);   // 500,200 지점에 클라이언트 크기만큼 설정 후 출력
         
-        g_hStartButton = CreateWindow("button", "Start", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON
-            , START_BUTTON_POINT.x, START_BUTTON_POINT.y, BUTTON_SIZE.cx, BUTTON_SIZE.cy, hWnd, (HMENU)ButtonKind::START, hInst, NULL);    // 메인화면의 시작 버튼 생성
+        g_hStartButton = CreateWindow("button", "NEW START", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON
+            , START_BUTTON_POINT.x, START_BUTTON_POINT.y, BUTTON_SIZE.cx, BUTTON_SIZE.cy, hWnd, (HMENU)ButtonKind::NEW_START, hInst, NULL);    // 메인화면의 시작 버튼 생성
 
         g_hMapEdittorButton = CreateWindow("button", "MapEdittor", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON
             , MAPEDITTOR_BUTTON_POINT.x, MAPEDITTOR_BUTTON_POINT.y, BUTTON_SIZE.cx, BUTTON_SIZE.cy, hWnd, (HMENU)ButtonKind::MAPEDITTOR, hInst, NULL);    // 메인 화면의 맵 에디터 버튼 생성
@@ -198,31 +211,63 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         {
             switch (LOWORD(wParam))
             {
-            case ButtonKind::START:         // 시작 버튼 누르면
+            case ButtonKind::NEW_START:         // 시작 버튼 누르면
+                soundManager->PlaySoundTrack(BGM::INGAME);
+
+                gameManager->Init(); // 초기화
                 HideMainFrameButton();                               // 버튼 숨기기
                 gameManager->SetState(GameState::INGAME);            // 인게임 실행
                 gameManager->SetPlayer(new Player());           // 플레이어 생성
                 gameManager->SetInventory(new Inventory());     // 인벤토리 생성
 
-                imageManager->LoadMapBitmapData();                      // 인게임에서 사용할 맵 관련 비트맵 로드
-                imageManager->LoadAnimationBitmapData(AnimationKind::PLAYER, PLAYER_ANIMATION_PATH);    // 인게임에서 사용할 플레이어 애니메이션 로드
-                
-                monsterManager->LoadBitmapPath();   // 몬스터 이미지 경로 로드
-                for (const auto iterator : (*monsterManager->GetbitmapPath()))
+                if (imageManager->GetBitmapData(BitmapKind::BACKGROUND, 0) == NULL &&
+                    imageManager->GetBitmapData(BitmapKind::OBJECT, 0) == NULL)      // 이전에 로드 한 것이 없다면 로드
                 {
-                    imageManager->LoadAnimationBitmapData(AnimationKind::MONSTER, iterator);    // 인게임에서 사용할 몬스터 애니메이션 로드
+                    imageManager->LoadMapBitmapData();                      // 인게임에서 사용할 맵 관련 비트맵 로드
+                }
+                if (imageManager->GetPlayerAnimationData(0) == nullptr) // 이전에 로드 한 것이 없다면 로드
+                {
+                    imageManager->LoadAnimationBitmapData(AnimationKind::PLAYER, PLAYER_ANIMATION_PATH);    // 인게임에서 사용할 플레이어 애니메이션 로드
+                }
+                
+                if (monsterManager->GetbitmapPath()->size() <= 0)   // 이전에 로드 한 것이 없다면 로드
+                {
+                    monsterManager->LoadBitmapPath();   // 몬스터 이미지 경로 로드
                 }
 
-                imageManager->LoadBitmapPathData(BitmapKind::UI, UI_BITMAP_PATH);   // 인게임에서 사용할 UI 비트맵 로드
-                imageManager->LoadBitmapPathData(BitmapKind::ITEM, ITEM_BITMAP_PATH);   // 인게임에서 사용할 아이템 비트맵 로드
-                imageManager->LoadBitmapPathData(BitmapKind::NPC, NPC_BITMAP_PATH);   // 인게임에서 사용할 NPC 비트맵 로드
+                if (imageManager->GetMonsterAnimation()->size() <= 0)   // 이전에 로드 한 것이 없다면 로드
+                {
+                    for (const auto iterator : (*monsterManager->GetbitmapPath()))
+                    {
+                        imageManager->LoadAnimationBitmapData(AnimationKind::MONSTER, iterator);    // 인게임에서 사용할 몬스터 애니메이션 로드
+                    }
+                }
+                
+                if (imageManager->GetBitmapData(BitmapKind::UI, 0) == NULL &&
+                    imageManager->GetBitmapData(BitmapKind::ITEM, 0) == NULL &&
+                    imageManager->GetBitmapData(BitmapKind::NPC, 0) == NULL)
+                {
+                    imageManager->LoadBitmapPathData(BitmapKind::UI, UI_BITMAP_PATH);   // 인게임에서 사용할 UI 비트맵 로드
+                    imageManager->LoadBitmapPathData(BitmapKind::ITEM, ITEM_BITMAP_PATH);   // 인게임에서 사용할 아이템 비트맵 로드
+                    imageManager->LoadBitmapPathData(BitmapKind::NPC, NPC_BITMAP_PATH);   // 인게임에서 사용할 NPC 비트맵 로드
+                }
 
-                itemManager->LoadItemData();         // 인게임에서 사용할 아이템 정보 로드
-                itemManager->AddFieldItem({ 10, 10 }, 2);
+                if (itemManager->GetItemData()->size() <= 0)
+                {
+                    itemManager->LoadItemData();         // 인게임에서 사용할 아이템 정보 로드
+                }
+                itemManager->AddFieldItem({ 10, 10 }, 2);   // 테스트용 아이템 출력
 
-                monsterManager->LoadMonsterData();  // 인게임에서 사용할 몬스터 정보 로드
-                npcManager->LoadNPCData();          // 인게임에서 사용할 npc 정보 로드
+                if (monsterManager->GetMonsterData().size() <= 0)
+                {
+                    monsterManager->LoadMonsterData();  // 인게임에서 사용할 몬스터 정보 로드
+                }
+                if (npcManager->GetshopNPCVector()->size() <= 0)
+                {
+                    npcManager->LoadNPCData();          // 인게임에서 사용할 npc 정보 로드
+                }
 
+                // 맵 정보 세팅
                 worldMapManager->LoadMapData(GameState::INGAME, worldMapManager->GetCurrentStage());
                 worldMapManager->LoadEventData(worldMapManager->GetCurrentStage());
                 break;
@@ -267,6 +312,21 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         if (GameState::INGAME == gameManager->GetState() && clickLR == ClickLR::NONE)    // 인게임 상태
         {
             preFindItemIndex = interactionManager->FindInventoryItemIndex();
+
+            if (g_isPause)
+            {
+                switch (interactionManager->FindEscMenuIndex())
+                {
+                case TO_THE_GAME:
+                    GoTheGame();
+                    break;
+                case TO_THE_MAIN_MENU:
+                    GoToMainMenu();
+                    break;
+                default:
+                    break;
+                }
+            }
         }
 
         clickLR = ClickLR::LEFT;    // 클릭 상태 설정
@@ -303,6 +363,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     case WM_RBUTTONUP:
         clickLR = ClickLR::NONE;    // 클릭 상태 설정
         break;
+    case WM_KEYDOWN:
+        if (wParam == VK_ESCAPE)
+        {
+            if (GameState::INGAME != gameManager->GetState())
+                break;
+
+            if (!g_isPause)
+            {
+                g_isPause = true;
+                renderManager->DrawESCMenu();
+            }
+            else
+            {
+                GoTheGame();
+            }
+        }
+        break;
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
@@ -321,6 +398,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         InteractionManager::ReleaseInstance();
         NPCManager::ReleaseInstance();
         MonsterManager::ReleaseInstance();
+        SoundManager::ReleaseInstance();
         PostQuitMessage(0);
         break;
     default:
@@ -406,11 +484,8 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
 
             return (INT_PTR)TRUE;
         case IDC_bEXIT:
-            ShowMainFrameButton();
-
-            gameManager->SetState(GameState::MAIN);              // 상태값 변경
+            GoToMainMenu();
             DestroyWindow(g_hMapEdittorDlg);                    // 다이얼로그 삭제
-
             InvalidateRect(g_hWnd, nullptr, true);              // 화면 초기화
             return (INT_PTR)TRUE;
         default:
@@ -589,4 +664,25 @@ void HideMainFrameButton()
 {
     ShowWindow(g_hStartButton, SW_HIDE);                // 버튼 숨기기
     ShowWindow(g_hMapEdittorButton, SW_HIDE);           // 버튼 숨기기
+}
+
+void GoTheGame()
+{
+    g_isPause = false;
+    // deltaTime을 갱신 시키지 않는다면 다음번 deltaTime이 멈춘 시간동안 늘어나 비정상적인 이동 수행함
+    Timmer::GetInstance()->Update();
+}
+
+void GoToMainMenu()
+{
+    g_isPause = false;
+    gameManager->Init();
+    worldMapManager->Init();
+    itemManager->Init();
+    renderManager->GetHud()->Init();
+
+    gameManager->SetState(GameState::MAIN); // 게임오버, 초기화 처리 해야함
+    ShowMainFrameButton();
+
+    soundManager->PlaySoundTrack(BGM::MAIN_MENU);
 }
