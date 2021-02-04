@@ -26,6 +26,12 @@ void WorldMapManager::ReleaseInstance()
 	instance = nullptr;
 }
 
+void WorldMapManager::Init()
+{
+	currentStage = 0;
+	worldMap.Init();
+}
+
 const POINT WorldMapManager::ChangePosToMapPoint(const POINT pos)
 {
 	POINT mapPos;

@@ -23,6 +23,8 @@ private:
 
 	ItemManager();
 public:
+	void Init();
+
 	static ItemManager* GetInstance();
 	static void ReleaseInstance();
 public:

@@ -2,6 +2,11 @@
 #include "HUD.h"
 #include "Timmer.h"
 
+void HUD::Init()
+{
+    stringHudVector.clear();
+}
+
 std::vector<textHudData>* HUD::GetStringHud()
 {
 	return &stringHudVector;

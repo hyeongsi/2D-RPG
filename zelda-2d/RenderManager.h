@@ -48,6 +48,9 @@ public:
 	RECT SHOP_ITEM_BOX_POS[SELL_ITEM_SIZE];
 	RECT INVENTORY_ITEM_POS[INVEN_SIZE];
 
+	RECT ESC_TO_THE_GAME_POS;
+	RECT ESC_TO_THE_MAIN_MENU_POS;
+
 	static RenderManager* GetInstance();
 	static void ReleaseInstance();
 
@@ -72,6 +75,7 @@ public:
 	void DrawFieldItem();		// 필드 아이템 그리기
 	void DrawInventoryItem();	// 인벤토리 아이템 그리기
 	void DrawInvenItemExplain();	// 인벤 창 아이템 설명 그리기
+	void DrawESCMenu();				// Esc 메뉴 그리기
 
 	void DrawPlayer();			
 	void DrawNPC();				// NPC 출력

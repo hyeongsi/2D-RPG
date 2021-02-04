@@ -11,6 +11,11 @@ ItemManager::ItemManager()
 
 }
 
+void ItemManager::Init()
+{
+	fieldItem.clear();
+}
+
 ItemManager* ItemManager::GetInstance()
 {
 	if (nullptr == instance)

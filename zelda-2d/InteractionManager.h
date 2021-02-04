@@ -5,6 +5,12 @@
 
 using namespace std;
 
+enum ESCMenuEvent
+{
+	TO_THE_GAME,
+	TO_THE_MAIN_MENU,
+};
+
 class InteractionManager
 {
 private:
@@ -13,6 +19,7 @@ private:
 	InteractionManager();
 	~InteractionManager();
 
+	POINT mousePos;
 public:
 	static InteractionManager* GetInstance();
 	static void ReleaseInstance();
@@ -31,4 +38,6 @@ public:
 	const int FindBuyItemId();		// 구매 아이템 인덱스 찾기
 
 	void SwitchInventoryItem(const int preIndex);		// 인벤 아이템 스위칭 이벤트
+
+	const int FindEscMenuIndex();		// escMenu 클릭 인덱스 찾기
 };

@@ -24,15 +24,12 @@ private:
 	Player* player;
 	Inventory* inventory;
 
-	Timmer* time;
-
-	InteractionManager* interactionManager;
-
 private:
 	static GameManager* instance;
 
 	GameManager();
 	~GameManager();
+
 private:
 	ULONGLONG inputTick;
 	ULONGLONG eventTick;
@@ -44,6 +41,7 @@ public:
 
 	ULONGLONG playerHitTick;
 public:
+	void Init();
 	void Input();
 	void Run();
 

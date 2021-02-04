@@ -35,6 +35,8 @@ public:
 	static void ReleaseInstance();
 
 public:
+	void Init();
+
 	const POINT ChangePosToMapPoint(const POINT pos);		// 좌표값을 맵 배열에서 사용하는 값으로 변환
 
 public:

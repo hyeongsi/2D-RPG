@@ -149,7 +149,7 @@ void MonsterManager::AttackPlayer(Monster* monster)
 			textHudData hudData;
 			hudData.pos = { GameManager::GetInstance()->GetPlayer()->GetPos().x, 
 				GameManager::GetInstance()->GetPlayer()->GetPos().y - 10 };
-			hudData.msg = to_string(GameManager::GetInstance()->GetPlayer()->GetDamage());
+			hudData.msg = to_string(monster->GetDamage());
 			hudData.color = 0xff0000;
 			RenderManager::GetInstance()->GetHud()->GetStringHud()->emplace_back(hudData);
 

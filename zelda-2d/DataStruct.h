@@ -177,7 +177,7 @@ namespace ButtonKind
 {
 	enum
 	{
-		START,
+		NEW_START,
 		MAPEDITTOR
 	};
 }

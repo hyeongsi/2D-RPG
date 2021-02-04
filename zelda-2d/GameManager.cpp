@@ -22,8 +22,6 @@ GameManager::GameManager()
 	state = GameState::MAIN;
 	player = nullptr;
 	inventory = nullptr;
-	time = Timmer::GetInstance();
-	interactionManager = InteractionManager::GetInstance();
 }
 
 GameManager::~GameManager()
@@ -34,11 +32,6 @@ GameManager::~GameManager()
 	if (inventory != nullptr)
 		delete inventory;
 	inventory = nullptr;
-
-	time->ReleaseInstance();
-	time = nullptr;
-	interactionManager->ReleaseInstance();
-	interactionManager = nullptr;
 }
 
 GameManager* GameManager::GetInstance()
@@ -53,6 +46,16 @@ void GameManager::ReleaseInstance()
 {
 	delete instance;
 	instance = nullptr;
+}
+
+void GameManager::Init()
+{
+	if (player != nullptr)
+		delete player;
+	player = nullptr;
+	if (inventory != nullptr)
+		delete inventory;
+	inventory = nullptr;
 }
 
 void GameManager::Input()
@@ -74,7 +77,7 @@ void GameManager::Input()
 void GameManager::Run()
 {
 	DPOINT prevPos = player->GetPos();	
-	time->Update();	// deltaTime 연산
+	Timmer::GetInstance()->Update();	// deltaTime 연산
 	player->Input();
 	POINT pivotPos;
 
@@ -113,8 +116,8 @@ void GameManager::Run()
 			return;
 		}
 
-		interactionManager->ChangeMapData(pivotPos);		// 오브젝트 애니메이션 변경
-		interactionManager->ActionEvent(pivotPos);			// 연결 이벤트 발생
+		InteractionManager::GetInstance()->ChangeMapData(pivotPos);		// 오브젝트 애니메이션 변경
+		InteractionManager::GetInstance()->ActionEvent(pivotPos);			// 연결 이벤트 발생
 
 		break;
 	case CharacterInfo::ATTACK:

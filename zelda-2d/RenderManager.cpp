@@ -160,6 +160,8 @@ void RenderManager::InGameDataRender()
     DrawNpcOrderPos();      // NPC와 캐릭터의 출력 순서 보정
     DrawMonsterOrderPos();  // Monster와 캐릭터의 출력 순서 보정
 
+    DrawHudVector();    // hudData 출력 부분
+
     switch (NPCManager::GetInstance()->GetInteractNPCData().state)
     {
     case InteractNPCState::SHOP_NPC:
@@ -210,8 +212,6 @@ void RenderManager::InGameDataRender()
         }
         DrawCharUIData(hp[index - 1], { 70 + (30 * (index - 1)),52 });     // 배열이 0부터 시작하여 i에 -1을 해줌
     }
-
-    DrawHudVector();    // hudData 출력 부분
 
     Render();                   // 출력
 
@@ -412,6 +412,33 @@ void RenderManager::DrawInvenItemExplain()
                 strlen((GameManager::GetInstance()->GetInventory()->GetItem())[i].GetExplain().c_str()));
         }
     }
+}
+
+void RenderManager::DrawESCMenu()
+{
+    const RECT escMenu = { (g_clientSize.cx / 5) * 2,
+                            (g_clientSize.cy / 5) * 2,
+                            (g_clientSize.cx / 5) * 3,
+                            (g_clientSize.cy / 5) * 3 };
+
+    const POINT toTheGame = { g_clientSize.cx / 3 + 105,
+                              g_clientSize.cy / 3 + 70 };
+
+    const POINT toTheMainMenu = { g_clientSize.cx / 3 + 70 ,
+                                  g_clientSize.cy / 3 + 125 };
+
+   ESC_TO_THE_GAME_POS = { toTheGame.x - 10 ,toTheGame.y - 5, toTheGame.x + 75, toTheGame.y + 25 };
+    ESC_TO_THE_MAIN_MENU_POS = { toTheMainMenu.x - 5 , toTheMainMenu.y - 5, toTheMainMenu.x + 140, toTheMainMenu.y + 25 };
+
+    Rectangle(hdc, escMenu.left, escMenu.top, escMenu.right, escMenu.bottom);   // escMenu print
+
+    Rectangle(hdc, ESC_TO_THE_GAME_POS.left, ESC_TO_THE_GAME_POS.top, 
+        ESC_TO_THE_GAME_POS.right, ESC_TO_THE_GAME_POS.bottom);     // toGame print
+    TextOut(hdc, toTheGame.x, toTheGame.y, "게임으로", strlen("게임으로"));
+
+    Rectangle(hdc, ESC_TO_THE_MAIN_MENU_POS.left, ESC_TO_THE_MAIN_MENU_POS.top, 
+        ESC_TO_THE_MAIN_MENU_POS.right, ESC_TO_THE_MAIN_MENU_POS.bottom);     // toGame print
+    TextOut(hdc, toTheMainMenu.x, toTheMainMenu.y, "메인 메뉴로 나가기", strlen("메인 메뉴로 나가기"));
 }
 
 void RenderManager::DrawPlayer()

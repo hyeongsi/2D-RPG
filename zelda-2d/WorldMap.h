@@ -19,6 +19,8 @@ private:
 public:
 	friend class MapEdittor;
 
+	void Init();
+
 	int GetData(SelectMapState state, POINT pos);
 	void SetData(SelectMapState state, POINT pos, int data);
 

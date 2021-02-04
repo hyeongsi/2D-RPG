@@ -1,6 +1,12 @@
 ﻿#include "pch.h"
 #include "WorldMap.h"
 
+void WorldMap::Init()
+{
+	npcData.clear();
+	fieldMonster.clear();
+}
+
 int WorldMap::GetData(SelectMapState state, POINT pos)
 {
 	if (!(0 <= pos.x && MAP_MAX_X > pos.x))

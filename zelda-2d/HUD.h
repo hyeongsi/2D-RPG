@@ -5,8 +5,8 @@
 
 typedef struct TEXT_HUD_DATA
 {
-	DPOINT pos;
-	std::string msg;
+	DPOINT pos = {0.0, 0.0};
+	std::string msg = "";
 	ULONGLONG tick = GetTickCount64();
 	COLORREF color = 0x0000FF;
 }textHudData;
@@ -23,6 +23,8 @@ public:
 	const RECT HP_HUD_RECT = { 20,0,20,5 };
 
 public:
+	void Init();
+
 	std::vector<textHudData>* GetStringHud();
 
 	void DeleteEndStringHud();	// hud 삭제

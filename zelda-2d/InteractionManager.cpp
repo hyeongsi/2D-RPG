@@ -267,13 +267,15 @@ void InteractionManager::BuyItem()
 
 	// 구매 아이템 인벤토리에 추가
 	Item buyItem;
-	buyItem = (*ItemManager::GetInstance()->GetItemData())[findItemId];
-	GameManager::GetInstance()->GetInventory()->SetItem(buyItem);
+buyItem = (*ItemManager::GetInstance()->GetItemData())[findItemId];
+GameManager::GetInstance()->GetInventory()->SetItem(buyItem);
 }
 
 const int InteractionManager::FindInventoryItemIndex()
 {
-	POINT mousePos;
+	if (!GameManager::GetInstance()->GetInventory()->IsOpen())	// 인벤창 활성화 x 상태면 리턴
+		return -1;
+
 	GetCursorPos(&mousePos);
 	ScreenToClient(g_hWnd, &mousePos);
 
@@ -300,20 +302,19 @@ const int InteractionManager::FindBuyItemId()
 	if (!(InteractNPCState::SHOP_NPC == NPCManager::GetInstance()->GetInteractNPCData().state))
 		return -1;
 
-	POINT mousePos;
 	GetCursorPos(&mousePos);
 	ScreenToClient(g_hWnd, &mousePos);
 
 	for (int i = 0; i < SELL_ITEM_SIZE; i++)
 	{
 		// 아이템 범위안에 마우스 커서가 들어간 경우
-		if (mousePos.x >=(RenderManager::GetInstance()->SHOP_ITEM_BOX_POS[i].left) &&
+		if (mousePos.x >= (RenderManager::GetInstance()->SHOP_ITEM_BOX_POS[i].left) &&
 			mousePos.x <= (RenderManager::GetInstance()->SHOP_ITEM_BOX_POS[i].right) &&
 			mousePos.y >= (RenderManager::GetInstance()->SHOP_ITEM_BOX_POS[i].top) &&
 			mousePos.y <= (RenderManager::GetInstance()->SHOP_ITEM_BOX_POS[i].bottom))
 		{
 			int t = 0;
-			for (const auto& iterator : 
+			for (const auto& iterator :
 				(*(*NPCManager::GetInstance()->GetshopNPCVector())
 					[NPCManager::GetInstance()->GetInteractNPCData().index].GetSellItemId()))
 			{
@@ -321,7 +322,7 @@ const int InteractionManager::FindBuyItemId()
 					return iterator;
 
 				t++;
-			}	
+			}
 		}
 	}
 
@@ -345,6 +346,30 @@ void InteractionManager::SwitchInventoryItem(const int preIndex)
 	// 바꿀려고 하는 값이 본인과 같다면 바꿀필요 없이 return
 	if (itemIndex == preIndex)
 		return;
-	
+
 	GameManager::GetInstance()->GetInventory()->SwitchingItem(itemIndex, preIndex);
+}
+
+const int InteractionManager::FindEscMenuIndex()
+{
+	GetCursorPos(&mousePos);
+	ScreenToClient(g_hWnd, &mousePos);
+
+	if (mousePos.x >= (RenderManager::GetInstance()->ESC_TO_THE_GAME_POS.left) &&
+		mousePos.x <= (RenderManager::GetInstance()->ESC_TO_THE_GAME_POS.right) &&
+		mousePos.y >= (RenderManager::GetInstance()->ESC_TO_THE_GAME_POS.top) &&
+		mousePos.y <= (RenderManager::GetInstance()->ESC_TO_THE_GAME_POS.bottom))
+	{
+		return TO_THE_GAME;
+	}
+	else if (
+		mousePos.x >= (RenderManager::GetInstance()->ESC_TO_THE_MAIN_MENU_POS.left) &&
+		mousePos.x <= (RenderManager::GetInstance()->ESC_TO_THE_MAIN_MENU_POS.right) &&
+		mousePos.y >= (RenderManager::GetInstance()->ESC_TO_THE_MAIN_MENU_POS.top) &&
+		mousePos.y <= (RenderManager::GetInstance()->ESC_TO_THE_MAIN_MENU_POS.bottom))
+	{
+		return TO_THE_MAIN_MENU;
+	}
+	else
+		return -1;
 }
