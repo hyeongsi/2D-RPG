@@ -370,6 +370,8 @@ void GameManager::AttackMonster()
 		return;
 	}
 
+	SoundManager::GetInstance()->PlayEffectSound(EFFECTSOUND::ATTACK);
+
 	for (auto& iterator: (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()))
 	{
 		if (colliderRect.left <= iterator.GetPos().x + MONSTER1_PIVOT_POS.x &&
@@ -388,6 +390,8 @@ void GameManager::AttackMonster()
 			huddata.pos = { iterator.GetPos().x, iterator.GetPos().y - 10 };
 			huddata.msg = to_string(player->GetDamage());
 			RenderManager::GetInstance()->GetHud()->GetStringHud()->emplace_back(huddata);
+
+			SoundManager::GetInstance()->PlayEffectSound(EFFECTSOUND::MONSTER_HIT);
 
 			// 밀려남 처리 (맵 나가는거 보정)
 			constexpr const int LIMIT_MAP_X_CORRECTION = 32;	// 맵 밖으로 나가는 경우 보정 크기

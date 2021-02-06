@@ -2,6 +2,7 @@
 #include "MonsterManager.h"
 #include "WorldMapManager.h"
 #include "GameManager.h"
+#include "SoundManager.h"
 #include "RenderManager.h"
 #include <fstream>
 #include <string>
@@ -153,6 +154,7 @@ void MonsterManager::AttackPlayer(Monster* monster)
 			hudData.color = 0xff0000;
 			RenderManager::GetInstance()->GetHud()->GetStringHud()->emplace_back(hudData);
 
+			SoundManager::GetInstance()->PlayEffectSound(EFFECTSOUND::HIT);
 			GameManager::GetInstance()->PushOutPlayer(monster->GetDir());
 		}
 	}
@@ -217,10 +219,12 @@ void MonsterManager::DieMonster()
 
 			// hud 출력 관련 데이터 세팅
 			textHudData hudData;
-			hudData.pos = { static_cast<double>(DRAW_MONEYINFO_UI_POS.x) + 100,
+			hudData.pos = { static_cast<double>(DRAW_MONEYINFO_UI_POS.x) + 130,
 				static_cast<double>(DRAW_MONEYINFO_UI_POS.y) + 20 };
 			hudData.msg = "+ " + to_string((*iterator).GetMoney());
 			RenderManager::GetInstance()->GetHud()->GetStringHud()->emplace_back(hudData);
+
+			SoundManager::GetInstance()->PlayEffectSound(EFFECTSOUND::SELL_ITEM);
 
 			iterator = WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->erase(iterator);
 		}

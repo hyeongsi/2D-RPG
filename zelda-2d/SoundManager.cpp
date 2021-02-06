@@ -14,9 +14,10 @@ SoundManager* SoundManager::GetInstance()
 
 		mciSendString("open data/Sound/getItem.wav alias getItem", 0, 0, 0);
 		mciSendString("open data/Sound/moneySound.wav alias sellItem", 0, 0, 0);
-		//mciSendString("open Sound/explosionBallon.wav alias explosionBallon", 0, 0, 0);
-		//mciSendString("open Sound/pickupItem.mp3 alias pickupItem", 0, 0, 0);
-		//mciSendString("open Sound/explodeCharacter.mp3 alias explodeCharacter", 0, 0, 0);
+		mciSendString("open data/Sound/damage.wav alias hitCharacter", 0, 0, 0);
+		mciSendString("open data/Sound/swingSword.wav alias swingSword", 0, 0, 0);
+		mciSendString("open data/Sound/ppusic.wav alias explodeCharacter", 0, 0, 0);
+		mciSendString("open data/Sound/drinkwater.mp3 alias drink", 0, 0, 0);
 	}
 
 	return instance;
@@ -44,15 +45,18 @@ void SoundManager::PlayEffectSound(EFFECTSOUND effectSound)
 {
 	switch (effectSound)
 	{
-	/*case EFFECTSOUND::ATTACK:
-		mciSendString("play installationBallon from 0", 0, 0, 0);
+	case EFFECTSOUND::ATTACK:
+		mciSendString("play swingSword from 0", 0, 0, 0);
 		break;
 	case EFFECTSOUND::HIT:
-		mciSendString("play mouseOverlap from 0", 0, 0, 0);
+		mciSendString("play hitCharacter from 0", 0, 0, 0);
 		break;
 	case EFFECTSOUND::MONSTER_HIT:
-		mciSendString("play explosionBallon from 0", 0, 0, 0);
-		break;*/
+		mciSendString("play explodeCharacter from 0", 0, 0, 0);
+		break;
+	case EFFECTSOUND::USE_POSION:
+		mciSendString("play drink from 0", 0, 0, 0);
+		break;
 	case EFFECTSOUND::GET_ITEM:
 		mciSendString("play getItem from 0", 0, 0, 0);
 		break;

@@ -149,6 +149,7 @@
   <ItemGroup>
     <ClInclude Include="AnimationObject.h" />
     <ClInclude Include="Character.h" />
+    <ClInclude Include="HUD.h" />
     <ClInclude Include="Inventory.h" />
     <ClInclude Include="Item.h" />
     <ClInclude Include="ItemManager.h" />
@@ -166,8 +167,9 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="RenderManager.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="SoundManager.h" />
     <ClInclude Include="targetver.h" />
-    <ClInclude Include="Time.h" />
+    <ClInclude Include="Timmer.h" />
     <ClInclude Include="WorldMap.h" />
     <ClInclude Include="WorldMapManager.h" />
     <ClInclude Include="zelda-2d.h" />
@@ -177,6 +179,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Character.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="HUD.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Inventory.cpp">
@@ -224,7 +229,12 @@
     <ClCompile Include="RenderManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Time.cpp" />
+    <ClCompile Include="SoundManager.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="Timmer.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
     <ClCompile Include="WorldMap.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>

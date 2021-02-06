@@ -12,6 +12,7 @@ enum class EFFECTSOUND
 	MONSTER_HIT,
 	GET_ITEM,
 	SELL_ITEM,
+	USE_POSION
 };
 
 class SoundManager

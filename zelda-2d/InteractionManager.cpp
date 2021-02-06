@@ -226,9 +226,11 @@ void InteractionManager::UseItem()
 		{
 		case 1:
 			GameManager::GetInstance()->GetPlayer()->SetHp(GameManager::GetInstance()->GetPlayer()->GetHp() + 1);
+			SoundManager::GetInstance()->PlayEffectSound(EFFECTSOUND::USE_POSION);
 			break;
 		case 2:
 			GameManager::GetInstance()->GetPlayer()->SetHp(GameManager::GetInstance()->GetPlayer()->GetHp() + 2);
+			SoundManager::GetInstance()->PlayEffectSound(EFFECTSOUND::USE_POSION);
 			break;
 		case 3:
 			GameManager::GetInstance()->GetPlayer()->SetDamage(GameManager::GetInstance()->GetPlayer()->GetDamage() + 1);
