@@ -20,6 +20,8 @@ InteractionManager* InteractionManager::instance = nullptr;
 InteractionManager::InteractionManager()
 {
 	srand(static_cast<unsigned int>(time(NULL)));
+
+	mousePos = { 0,0 };
 }
 
 InteractionManager::~InteractionManager()
