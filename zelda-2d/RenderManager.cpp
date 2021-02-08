@@ -721,6 +721,16 @@ void RenderManager::DrawCursorFollowBitmap()
     BitBlt(memDC, mousePoint.x, mousePoint.y, bit.bmWidth, bit.bmHeight, backMemDC, 0, 0, SRCCOPY);
 }
 
+void RenderManager::AddHudData(const double x, const double y, const string str, const COLORREF color)
+{
+    // hud 출력 관련 데이터 세팅
+    textHudData hudData;
+    hudData.pos = { x, y };
+    hudData.msg = str;
+    hudData.color = color;
+    RenderManager::GetInstance()->GetHud()->GetStringHud()->emplace_back(hudData);
+}
+
 void RenderManager::DrawPlayerAnimation(const int uiName, const DPOINT pos)
 {
     AnimationObject* animationObject = ImageManager::GetInstance()->GetPlayerAnimationData(uiName);

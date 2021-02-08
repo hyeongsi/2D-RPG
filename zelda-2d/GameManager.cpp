@@ -17,7 +17,6 @@ GameManager::GameManager()
 	inputTick = GetTickCount64();
 	eventTick = GetTickCount64();
 	attackTick = GetTickCount64();
-	playerHitTick = GetTickCount64();
 	monsterHitTick = GetTickCount64();
 
 	state = GameState::MAIN;
@@ -141,8 +140,13 @@ void GameManager::Run()
 			MonsterManager::GetInstance()->FindPlayer(&iterator);
 			break;
 		case CharacterInfo::ATTACK:
-			MonsterManager::GetInstance()->ChasePlayer(&iterator);
-			MonsterManager::GetInstance()->AttackPlayer(&iterator);
+			iterator.ChaseCharacter(player);
+			if (iterator.AttackCharacter(player))
+			{
+				RenderManager::GetInstance()->AddHudData(player->GetPos().x, player->GetPos().y - 10, to_string(iterator.GetDamage()), 0xff0000);
+				SoundManager::GetInstance()->PlayEffectSound(EFFECTSOUND::HIT);
+				GameManager::GetInstance()->PushOutPlayer(iterator.GetDir());
+			}
 			break;
 		case CharacterInfo::HIT:
 			if (GetTickCount64() > monsterHitTick + hitDelay)
@@ -206,11 +210,9 @@ void GameManager::PickUpItem()
 			if (inventory->GetLastItemIndex() == INVEN_SIZE)		// 인벤토리 풀이면 아이템 파밍 X
 				return;
 
-			// hud 추가
-			textHudData huddata;
-			huddata.pos = player->GetPos();
-			huddata.msg = (*ItemManager::GetInstance()->GetItemData())[(*iterator).index - 1].GetTitle() + " 획득";
-			RenderManager::GetInstance()->GetHud()->GetStringHud()->emplace_back(huddata);
+			RenderManager::GetInstance()->AddHudData(player->GetPos().x, player->GetPos().y, 
+				(*ItemManager::GetInstance()->GetItemData())[(*iterator).index - 1].GetTitle() + " 획득", 0x0000ff);
+
 
 			inventory->SetItem((*ItemManager::GetInstance()->GetItemData())[(*iterator).index - 1]);	// (아이템 매니저의 정보를 가지고) 인벤토리에 아이템 추가 
 			(*ItemManager::GetInstance()->GetFieldItem()).erase(iterator);			// 필드 아이템은 삭제 처리
@@ -385,11 +387,8 @@ void GameManager::AttackMonster()
 			monsterHitTick = GetTickCount64();
 			iterator.SetState(CharacterInfo::HIT);
 
-			// hud 출력 관련 데이터 세팅
-			textHudData huddata;
-			huddata.pos = { iterator.GetPos().x + 25, iterator.GetPos().y - 10 };
-			huddata.msg = to_string(player->GetDamage());
-			RenderManager::GetInstance()->GetHud()->GetStringHud()->emplace_back(huddata);
+			RenderManager::GetInstance()->AddHudData(iterator.GetPos().x + 25, iterator.GetPos().y - 10,
+				to_string(player->GetDamage()), 0x0000ff);
 
 			SoundManager::GetInstance()->PlayEffectSound(EFFECTSOUND::MONSTER_HIT);
 

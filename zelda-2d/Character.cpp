@@ -15,6 +15,8 @@ Character::Character()
 	damage = INIT_DAMAGE;
 
 	money = 0;
+
+	hitTick = GetTickCount64();
 }
 
 Character::Character(const DPOINT pos, const int hp, const int speed, const int damage)
@@ -31,6 +33,8 @@ Character::Character(const DPOINT pos, const int hp, const int speed, const int 
 	this->damage = damage;
 
 	money = 0;
+
+	hitTick = GetTickCount64();
 }
 
 Character::~Character()
@@ -108,4 +112,14 @@ const int Character::GetMoney()
 void Character::SetMoney(const int money)
 {
 	this->money = money;
+}
+
+const ULONGLONG Character::GetHitTick()
+{
+	return hitTick;
+}
+
+void Character::SetHitTick(const ULONGLONG hitTick)
+{
+	this->hitTick = hitTick;
 }

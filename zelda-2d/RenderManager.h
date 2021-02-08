@@ -90,6 +90,8 @@ public:
 
 	void DrawCheckPattern(HDC hdc, const SIZE size);
 	void DrawCursorFollowBitmap();
+public:
+	void AddHudData(const double x, const double y, const string str, const COLORREF color);
 
 public:
 	void DrawPlayerAnimation(const int uiName, const DPOINT pos);

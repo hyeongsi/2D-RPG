@@ -22,6 +22,8 @@ protected:
 	int damage;			// damage
 
 	int money;			// money
+
+	ULONGLONG hitTick;
 public:
 	Character();
 	Character(const DPOINT pos, const int hp, const int speed, const int damage);
@@ -48,5 +50,8 @@ public:
 
 	const int GetMoney();
 	void SetMoney(const int money);
+
+	const ULONGLONG GetHitTick();
+	void SetHitTick(const ULONGLONG hitTick);
 };
 

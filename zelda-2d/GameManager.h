@@ -39,7 +39,6 @@ public:
 	static GameManager* GetInstance();
 	static void ReleaseInstance();
 
-	ULONGLONG playerHitTick;
 public:
 	void Init();
 	void Input();
