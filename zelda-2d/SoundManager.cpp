@@ -38,6 +38,9 @@ void SoundManager::PlaySoundTrack(BGM bgm)
 	case BGM::INGAME:
 		PlaySound("data/Sound/inGameBGM.wav", NULL, SND_ASYNC | SND_LOOP);
 		break;
+	default:
+		PlaySound(NULL, NULL, SND_ASYNC);
+		break;
 	}
 }
 

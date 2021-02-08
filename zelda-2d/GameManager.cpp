@@ -387,7 +387,7 @@ void GameManager::AttackMonster()
 
 			// hud 출력 관련 데이터 세팅
 			textHudData huddata;
-			huddata.pos = { iterator.GetPos().x, iterator.GetPos().y - 10 };
+			huddata.pos = { iterator.GetPos().x + 25, iterator.GetPos().y - 10 };
 			huddata.msg = to_string(player->GetDamage());
 			RenderManager::GetInstance()->GetHud()->GetStringHud()->emplace_back(huddata);
 

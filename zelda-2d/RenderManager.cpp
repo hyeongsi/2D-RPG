@@ -5,12 +5,15 @@
 #include "ItemManager.h"
 #include "NPCManager.h"
 #include "Time.h"
+#define DEBUG
 
 extern HWND g_hWnd;
 extern SIZE g_clientSize;
 extern HINSTANCE hInst;
 extern HWND g_hStartButton;
+#ifdef DEBUG
 extern HWND g_hMapEdittorButton;
+#endif // DEBUG
 
 RenderManager* RenderManager::instance = nullptr;
 RenderManager::RenderManager()
@@ -133,8 +136,9 @@ void RenderManager::MainFrameDataRender()
 
     SaveMemDcData(ImageManager::GetInstance()->GetMainFrameBitmap(), { 0,0 });      // 출력할 비트맵 세팅 작업
     SaveMemDcData(g_hStartButton, START_BUTTON_POINT);
+#ifdef DEBUG
     SaveMemDcData(g_hMapEdittorButton, MAPEDITTOR_BUTTON_POINT);
-
+#endif // DEBUG
     Render();                   // 출력
 }
 

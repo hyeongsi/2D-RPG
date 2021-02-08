@@ -3,6 +3,7 @@ enum class BGM
 {
 	MAIN_MENU,
 	INGAME,
+	STOP,
 };
 
 enum class EFFECTSOUND

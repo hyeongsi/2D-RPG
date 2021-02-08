@@ -17,6 +17,8 @@
 #include "MonsterManager.h"
 #include "SoundManager.h"
 
+#define DEBUG       // 빌드 분기 나눌 때 사용
+
 #define MAX_LOADSTRING 100
 
 // 전역 변수:
@@ -29,8 +31,9 @@ RECT g_clientRect{ 0,0, ClientSize::width,ClientSize::height }; // 클라이언�
 SIZE g_clientSize;                              // 클라이언트 사이즈
 
 HWND g_hStartButton;                            // 시작 버튼
+#ifdef DEBUG
 HWND g_hMapEdittorButton;                       // 맵 에디터 버튼
-
+#endif // DEBUG
 bool g_isPause = false;                                 // 게임 중단 변수
 
 ClickLR clickLR{ ClickLR::NONE };
@@ -121,9 +124,11 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
         case GameState::MAIN:
             renderManager->MainFrameDataRender();
             break;
+#ifdef DEBUG
         case GameState::MAPEDITTOR:
             renderManager->MapEdittorDataRender();
             break;
+#endif // DEBUG
         case GameState::INGAME:
             if (gameManager->GetPlayer()->GetHp() <= 0)
             { 
@@ -202,10 +207,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         
         g_hStartButton = CreateWindow("button", "NEW START", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON
             , START_BUTTON_POINT.x, START_BUTTON_POINT.y, BUTTON_SIZE.cx, BUTTON_SIZE.cy, hWnd, (HMENU)ButtonKind::NEW_START, hInst, NULL);    // 메인화면의 시작 버튼 생성
-
+#ifdef DEBUG
         g_hMapEdittorButton = CreateWindow("button", "MapEdittor", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON
             , MAPEDITTOR_BUTTON_POINT.x, MAPEDITTOR_BUTTON_POINT.y, BUTTON_SIZE.cx, BUTTON_SIZE.cy, hWnd, (HMENU)ButtonKind::MAPEDITTOR, hInst, NULL);    // 메인 화면의 맵 에디터 버튼 생성
-        
+#endif // DEBUG  
         break;
     case WM_COMMAND:
         {
@@ -271,7 +276,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
                 worldMapManager->LoadMapData(GameState::INGAME, worldMapManager->GetCurrentStage());
                 worldMapManager->LoadEventData(worldMapManager->GetCurrentStage());
                 break;
+#ifdef DEBUG
             case ButtonKind::MAPEDITTOR:       // 맵에디터 버튼 누르면
+                soundManager->PlaySoundTrack(BGM::STOP);
+
                 HideMainFrameButton();                               // 버튼 숨기기
 
                 gameManager->SetState(GameState::MAPEDITTOR);        // 맵 에디터 실행
@@ -293,6 +301,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
                 InvalidateRect(hWnd, nullptr, true);    // 화면 초기화
                 break;
+#endif // DEBUG
             case IDM_EXIT:
                 DestroyWindow(hWnd);
                 break;
@@ -407,6 +416,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
     return 0;
 }
 
+#ifdef DEBUG
 INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
     OPENFILENAME openFileName;
@@ -495,6 +505,7 @@ INT_PTR CALLBACK MapEdittorDlg(HWND hDlg, UINT message, WPARAM wParam, LPARAM lP
     }
     return (INT_PTR)FALSE;
 }
+#endif // DEBUG
 
 void SetMapEdittorData()
 {
@@ -657,13 +668,17 @@ void SelectListBoxSetting(const SelectMapState state)
 void ShowMainFrameButton()
 {
     ShowWindow(g_hStartButton, SW_SHOW);                // 버튼 출력
+#ifdef DEBUG
     ShowWindow(g_hMapEdittorButton, SW_SHOW);           // 버튼 출력
+#endif // DEBUG 
 }
 
 void HideMainFrameButton()
 {
     ShowWindow(g_hStartButton, SW_HIDE);                // 버튼 숨기기
+#ifdef DEBUG
     ShowWindow(g_hMapEdittorButton, SW_HIDE);           // 버튼 숨기기
+#endif // DEBUG
 }
 
 void GoTheGame()
