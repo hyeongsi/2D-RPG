@@ -139,7 +139,6 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
             if (g_isPause)
                 break;
 
-            gameManager->Input();
             gameManager->Run();
             renderManager->InGameDataRender();
             break;
@@ -373,7 +372,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
         clickLR = ClickLR::NONE;    // 클릭 상태 설정
         break;
     case WM_KEYDOWN:
-        if (wParam == VK_ESCAPE)
+        if (wParam == VK_ESCAPE)    // esc 키
         {
             if (GameState::INGAME != gameManager->GetState())
                 break;
@@ -387,6 +386,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
             {
                 GoTheGame();
             }
+        }
+
+        if (wParam == 'I')  // I 키
+        {
+            if (GameState::INGAME != gameManager->GetState())
+                break;
+
+            if (gameManager->GetInventory()->IsOpen())
+                gameManager->GetInventory()->SetOpen(false);
+            else
+                gameManager->GetInventory()->SetOpen(true);
         }
         break;
     case WM_PAINT:

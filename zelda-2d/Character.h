@@ -23,7 +23,8 @@ protected:
 
 	int money;			// money
 
-	ULONGLONG hitTick;
+	ULONGLONG hitTick;		// 피격 딜레이
+	ULONGLONG attackTick;	// 공격 딜레이
 public:
 	Character();
 	Character(const DPOINT pos, const int hp, const int speed, const int damage);
@@ -53,5 +54,8 @@ public:
 
 	const ULONGLONG GetHitTick();
 	void SetHitTick(const ULONGLONG hitTick);
+
+	const ULONGLONG GetAttackTick();
+	void SetAttackTick(const ULONGLONG attackTick);
 };
 

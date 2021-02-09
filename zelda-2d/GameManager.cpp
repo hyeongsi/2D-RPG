@@ -14,10 +14,7 @@ GameManager* GameManager::instance = nullptr;
 
 GameManager::GameManager()
 {
-	inputTick = GetTickCount64();
 	eventTick = GetTickCount64();
-	attackTick = GetTickCount64();
-	monsterHitTick = GetTickCount64();
 
 	state = GameState::MAIN;
 	player = nullptr;
@@ -56,22 +53,6 @@ void GameManager::Init()
 	if (inventory != nullptr)
 		delete inventory;
 	inventory = nullptr;
-}
-
-void GameManager::Input()
-{
-	if (GetAsyncKeyState(0x49) & 0x8000)
-	{
-		if (GetTickCount64() > inputTick + INPUT_DELAY)
-			inputTick = GetTickCount64();
-		else
-			return;
-
-		if (inventory->IsOpen())
-			inventory->SetOpen(false);
-		else
-			inventory->SetOpen(true);
-	}
 }
 
 void GameManager::Run()
@@ -149,7 +130,7 @@ void GameManager::Run()
 			}
 			break;
 		case CharacterInfo::HIT:
-			if (GetTickCount64() > monsterHitTick + hitDelay)
+			if (GetTickCount64() > iterator.GetHitTick() + hitDelay)
 				iterator.SetState(CharacterInfo::ATTACK);
 			break;
 		default:
@@ -318,9 +299,9 @@ void GameManager::AttackMonster()
 		return;
 	}
 
-	if (GetTickCount64() > attackTick + hitDamageDelay)
+	if (GetTickCount64() > player->GetAttackTick() + hitDamageDelay)
 	{
-		attackTick = GetTickCount64();
+		player->SetAttackTick(GetTickCount64());
 	}
 	else
 		return;
@@ -384,7 +365,7 @@ void GameManager::AttackMonster()
 			iterator.SetHp(iterator.GetHp() - player->GetDamage());		// 몬스터 hp -- 처리
 			iterator.SetPos({ iterator.GetPos().x + pushOutPos.x , iterator.GetPos().y + pushOutPos.y });	// 밀려남 처리
 
-			monsterHitTick = GetTickCount64();
+			iterator.SetHitTick(GetTickCount64());
 			iterator.SetState(CharacterInfo::HIT);
 
 			RenderManager::GetInstance()->AddHudData(iterator.GetPos().x + 25, iterator.GetPos().y - 10,

@@ -31,17 +31,13 @@ private:
 	~GameManager();
 
 private:
-	ULONGLONG inputTick;
 	ULONGLONG eventTick;
-	ULONGLONG attackTick;
-	ULONGLONG monsterHitTick;
 public:
 	static GameManager* GetInstance();
 	static void ReleaseInstance();
 
 public:
 	void Init();
-	void Input();
 	void Run();
 
 	void LimitMoveMent(const DPOINT prevDPos);	// 이동 제한
