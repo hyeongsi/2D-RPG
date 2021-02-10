@@ -135,10 +135,10 @@ void Monster::ChaseCharacter(Character* character)
 		if (this == &iterator)
 			continue;
 		// 콜라이더가 겹치면
-		if (pos.x + MONSTER1_PIVOT_POS.x - 16 <= iterator.GetPos().x + MONSTER1_PIVOT_POS.x &&
-			pos.x + MONSTER1_PIVOT_POS.x + 16 >= iterator.GetPos().x + MONSTER1_PIVOT_POS.x &&
-			pos.y + MONSTER1_PIVOT_POS.y - 16 <= iterator.GetPos().y + MONSTER1_PIVOT_POS.y &&
-			pos.y + MONSTER1_PIVOT_POS.y + 16 >= iterator.GetPos().y + MONSTER1_PIVOT_POS.y)
+		if (pos.x + MONSTER1_PIVOT_POS.x - attackColliderSize <= iterator.GetPos().x + MONSTER1_PIVOT_POS.x &&
+			pos.x + MONSTER1_PIVOT_POS.x + attackColliderSize >= iterator.GetPos().x + MONSTER1_PIVOT_POS.x &&
+			pos.y + MONSTER1_PIVOT_POS.y - attackColliderSize <= iterator.GetPos().y + MONSTER1_PIVOT_POS.y &&
+			pos.y + MONSTER1_PIVOT_POS.y + attackColliderSize >= iterator.GetPos().y + MONSTER1_PIVOT_POS.y)
 		{
 			pos = prevPos;		// 이동하기 전으로 돌리고,
 			InitAstarVector();				// 초기화
