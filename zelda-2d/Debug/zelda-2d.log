@@ -1,14 +1,2 @@
 ﻿  Monster.cpp
-  MonsterManager.cpp
-  Player.cpp
-  GameManager.cpp
-  InteractionManager.cpp
-  RenderManager.cpp
-  WorldMapManager.cpp
-  zelda-2d.cpp
-  코드를 생성하고 있습니다...
-pch.obj : warning LNK4204: 'C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\vc142.pdb'에 참조 모듈에 대한 디버깅 정보가 없습니다. 디버깅 정보가 없는 것처럼 개체를 링크합니다.
-Item.obj : warning LNK4204: 'C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\vc142.pdb'에 참조 모듈에 대한 디버깅 정보가 없습니다. 디버깅 정보가 없는 것처럼 개체를 링크합니다.
-Inventory.obj : warning LNK4204: 'C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\vc142.pdb'에 참조 모듈에 대한 디버깅 정보가 없습니다. 디버깅 정보가 없는 것처럼 개체를 링크합니다.
-AnimationObject.obj : warning LNK4204: 'C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\vc142.pdb'에 참조 모듈에 대한 디버깅 정보가 없습니다. 디버깅 정보가 없는 것처럼 개체를 링크합니다.
   zelda-2d.vcxproj -> C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\zelda-2d.exe

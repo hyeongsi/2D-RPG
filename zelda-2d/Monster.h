@@ -17,6 +17,7 @@ class Monster : public Character
 {
 private:
 	int index;
+	int attackColliderSize = 13;
 
 	friend class MonsterManager;
 private:
@@ -41,6 +42,7 @@ public:
 
 public:
 	void InitAstarNode();	// 초기화
+	void InitStartEndNode(Character* character);	// 초기화
 	void InitAstarVector();	// 초기화
 
 	bool AttackCharacter(Character* character);	// 공격
@@ -48,6 +50,8 @@ public:
 	void FindPath();			// astar findPath;;			// 플레이어 감지
 	void SettingTileMap(Character * character);		// setting tileMap;
 	void AddChildNode(const int childX, const int childY, ASNode* parentNode, const int value);
+
+	void FollowAstarAlgorithm(Character* character);
 
 	void Die(Character* character);
 };

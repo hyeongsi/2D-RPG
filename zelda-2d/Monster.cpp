@@ -64,6 +64,22 @@ void Monster::InitAstarNode()
 	}
 }
 
+void Monster::InitStartEndNode(Character * character)
+{
+	// startNode : 본인 위치
+	startNode = new ASNode(GetPivotMapPoint().x, GetPivotMapPoint().y);
+	// endNode : 상대방 위치
+	endNode = new ASNode(static_cast<int>((character->GetPos().x + PLAYER_PIVOT_POS.x)) / TILE_SIZE,
+		static_cast<int>((character->GetPos().y + PLAYER_PIVOT_POS.y)) / TILE_SIZE);
+
+	// startNode setting
+	startNode->g = 0;
+	startNode->h = abs((endNode->x - startNode->x)) + abs((endNode->y - startNode->y));
+	startNode->f = startNode->g + startNode->h;
+
+	openVec.emplace_back(new ASNode(startNode->x, startNode->y));
+}
+
 void Monster::InitAstarVector()
 {
 	// openVec 초기화
@@ -79,11 +95,12 @@ void Monster::InitAstarVector()
 		iterator = closeVec.erase(iterator);
 	}
 	resultVec.clear();
+
+	delete endNode;
 }
 
 bool Monster::AttackCharacter(Character * character)
 {
-	const int attackColliderSize = 13;
 	// 공격 범위 안에 플레이어 접촉 상태
 	if (pos.x + MONSTER1_PIVOT_POS.x - attackColliderSize <= character->GetPos().x + PLAYER_PIVOT_POS.x &&
 		pos.x + MONSTER1_PIVOT_POS.x + attackColliderSize >= character->GetPos().x + PLAYER_PIVOT_POS.x &&
@@ -105,83 +122,34 @@ bool Monster::AttackCharacter(Character * character)
 
 void Monster::ChaseCharacter(Character* character)
 {
-	// 초기화
-	InitAstarVector();
-	// 타일맵 세팅
-	SettingTileMap(character);
-	// startNode : 본인 위치
-	startNode = new ASNode(GetPivotMapPoint().x, GetPivotMapPoint().y);
-	// endNode : 상대방 위치
-	endNode = new ASNode(static_cast<int>((character->GetPos().x + PLAYER_PIVOT_POS.x)) / TILE_SIZE,
-		static_cast<int>((character->GetPos().y + PLAYER_PIVOT_POS.y)) / TILE_SIZE);
+	InitAstarVector();				// 초기화
+	InitStartEndNode(character);
+	SettingTileMap(character);		// 타일맵 세팅
 
-	// startNode setting
-	startNode->g = 0;
-	startNode->h = abs((endNode->x - startNode->x)) + abs((endNode->y - startNode->y));
-	startNode->f = startNode->g + startNode->h;
+	for (auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()))
+	{
+		// 본인이 아닐 때
+		if (this == &iterator)
+			continue;
+		// 콜라이더가 겹치면
+		if (pos.x + MONSTER1_PIVOT_POS.x - 16 <= iterator.GetPos().x + MONSTER1_PIVOT_POS.x &&
+			pos.x + MONSTER1_PIVOT_POS.x + 16 >= iterator.GetPos().x + MONSTER1_PIVOT_POS.x &&
+			pos.y + MONSTER1_PIVOT_POS.y - 16 <= iterator.GetPos().y + MONSTER1_PIVOT_POS.y &&
+			pos.y + MONSTER1_PIVOT_POS.y + 16 >= iterator.GetPos().y + MONSTER1_PIVOT_POS.y)
+		{
+			// 이동방향에 벽을 생성해서 우회해서 갈수 있도록 함
+			POINT diffDir[4] = { {0,1},{1,0},{0,-1},{-1,0} };
+			tileMap[GetPivotMapPoint().y + diffDir[dir].y][GetPivotMapPoint().x + diffDir[dir].x] = WALL;
+		}
+	}
 
-	openVec.emplace_back(new ASNode(startNode->x, startNode->y));
-
-	FindPath();		// astar findPath
-
-	if (resultVec.size() == 0)
-		return;
-
-	POINT diffPos;
+	FindPath();						// 경로 찾기
+	FollowAstarAlgorithm(character);	// 경로 따라서 이동
 
 	// 해결해야 할 문제 : 
 	// 1. 다양한 이동관련 처리 도중 같은 타일에 적들이 2명이상 들어간 경우
 	// 2. 적1 타일 오른쪽 끝자락 위치, 적2 타일 왼쪽 끝자락 위치 시 같이 이동하는 것 처럼 보이는 경우
-
-	if (resultVec.size() == 1)	// 같은 타일 위에 위치 한 경우
-	{
-		const int retouchPivotPos = 6;
-		// x 값 비교
-		if (static_cast<int>(character->GetPos().x) + PLAYER_PIVOT_POS.x >
-			static_cast<int>(pos.x) + MONSTER1_PIVOT_POS.x)
-			diffPos.x = 1;
-		else if (static_cast<int>(character->GetPos().x) + PLAYER_PIVOT_POS.x <
-			static_cast<int>(pos.x) + MONSTER1_PIVOT_POS.x)
-			diffPos.x = -1;
-		else
-			diffPos.x = 0;
-
-		// y 값 비교
-		if (static_cast<int>(character->GetPos().y) + PLAYER_PIVOT_POS.y + retouchPivotPos >
-			static_cast<int>(pos.y) + MONSTER1_PIVOT_POS.y)
-			diffPos.y = 1;
-		else if (static_cast<int>(character->GetPos().y) + PLAYER_PIVOT_POS.y + retouchPivotPos <
-			static_cast<int>(pos.y) + MONSTER1_PIVOT_POS.y)
-			diffPos.y = -1;
-		else
-			diffPos.y = 0;
-	}
-	else
-	{
-		diffPos.x = ((resultVec[resultVec.size() - 1]->x - (resultVec[resultVec.size() - 2])->x)) * -1;
-		diffPos.y = ((resultVec[resultVec.size() - 1]->y - (resultVec[resultVec.size() - 2])->y)) * -1;
-	}
-
-	if (diffPos.x == 0 || diffPos.y == 0)
-	{
-		pos.x +=  (speed * Timmer::GetInstance()->deltaTime) * diffPos.x;
-		pos.y += (speed * Timmer::GetInstance()->deltaTime) * diffPos.y;
-	}
-	else  // 대각선 이동 보정
-	{
-		pos.x += (speed * Timmer::GetInstance()->deltaTime) * diffPos.x * sqrt(2) / 2;
-		pos.y += (speed * Timmer::GetInstance()->deltaTime) * diffPos.y * sqrt(2) / 2;
-	}
-
-	// 방향 설정
-	if (diffPos.x > 0)
-		dir = CharacterInfo::RIGHT;
-	else if (diffPos.x < 0)
-		dir = CharacterInfo::LEFT;
-	else if (diffPos.y > 0)
-		dir = CharacterInfo::DOWN;
-	else if (diffPos.y < 0)
-		dir = CharacterInfo::UP;
+	// -> 해결 했으나, 공격 처리를 못하는 문제가 발생, -> resultSize로, 해결해보던가, 1번을 해결하면 자연스럽게 해결될듯?
 }
 
 void Monster::FindPath()
@@ -222,7 +190,7 @@ void Monster::FindPath()
 			for (int i = 0; i < 8; i++)
 			{
 				if (currentNode->x + checkNode[i].x < MAP_MAX_X && currentNode->y + checkNode[i].y < MAP_MAX_Y &&
-					currentNode->x + checkNode[i].x >= 0 && currentNode->y + checkNode[i].y >= 0)
+					currentNode->x + checkNode[i].x >= 0 && currentNode->y + checkNode[i].y >= 0)	// 맵의 범위 안이라면
 				{
 					if (i < 4)
 					{
@@ -291,6 +259,64 @@ void Monster::AddChildNode(const int childX, const int childY, ASNode* parentNod
 
 }
 
+void Monster::FollowAstarAlgorithm(Character* character)
+{
+	POINT diffPos;
+	if (resultVec.size() == 0)
+		return;
+
+	if (resultVec.size() == 1)	// 같은 타일 위에 위치 한 경우
+	{
+		const int retouchPivotPos = 6;
+		// x 값 비교
+		if (static_cast<int>(character->GetPos().x) + PLAYER_PIVOT_POS.x >
+			static_cast<int>(pos.x) + MONSTER1_PIVOT_POS.x)
+			diffPos.x = 1;
+		else if (static_cast<int>(character->GetPos().x) + PLAYER_PIVOT_POS.x <
+			static_cast<int>(pos.x) + MONSTER1_PIVOT_POS.x)
+			diffPos.x = -1;
+		else
+			diffPos.x = 0;
+
+		// y 값 비교
+		if (static_cast<int>(character->GetPos().y) + PLAYER_PIVOT_POS.y + retouchPivotPos >
+			static_cast<int>(pos.y) + MONSTER1_PIVOT_POS.y)
+			diffPos.y = 1;
+		else if (static_cast<int>(character->GetPos().y) + PLAYER_PIVOT_POS.y + retouchPivotPos <
+			static_cast<int>(pos.y) + MONSTER1_PIVOT_POS.y)
+			diffPos.y = -1;
+		else
+			diffPos.y = 0;
+	}
+	else
+	{
+		diffPos.x = ((resultVec[resultVec.size() - 1]->x - (resultVec[resultVec.size() - 2])->x)) * -1;
+		diffPos.y = ((resultVec[resultVec.size() - 1]->y - (resultVec[resultVec.size() - 2])->y)) * -1;
+	}
+
+	if (diffPos.x == 0 || diffPos.y == 0)
+	{
+		pos.x += (speed * Timmer::GetInstance()->deltaTime) * diffPos.x;
+		pos.y += (speed * Timmer::GetInstance()->deltaTime) * diffPos.y;
+	}
+	else  // 대각선 이동 보정
+	{
+
+		pos.x += (speed * Timmer::GetInstance()->deltaTime) * diffPos.x * sqrt(2) / 2;
+		pos.y += (speed * Timmer::GetInstance()->deltaTime) * diffPos.y * sqrt(2) / 2;
+	}
+
+	// 방향 설정
+	if (diffPos.x > 0)
+		dir = CharacterInfo::RIGHT;
+	else if (diffPos.x < 0)
+		dir = CharacterInfo::LEFT;
+	else if (diffPos.y > 0)
+		dir = CharacterInfo::DOWN;
+	else if (diffPos.y < 0)
+		dir = CharacterInfo::UP;
+}
+
 void Monster::Die(Character* character)
 {
 	for (auto iterator = WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->begin();
@@ -327,7 +353,9 @@ void Monster::SettingTileMap(Character * character)
 	// monster pos init
 	for (auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()))
 	{
-		tileMap[GetPivotMapPoint().y][GetPivotMapPoint().x] = WALL;
+		if (this == &iterator)
+			continue;
+		tileMap[iterator.GetPivotMapPoint().y][iterator.GetPivotMapPoint().x] = WALL;
 	}
 
 	// player pos init
