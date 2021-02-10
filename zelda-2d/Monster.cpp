@@ -125,6 +125,9 @@ void Monster::ChaseCharacter(Character* character)
 	InitAstarVector();				// 초기화
 	InitStartEndNode(character);
 	SettingTileMap(character);		// 타일맵 세팅
+	FindPath();						// 경로 찾기
+	DPOINT prevPos = pos;
+	FollowAstarAlgorithm(character);	// 경로 따라서 이동
 
 	for (auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()))
 	{
@@ -137,19 +140,25 @@ void Monster::ChaseCharacter(Character* character)
 			pos.y + MONSTER1_PIVOT_POS.y - 16 <= iterator.GetPos().y + MONSTER1_PIVOT_POS.y &&
 			pos.y + MONSTER1_PIVOT_POS.y + 16 >= iterator.GetPos().y + MONSTER1_PIVOT_POS.y)
 		{
+			pos = prevPos;		// 이동하기 전으로 돌리고,
+			InitAstarVector();				// 초기화
+			InitStartEndNode(character);
+			SettingTileMap(character);		// 타일맵 세팅
+
 			// 이동방향에 벽을 생성해서 우회해서 갈수 있도록 함
 			POINT diffDir[4] = { {0,1},{1,0},{0,-1},{-1,0} };
 			tileMap[GetPivotMapPoint().y + diffDir[dir].y][GetPivotMapPoint().x + diffDir[dir].x] = WALL;
+			// player pos init
+			tileMap[(static_cast<int>(character->GetPos().y) + PLAYER_PIVOT_POS.y) / TILE_SIZE]
+				[(static_cast<int>(character->GetPos().x) + PLAYER_PIVOT_POS.x) / TILE_SIZE] = END_LOCATION;
+
+			FindPath();
+			FollowAstarAlgorithm(character);	// 경로 따라서 이동
 		}
 	}
 
-	FindPath();						// 경로 찾기
-	FollowAstarAlgorithm(character);	// 경로 따라서 이동
-
 	// 해결해야 할 문제 : 
-	// 1. 다양한 이동관련 처리 도중 같은 타일에 적들이 2명이상 들어간 경우
-	// 2. 적1 타일 오른쪽 끝자락 위치, 적2 타일 왼쪽 끝자락 위치 시 같이 이동하는 것 처럼 보이는 경우
-	// -> 해결 했으나, 공격 처리를 못하는 문제가 발생, -> resultSize로, 해결해보던가, 1번을 해결하면 자연스럽게 해결될듯?
+	// 1. 도착점에 도착 시 콜라이더 무시하고 공격하는 현상,
 }
 
 void Monster::FindPath()
