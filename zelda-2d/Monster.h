@@ -53,7 +53,7 @@ public:
 
 	void FollowAstarAlgorithm(Character* character);
 
-	void Die(Character* character);
+	bool Die(Character* character);
 };
 
 class ASNode

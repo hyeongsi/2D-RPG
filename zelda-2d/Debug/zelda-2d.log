@@ -1,2 +1,3 @@
-﻿  Monster.cpp
+﻿  GameManager.cpp
+C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\GameManager.cpp(110,27): warning C4390: ';': 제어된 빈 문이 있습니다. 이 문이 필요합니까?
   zelda-2d.vcxproj -> C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\zelda-2d.exe

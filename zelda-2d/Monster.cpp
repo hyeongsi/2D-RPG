@@ -102,10 +102,10 @@ void Monster::InitAstarVector()
 bool Monster::AttackCharacter(Character * character)
 {
 	// 공격 범위 안에 플레이어 접촉 상태
-	if (pos.x + MONSTER1_PIVOT_POS.x - attackColliderSize <= character->GetPos().x + PLAYER_PIVOT_POS.x &&
-		pos.x + MONSTER1_PIVOT_POS.x + attackColliderSize >= character->GetPos().x + PLAYER_PIVOT_POS.x &&
-		pos.y + MONSTER1_PIVOT_POS.y - attackColliderSize <= character->GetPos().y + PLAYER_PIVOT_POS.y &&
-		pos.y + MONSTER1_PIVOT_POS.y + attackColliderSize >= character->GetPos().y + PLAYER_PIVOT_POS.y)
+	if (pos.x + MONSTER1_PIVOT_POS.x - 16 <= character->GetPos().x + PLAYER_PIVOT_POS.x &&
+		pos.x + MONSTER1_PIVOT_POS.x + 16 >= character->GetPos().x + PLAYER_PIVOT_POS.x &&
+		pos.y + MONSTER1_PIVOT_POS.y - 16 <= character->GetPos().y + PLAYER_PIVOT_POS.y &&
+		pos.y + MONSTER1_PIVOT_POS.y + 16 >= character->GetPos().y + PLAYER_PIVOT_POS.y)
 	{
 		if (GetTickCount64() > character->GetHitTick() + 1000)
 		{
@@ -147,7 +147,7 @@ void Monster::ChaseCharacter(Character* character)
 
 			// 이동방향에 벽을 생성해서 우회해서 갈수 있도록 함
 			POINT diffDir[4] = { {0,1},{1,0},{0,-1},{-1,0} };
-			tileMap[GetPivotMapPoint().y + diffDir[dir].y][GetPivotMapPoint().x + diffDir[dir].x] = WALL;
+			tileMap[GetPivotMapPoint().y + diffDir[iterator.dir].y][GetPivotMapPoint().x + diffDir[iterator.dir].x] = WALL;
 			// player pos init
 			tileMap[(static_cast<int>(character->GetPos().y) + PLAYER_PIVOT_POS.y) / TILE_SIZE]
 				[(static_cast<int>(character->GetPos().x) + PLAYER_PIVOT_POS.x) / TILE_SIZE] = END_LOCATION;
@@ -158,7 +158,7 @@ void Monster::ChaseCharacter(Character* character)
 	}
 
 	// 해결해야 할 문제 : 
-	// 1. 도착점에 도착 시 콜라이더 무시하고 공격하는 현상,
+	// 1. 도착점 위치시 콜라이더 무시하고 공격하는 현상,
 }
 
 void Monster::FindPath()
@@ -326,8 +326,9 @@ void Monster::FollowAstarAlgorithm(Character* character)
 		dir = CharacterInfo::UP;
 }
 
-void Monster::Die(Character* character)
+bool Monster::Die(Character* character)
 {
+	bool eraseCheck = false;
 	for (auto iterator = WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->begin();
 		iterator != WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->end();)
 	{
@@ -343,10 +344,13 @@ void Monster::Die(Character* character)
 			SoundManager::GetInstance()->PlayEffectSound(EFFECTSOUND::SELL_ITEM);
 
 			iterator = WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->erase(iterator);
+			eraseCheck = true;
 		}
 		else
 			iterator++;
 	}
+
+	return eraseCheck;
 }
 
 void Monster::SettingTileMap(Character * character)

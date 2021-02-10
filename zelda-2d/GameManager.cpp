@@ -105,12 +105,16 @@ void GameManager::Run()
 		break;
 	}
 
+	for (auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()))
+	{
+		if(iterator.Die(player));	// hp <= 0 이면 죽음 처리
+			break;
+	}
+
 	// 몬스터 처리
 	const int hitDelay = 150;
 	for (auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()))
 	{
-		iterator.Die(player);	// hp <= 0 이면 죽음 처리
-
 		switch (iterator.GetState())
 		{
 		case CharacterInfo::IDLE:
