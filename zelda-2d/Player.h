@@ -5,7 +5,6 @@ class Player : public Character
 {
 private:
 	int level;			// level
-	int exp;
 
 public:
 	Player();
@@ -15,11 +14,12 @@ public:
 public:
 	const int GetLevel();
 
-	void SetExp(const int exp);
-
 	POINT GetPivotMapPoint();
+
+public:
+	void Attack();						// 공격
+
 public:
 	void Input();
-	void Update();
 };
 

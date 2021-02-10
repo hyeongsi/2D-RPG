@@ -130,29 +130,3 @@ void MonsterManager::FindPlayer(Monster* monster)
 		monster->SetState(CharacterInfo::ATTACK);	// 몬스터를 공격 상태로 변경
 	}
 }
-
-void MonsterManager::DieMonster()
-{
-	for (auto iterator = WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->begin();
-		iterator != WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->end();)
-	{
-		if ((*iterator).GetHp() <= 0)
-		{
-			GameManager::GetInstance()->GetPlayer()->SetMoney(GameManager::GetInstance()->GetPlayer()->GetMoney() + (*iterator).GetMoney());
-			GameManager::GetInstance()->GetPlayer()->SetExp((*iterator).GetExp());
-
-			// hud 출력 관련 데이터 세팅
-			textHudData hudData;
-			hudData.pos = { static_cast<double>(DRAW_MONEYINFO_UI_POS.x) + 130,
-				static_cast<double>(DRAW_MONEYINFO_UI_POS.y) + 20 };
-			hudData.msg = "+ " + to_string((*iterator).GetMoney());
-			RenderManager::GetInstance()->GetHud()->GetStringHud()->emplace_back(hudData);
-
-			SoundManager::GetInstance()->PlayEffectSound(EFFECTSOUND::SELL_ITEM);
-
-			iterator = WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->erase(iterator);
-		}
-		else
-			iterator++;
-	}
-}

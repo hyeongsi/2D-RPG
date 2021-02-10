@@ -3,6 +3,9 @@
 #include <math.h>
 #include "Timmer.h"
 #include "WorldMapManager.h"
+#include "RenderManager.h"
+#include "SoundManager.h"
+#include <string>
 
 Monster::Monster()
 	:Character()
@@ -33,11 +36,6 @@ const int Monster::GetIndex()
 void Monster::SetIndex(const int index)
 {
 	this->index = index;
-}
-
-const int Monster::GetExp()
-{
-	return exp;
 }
 
 POINT Monster::GetPivotMapPoint()
@@ -291,7 +289,30 @@ void Monster::AddChildNode(const int childX, const int childY, ASNode* parentNod
 	childNode->f = childNode->g + childNode->h;
 	openVec.emplace_back(childNode);
 
-};
+}
+
+void Monster::Die(Character* character)
+{
+	for (auto iterator = WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->begin();
+		iterator != WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->end();)
+	{
+		if ((*iterator).GetHp() <= 0)
+		{
+			character->SetMoney(character->GetMoney() + (*iterator).GetMoney());
+			character->SetExp((*iterator).GetExp());
+
+			RenderManager::GetInstance()->AddHudData(static_cast<double>(DRAW_MONEYINFO_UI_POS.x) + 130,
+				static_cast<double>(DRAW_MONEYINFO_UI_POS.y) + 20,
+				"+ " + std::to_string((*iterator).GetMoney()), 0x0000ff);
+
+			SoundManager::GetInstance()->PlayEffectSound(EFFECTSOUND::SELL_ITEM);
+
+			iterator = WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->erase(iterator);
+		}
+		else
+			iterator++;
+	}
+}
 
 void Monster::SettingTileMap(Character * character)
 {

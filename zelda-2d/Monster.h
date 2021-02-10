@@ -17,7 +17,6 @@ class Monster : public Character
 {
 private:
 	int index;
-	int exp;
 
 	friend class MonsterManager;
 private:
@@ -38,7 +37,6 @@ public:
 	const int GetIndex();
 	void SetIndex(const int index);
 
-	const int GetExp();
 	POINT GetPivotMapPoint();
 
 public:
@@ -50,6 +48,8 @@ public:
 	void FindPath();			// astar findPath;;			// 플레이어 감지
 	void SettingTileMap(Character * character);		// setting tileMap;
 	void AddChildNode(const int childX, const int childY, ASNode* parentNode, const int value);
+
+	void Die(Character* character);
 };
 
 class ASNode

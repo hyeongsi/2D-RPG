@@ -22,6 +22,7 @@ protected:
 	int damage;			// damage
 
 	int money;			// money
+	int exp;
 
 	ULONGLONG hitTick;		// 피격 딜레이
 	ULONGLONG attackTick;	// 공격 딜레이
@@ -51,6 +52,9 @@ public:
 
 	const int GetMoney();
 	void SetMoney(const int money);
+
+	void SetExp(const int exp);
+	const int GetExp();
 
 	const ULONGLONG GetHitTick();
 	void SetHitTick(const ULONGLONG hitTick);

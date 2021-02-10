@@ -34,5 +34,4 @@ public:
 	const vector<string>* GetbitmapPath();
 public:
 	void FindPlayer(Monster* monster);			// 플레이어 감지
-	void DieMonster();							// 몬스터 죽음 처리
 };

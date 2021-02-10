@@ -45,8 +45,6 @@ public:
 	void UsePortal();							// 포탈 사용
 	void RetouchMoveMent(POINT colliderPos[4]);	// 이동 보정
 
-	void AttackMonster();						// 공격
-
 	void PushOutPlayer(const int dir);	// 플레이어 밀려남 처리
 public:
 	const GameState GetState();
