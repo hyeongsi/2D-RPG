@@ -89,10 +89,10 @@ void InteractionManager::ActionEvent(POINT pos)
 		return;
 	}
 
-	switch (worldMap->GetData(SelectMapState::EVENT, GameManager::GetInstance()->GetPlayerPivotMapPoint()))
+	switch (worldMap->GetData(SelectMapState::EVENT, GameManager::GetInstance()->GetPlayer()->GetPivotMapPoint()))
 	{
 	case Event::INTERACT_NPC:
-		NPCManager::GetInstance()->InteractNPC(GameManager::GetInstance()->GetPlayerPivotMapPoint());	// 상점 이용 상태로 변경
+		NPCManager::GetInstance()->InteractNPC(GameManager::GetInstance()->GetPlayer()->GetPivotMapPoint());	// 상점 이용 상태로 변경
 		return;
 	}
 }

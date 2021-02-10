@@ -76,7 +76,7 @@ void GameManager::Run()
 		else
 			break;
 
-		pivotPos = GetPlayerPivotMapPoint();
+		pivotPos = player->GetPivotMapPoint();
 		
 		// 캐릭터가 보고있는 방향의 오브젝트의 상호작용 실행 시키기 위해 연산
 		switch (player->GetDir())
@@ -182,7 +182,7 @@ void GameManager::LimitMoveMent(const DPOINT prevDPos)
 
 void GameManager::PickUpItem()
 {
-	POINT pivotPos = GetPlayerPivotMapPoint();		// 피벗 좌표를 기준으로 캐릭터의 맵 좌표 가져옴
+	POINT pivotPos = player->GetPivotMapPoint();		// 피벗 좌표를 기준으로 캐릭터의 맵 좌표 가져옴
 
 	for (auto iterator = (*ItemManager::GetInstance()->GetFieldItem()).begin(); iterator != (*ItemManager::GetInstance()->GetFieldItem()).end();)
 	{
@@ -208,7 +208,7 @@ void GameManager::PickUpItem()
 
 void GameManager::UsePortal()
 {
-	POINT pivotPos = GetPlayerPivotMapPoint();		// 피벗 좌표를 기준으로 캐릭터의 맵 좌표 가져옴
+	POINT pivotPos = player->GetPivotMapPoint();		// 피벗 좌표를 기준으로 캐릭터의 맵 좌표 가져옴
 	for (auto& iterator : WorldMapManager::GetInstance()->GetProtalData())
 	{
 		if (iterator.pos.x == pivotPos.x && iterator.pos.y == pivotPos.y)
@@ -390,14 +390,14 @@ void GameManager::AttackMonster()
 
 			// 맵 콜라이더 나가는거 보정
 			POINT monsterMapPos;
-			monsterMapPos.x = ((static_cast<int>(iterator.GetPos().x) + MONSTER1_PIVOT_POS.x)) / TILE_SIZE;
-			monsterMapPos.y = ((static_cast<int>(iterator.GetPos().y) + MONSTER1_PIVOT_POS.y)) / TILE_SIZE;
+			monsterMapPos.x = iterator.GetPivotMapPoint().x;
+			monsterMapPos.y = iterator.GetPivotMapPoint().y;
 
 			while (0 != WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::COLLIDER, monsterMapPos))
 			{
 				iterator.SetPos({ iterator.GetPos().x  + pushCorrectionPos.x, iterator.GetPos().y  + pushCorrectionPos .y});	// 밀려남 처리
-				monsterMapPos.x = ((static_cast<int>(iterator.GetPos().x) + MONSTER1_PIVOT_POS.x)) / TILE_SIZE;
-				monsterMapPos.y = ((static_cast<int>(iterator.GetPos().y) + MONSTER1_PIVOT_POS.y)) / TILE_SIZE;
+				monsterMapPos.x = iterator.GetPivotMapPoint().x;
+				monsterMapPos.y = iterator.GetPivotMapPoint().y;
 			}
 		}
 	}
@@ -449,21 +449,10 @@ void GameManager::PushOutPlayer(const int dir)
 	}
 
 	// 맵 콜라이더 나가는거 보정
-	while (0 != WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::COLLIDER, { GetPlayerPivotMapPoint().x, GetPlayerPivotMapPoint().y}))
+	while (0 != WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::COLLIDER, { player->GetPivotMapPoint().x, player->GetPivotMapPoint().y}))
 	{
 		player->SetPos({ player->GetPos().x + pushCorrectionPos.x, player->GetPos().y + pushCorrectionPos.y });	// 밀려남 처리
 	}
-}
-
-POINT GameManager::GetPlayerPivotMapPoint()
-{
-	POINT pivotPos = { static_cast<LONG>(player->GetPos().x),  static_cast<LONG>(player->GetPos().y) };
-	pivotPos.x += PLAYER_PIVOT_POS.x;
-	pivotPos.y += PLAYER_PIVOT_POS.y;
-
-	pivotPos = WorldMapManager::GetInstance()->ChangePosToMapPoint(pivotPos);	// 맵 좌표로 변환
-
-	return pivotPos;
 }
 
 const GameState GameManager::GetState()

@@ -48,8 +48,6 @@ public:
 	void AttackMonster();						// 공격
 
 	void PushOutPlayer(const int dir);	// 플레이어 밀려남 처리
-
-	POINT GetPlayerPivotMapPoint();
 public:
 	const GameState GetState();
 	void SetState(const GameState state);

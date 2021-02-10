@@ -1,4 +1,4 @@
-#include "pch.h"
+ï»¿#include "pch.h"
 #include "Monster.h"
 #include <math.h>
 #include "Timmer.h"
@@ -7,7 +7,7 @@
 Monster::Monster()
 	:Character()
 {
-	initAstarNode();
+	InitAstarNode();
 
 	index = 0;
 	exp = 0;
@@ -16,7 +16,7 @@ Monster::Monster()
 Monster::Monster(const DPOINT pos, const int hp, const int speed, const int damage, const int index, const int exp)
 	: Character(pos, hp, speed, damage)
 {
-	initAstarNode();
+	InitAstarNode();
 
 	this->index = index;
 	maxHp = hp;
@@ -40,7 +40,19 @@ const int Monster::GetExp()
 	return exp;
 }
 
-void Monster::initAstarNode()
+POINT Monster::GetPivotMapPoint()
+{
+	POINT pivotPos = { static_cast<LONG>(pos.x),  static_cast<LONG>(pos.y) };
+	pivotPos.x += MONSTER1_PIVOT_POS.x;
+	pivotPos.y += MONSTER1_PIVOT_POS.y;
+
+	pivotPos.x /= TILE_SIZE;
+	pivotPos.y /= TILE_SIZE;
+
+	return pivotPos;
+}
+
+void Monster::InitAstarNode()
 {
 	startNode = nullptr;
 	endNode = nullptr;
@@ -54,10 +66,27 @@ void Monster::initAstarNode()
 	}
 }
 
+void Monster::InitAstarVector()
+{
+	// openVec ì´ˆê¸°í™”
+	for (auto iterator = openVec.begin(); iterator != openVec.end();)
+	{
+		delete* iterator;
+		iterator = openVec.erase(iterator);
+	}
+	// closeVec ì´ˆê¸°í™”
+	for (auto iterator = closeVec.begin(); iterator != closeVec.end();)
+	{
+		delete* iterator;
+		iterator = closeVec.erase(iterator);
+	}
+	resultVec.clear();
+}
+
 bool Monster::AttackCharacter(Character * character)
 {
 	const int attackColliderSize = 13;
-	// °ø°İ ¹üÀ§ ¾È¿¡ ÇÃ·¹ÀÌ¾î Á¢ÃË »óÅÂ
+	// ê³µê²© ë²”ìœ„ ì•ˆì— í”Œë ˆì´ì–´ ì ‘ì´‰ ìƒíƒœ
 	if (pos.x + MONSTER1_PIVOT_POS.x - attackColliderSize <= character->GetPos().x + PLAYER_PIVOT_POS.x &&
 		pos.x + MONSTER1_PIVOT_POS.x + attackColliderSize >= character->GetPos().x + PLAYER_PIVOT_POS.x &&
 		pos.y + MONSTER1_PIVOT_POS.y - attackColliderSize <= character->GetPos().y + PLAYER_PIVOT_POS.y &&
@@ -78,24 +107,13 @@ bool Monster::AttackCharacter(Character * character)
 
 void Monster::ChaseCharacter(Character* character)
 {
-	// openVec ÃÊ±âÈ­
-	for (auto iterator = openVec.begin(); iterator != openVec.end();)
-	{
-		delete* iterator;
-		iterator = openVec.erase(iterator);
-	}
-	// closeVec ÃÊ±âÈ­
-	for (auto iterator = closeVec.begin(); iterator != closeVec.end();)
-	{
-		delete* iterator;
-		iterator = closeVec.erase(iterator);
-	}
-	resultVec.clear();
-
-	// startNode : º»ÀÎ À§Ä¡
-	startNode = new ASNode((static_cast<int>(pos.x) + MONSTER1_PIVOT_POS.x) / TILE_SIZE,
-		(static_cast<int>(pos.y) + MONSTER1_PIVOT_POS.y) / TILE_SIZE);
-	// endNode : »ó´ë¹æ À§Ä¡
+	// ì´ˆê¸°í™”
+	InitAstarVector();
+	// íƒ€ì¼ë§µ ì„¸íŒ…
+	SettingTileMap(character);
+	// startNode : ë³¸ì¸ ìœ„ì¹˜
+	startNode = new ASNode(GetPivotMapPoint().x, GetPivotMapPoint().y);
+	// endNode : ìƒëŒ€ë°© ìœ„ì¹˜
 	endNode = new ASNode(static_cast<int>((character->GetPos().x + PLAYER_PIVOT_POS.x)) / TILE_SIZE,
 		static_cast<int>((character->GetPos().y + PLAYER_PIVOT_POS.y)) / TILE_SIZE);
 
@@ -106,19 +124,21 @@ void Monster::ChaseCharacter(Character* character)
 
 	openVec.emplace_back(new ASNode(startNode->x, startNode->y));
 
-	SettingTileMap(character);
-
 	FindPath();		// astar findPath
 
-	if (resultVec.size() < 1)
+	if (resultVec.size() == 0)
 		return;
 
 	POINT diffPos;
 
-	if (resultVec.size() == 1)	// °°Àº Å¸ÀÏ À§¿¡ À§Ä¡ ÇÑ °æ¿ì
+	// í•´ê²°í•´ì•¼ í•  ë¬¸ì œ : 
+	// 1. ë‹¤ì–‘í•œ ì´ë™ê´€ë ¨ ì²˜ë¦¬ ë„ì¤‘ ê°™ì€ íƒ€ì¼ì— ì ë“¤ì´ 2ëª…ì´ìƒ ë“¤ì–´ê°„ ê²½ìš°
+	// 2. ì 1 íƒ€ì¼ ì˜¤ë¥¸ìª½ ëìë½ ìœ„ì¹˜, ì 2 íƒ€ì¼ ì™¼ìª½ ëìë½ ìœ„ì¹˜ ì‹œ ê°™ì´ ì´ë™í•˜ëŠ” ê²ƒ ì²˜ëŸ¼ ë³´ì´ëŠ” ê²½ìš°
+
+	if (resultVec.size() == 1)	// ê°™ì€ íƒ€ì¼ ìœ„ì— ìœ„ì¹˜ í•œ ê²½ìš°
 	{
 		const int retouchPivotPos = 6;
-		// x °ª ºñ±³
+		// x ê°’ ë¹„êµ
 		if (static_cast<int>(character->GetPos().x) + PLAYER_PIVOT_POS.x >
 			static_cast<int>(pos.x) + MONSTER1_PIVOT_POS.x)
 			diffPos.x = 1;
@@ -128,7 +148,7 @@ void Monster::ChaseCharacter(Character* character)
 		else
 			diffPos.x = 0;
 
-		// y °ª ºñ±³
+		// y ê°’ ë¹„êµ
 		if (static_cast<int>(character->GetPos().y) + PLAYER_PIVOT_POS.y + retouchPivotPos >
 			static_cast<int>(pos.y) + MONSTER1_PIVOT_POS.y)
 			diffPos.y = 1;
@@ -144,19 +164,18 @@ void Monster::ChaseCharacter(Character* character)
 		diffPos.y = ((resultVec[resultVec.size() - 1]->y - (resultVec[resultVec.size() - 2])->y)) * -1;
 	}
 
-	// ´ë°¢¼± ÀÌµ¿ º¸Á¤
 	if (diffPos.x == 0 || diffPos.y == 0)
 	{
 		pos.x +=  (speed * Timmer::GetInstance()->deltaTime) * diffPos.x;
 		pos.y += (speed * Timmer::GetInstance()->deltaTime) * diffPos.y;
 	}
-	else
+	else  // ëŒ€ê°ì„  ì´ë™ ë³´ì •
 	{
 		pos.x += (speed * Timmer::GetInstance()->deltaTime) * diffPos.x * sqrt(2) / 2;
 		pos.y += (speed * Timmer::GetInstance()->deltaTime) * diffPos.y * sqrt(2) / 2;
 	}
 
-	// ¹æÇâ ¼³Á¤
+	// ë°©í–¥ ì„¤ì •
 	if (diffPos.x > 0)
 		dir = CharacterInfo::RIGHT;
 	else if (diffPos.x < 0)
@@ -174,7 +193,7 @@ void Monster::FindPath()
 
 	ASNode* currentNode = nullptr;
 
-	// openVec ¾È¿¡ ÀÖ´Â ³ëµå Áß f °ªÀÌ Á¦ÀÏ °ªÀº ³ëµå¸¦ ¼±ÅÃ
+	// openVec ì•ˆì— ìˆëŠ” ë…¸ë“œ ì¤‘ f ê°’ì´ ì œì¼ ê°’ì€ ë…¸ë“œë¥¼ ì„ íƒ
 	int smallest_f = 1000;
 	for (auto& iterator : openVec)
 	{
@@ -187,66 +206,38 @@ void Monster::FindPath()
 
 	if (currentNode != nullptr)
 	{
-		if (tileMap[currentNode->y][currentNode->x] == END_LOCATION)  // ÇöÀç ³ëµå°¡ µµÂøÇÑ °æ¿ì
+		if (tileMap[currentNode->y][currentNode->x] == END_LOCATION)  // í˜„ì¬ ë…¸ë“œê°€ ë„ì°©í•œ ê²½ìš°
 		{
-			// ±æÃ£±â ¼º°ø
+			// ê¸¸ì°¾ê¸° ì„±ê³µ
 			while (currentNode != nullptr)
 			{
 				resultVec.emplace_back(currentNode);
 				currentNode = currentNode->parentNode;
 			}
 
-			if (resultVec.size() != 1)
-				return;
+			return;
 		}
-		else	// ÇöÀç ³ëµå°¡ µµÂøÇÏÁö ¾Ê¾ÒÀ» °æ¿ì
+		else	// í˜„ì¬ ë…¸ë“œê°€ ë„ì°©í•˜ì§€ ì•Šì•˜ì„ ê²½ìš°
 		{
 			ASNode* childNode = nullptr;
-			if (currentNode->x + 1 < MAP_MAX_X)	// ¿À¸¥ÂÊ
+			POINT checkNode[8] = { {1,0},{0,1},{-1,0},{0,-1},{1,-1},{1,1},{-1,+1},{-1,-1} };
+			for (int i = 0; i < 8; i++)
 			{
-				AddChildNode(currentNode->x + 1, currentNode->y, currentNode, 10);
+				if (currentNode->x + checkNode[i].x < MAP_MAX_X && currentNode->y + checkNode[i].y < MAP_MAX_Y &&
+					currentNode->x + checkNode[i].x >= 0 && currentNode->y + checkNode[i].y >= 0)
+				{
+					if (i < 4)
+					{
+						AddChildNode(currentNode->x + checkNode[i].x, currentNode->y + checkNode[i].y, currentNode, 10);
+					}
+					else if(tileMap[currentNode->y][currentNode->x + checkNode[i].x] != WALL && tileMap[currentNode->y + checkNode[i].y][currentNode->x] != WALL)
+					{
+						AddChildNode(currentNode->x + checkNode[i].x, currentNode->y + checkNode[i].y, currentNode, 14);
+					}
+				}
 			}
 
-			if (currentNode->y + 1 < MAP_MAX_Y)	// ¾Æ·¡
-			{
-				AddChildNode(currentNode->x, currentNode->y + 1, currentNode, 10);
-			}
-
-			if (currentNode->x - 1 >= 0)	// ¿ŞÂÊ
-			{
-				AddChildNode(currentNode->x - 1, currentNode->y, currentNode, 10);
-			}
-
-			if (currentNode->y - 1 >= 0)	// À§
-			{
-				AddChildNode(currentNode->x, currentNode->y - 1, currentNode, 10);
-			}
-
-			if (currentNode->x + 1 < MAP_MAX_X && currentNode->y - 1 >= 0)	// 1»çºĞ¸é
-			{
-				if (tileMap[currentNode->y][currentNode->x + 1] != WALL && tileMap[currentNode->y - 1][currentNode->x] != WALL)
-					AddChildNode(currentNode->x + 1, currentNode->y - 1, currentNode, 14);
-			}
-
-			if (currentNode->x + 1 && currentNode->y + 1 < MAP_MAX_Y)	// 4»çºĞ¸é
-			{
-				if (tileMap[currentNode->y][currentNode->x + 1] != WALL && tileMap[currentNode->y + 1][currentNode->x] != WALL)
-					AddChildNode(currentNode->x + 1, currentNode->y + 1, currentNode, 14);
-			}
-
-			if (currentNode->x - 1 >= 0 && currentNode->y + 1 >= 0)	// 3»çºĞ¸é
-			{
-				if (tileMap[currentNode->y][currentNode->x - 1] != WALL && tileMap[currentNode->y + 1][currentNode->x] != WALL)
-					AddChildNode(currentNode->x - 1, currentNode->y + 1, currentNode, 14);
-			}
-
-			if (currentNode->x - 1 >= 0 && currentNode->y - 1 >= 0)	 // 2»çºĞ¸é
-			{
-				if (tileMap[currentNode->y][currentNode->x - 1] != WALL && tileMap[currentNode->y - 1][currentNode->x] != WALL)
-					AddChildNode(currentNode->x - 1, currentNode->y - 1, currentNode, 14);
-			}
-
-			// ÇöÀç ³ëµå¸¦ ¿­¸°³ëµå¿¡¼­ Áö¿ì°í ´İÈù³ëµå¿¡ µî·ÏÇØ ¶È°°Àº ³ëµå¸¦ Á¶»çÇÏÁö ¾Êµµ·Ï ¼³Á¤
+			// í˜„ì¬ ë…¸ë“œë¥¼ ì—´ë¦°ë…¸ë“œì—ì„œ ì§€ìš°ê³  ë‹«íŒë…¸ë“œì— ë“±ë¡í•´ ë˜‘ê°™ì€ ë…¸ë“œë¥¼ ì¡°ì‚¬í•˜ì§€ ì•Šë„ë¡ ì„¤ì •
 			for (auto iterator = openVec.begin(); iterator != openVec.end();)
 			{
 				if ((*iterator)->x == currentNode->x && (*iterator)->y == currentNode->y)
@@ -266,7 +257,7 @@ void Monster::FindPath()
 
 void Monster::AddChildNode(const int childX, const int childY, ASNode* parentNode, const int value)
 {
-	// º®ÀÌ¸é Á¾·á
+	// ë²½ì´ë©´ ì¢…ë£Œ
 	if (tileMap[childY][childX] == WALL)
 		return;
 
@@ -296,7 +287,7 @@ void Monster::AddChildNode(const int childX, const int childY, ASNode* parentNod
 	ASNode* childNode = new ASNode(childX, childY);
 	childNode->parentNode = parentNode;
 	childNode->g = parentNode->g + value;
-	childNode->h = (abs((endNode->x - childNode->x)) + abs((endNode->y - childNode->y))) * 10;		// µµÂøÁ¡±îÁöÀÇ Á÷¼±°Å¸®
+	childNode->h = (abs((endNode->x - childNode->x)) + abs((endNode->y - childNode->y))) * 10;		// ë„ì°©ì ê¹Œì§€ì˜ ì§ì„ ê±°ë¦¬
 	childNode->f = childNode->g + childNode->h;
 	openVec.emplace_back(childNode);
 
@@ -313,13 +304,9 @@ void Monster::SettingTileMap(Character * character)
 	}
 
 	// monster pos init
-	int x, y;
 	for (auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()))
 	{
-		x = ((static_cast<int>(iterator.GetPos().x) + MONSTER1_PIVOT_POS.x) / TILE_SIZE);
-		y = ((static_cast<int>(iterator.GetPos().y) + MONSTER1_PIVOT_POS.y) / TILE_SIZE);
-
-		tileMap[y][x] = WALL;
+		tileMap[GetPivotMapPoint().y][GetPivotMapPoint().x] = WALL;
 	}
 
 	// player pos init

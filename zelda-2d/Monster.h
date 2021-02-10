@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Character.h"
 #include <vector>
 
@@ -39,13 +39,15 @@ public:
 	void SetIndex(const int index);
 
 	const int GetExp();
+	POINT GetPivotMapPoint();
 
 public:
-	void initAstarNode();	// ÃÊ±âÈ­
+	void InitAstarNode();	// ì´ˆê¸°í™”
+	void InitAstarVector();	// ì´ˆê¸°í™”
 
-	bool AttackCharacter(Character* character);	// °ø°İ
-	void ChaseCharacter(Character* character);	// Ãß°İ
-	void FindPath();			// astar findPath;;			// ÇÃ·¹ÀÌ¾î °¨Áö
+	bool AttackCharacter(Character* character);	// ê³µê²©
+	void ChaseCharacter(Character* character);	// ì¶”ê²©
+	void FindPath();			// astar findPath;;			// í”Œë ˆì´ì–´ ê°ì§€
 	void SettingTileMap(Character * character);		// setting tileMap;
 	void AddChildNode(const int childX, const int childY, ASNode* parentNode, const int value);
 };

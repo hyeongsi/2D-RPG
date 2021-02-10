@@ -16,6 +16,8 @@ public:
 	const int GetLevel();
 
 	void SetExp(const int exp);
+
+	POINT GetPivotMapPoint();
 public:
 	void Input();
 	void Update();

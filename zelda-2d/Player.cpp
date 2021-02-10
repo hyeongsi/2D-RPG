@@ -31,6 +31,18 @@ void Player::SetExp(const int exp)
 	this->exp = exp;
 }
 
+POINT Player::GetPivotMapPoint()
+{
+	POINT pivotPos = { static_cast<LONG>(pos.x),  static_cast<LONG>(pos.y) };
+	pivotPos.x += PLAYER_PIVOT_POS.x;
+	pivotPos.y += PLAYER_PIVOT_POS.y;
+
+	pivotPos.x /= TILE_SIZE;
+	pivotPos.y /= TILE_SIZE;
+
+	return pivotPos;
+}
+
 void Player::Input()
 {
 	if ((GetAsyncKeyState(VK_UP) & 0x8000) && state != CharacterInfo::ATTACK)			// 상
