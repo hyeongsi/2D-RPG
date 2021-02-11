@@ -11,6 +11,7 @@ class Character
 {
 protected:
 	DPOINT pos;			// 위치값
+	POINT pivotPos;
 
 	int state;			// 상태값
 	int dir;			// 방향
@@ -33,6 +34,8 @@ public:
 
 	const DPOINT GetPos();
 	void SetPos(const DPOINT pos);
+
+	const POINT GetPivotPos();
 
 	const int GetMaxHp();
 

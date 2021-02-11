@@ -9,6 +9,8 @@
 
 Player::Player() : Character()
 {
+	pivotPos = { 16,47 };
+
 	level = 1;
 	exp = 0;
 	money = 123;
@@ -17,6 +19,8 @@ Player::Player() : Character()
 Player::Player(const DPOINT pos, const int hp, const int level, const int speed, const int damage) 
 	: Character(pos, hp, speed, damage)
 {
+	pivotPos = { 16,47 };
+
 	this->level = level;
 	exp = 0;
 	money = 123;
@@ -34,8 +38,8 @@ const int Player::GetLevel()
 POINT Player::GetPivotMapPoint()
 {
 	POINT pivotPos = { static_cast<LONG>(pos.x),  static_cast<LONG>(pos.y) };
-	pivotPos.x += PLAYER_PIVOT_POS.x;
-	pivotPos.y += PLAYER_PIVOT_POS.y;
+	pivotPos.x += pivotPos.x;
+	pivotPos.y += pivotPos.y;
 
 	pivotPos.x /= TILE_SIZE;
 	pivotPos.y /= TILE_SIZE;
@@ -70,37 +74,37 @@ void Player::Attack()
 	switch (dir)
 	{
 	case CharacterInfo::DOWN:
-		colliderRect.left = static_cast<LONG>(pos.x + PLAYER_PIVOT_POS.x - attackColliderSize);
-		colliderRect.top = static_cast<LONG>(pos.y + PLAYER_PIVOT_POS.y);
-		colliderRect.right = static_cast<LONG>(pos.x + PLAYER_PIVOT_POS.x + attackColliderSize);
-		colliderRect.bottom = static_cast<LONG>(pos.y + PLAYER_PIVOT_POS.y + (static_cast<double>(attackColliderSize) * 2));
+		colliderRect.left = static_cast<LONG>(pos.x + pivotPos.x - attackColliderSize);
+		colliderRect.top = static_cast<LONG>(pos.y + pivotPos.y);
+		colliderRect.right = static_cast<LONG>(pos.x + pivotPos.x + attackColliderSize);
+		colliderRect.bottom = static_cast<LONG>(pos.y + pivotPos.y + (static_cast<double>(attackColliderSize) * 2));
 
 		pushOutPos = { 0,pushedOutSize };	// 밀려날 크기 설정
 		pushCorrectionPos = { 0 , -1 };
 		break;
 	case CharacterInfo::RIGHT:
-		colliderRect.left = static_cast<LONG>(pos.x + PLAYER_PIVOT_POS.x);
-		colliderRect.top = static_cast<LONG>(pos.y + PLAYER_PIVOT_POS.y - attackColliderSize);
-		colliderRect.right = static_cast<LONG>(pos.x + PLAYER_PIVOT_POS.x + (static_cast<double>(attackColliderSize) * 2));
-		colliderRect.bottom = static_cast<LONG>(pos.y + PLAYER_PIVOT_POS.y + attackColliderSize);
+		colliderRect.left = static_cast<LONG>(pos.x + pivotPos.x);
+		colliderRect.top = static_cast<LONG>(pos.y + pivotPos.y - attackColliderSize);
+		colliderRect.right = static_cast<LONG>(pos.x + pivotPos.x + (static_cast<double>(attackColliderSize) * 2));
+		colliderRect.bottom = static_cast<LONG>(pos.y + pivotPos.y + attackColliderSize);
 
 		pushOutPos = { pushedOutSize,0 };	// 밀려날 크기 설정
 		pushCorrectionPos = { -1 ,0 };
 		break;
 	case CharacterInfo::UP:
-		colliderRect.left = static_cast<LONG>(pos.x + PLAYER_PIVOT_POS.x - attackColliderSize);
-		colliderRect.top = static_cast<LONG>(pos.y + PLAYER_PIVOT_POS.y - (static_cast<double>(attackColliderSize) * 2));
-		colliderRect.right = static_cast<LONG>(pos.x + PLAYER_PIVOT_POS.x + attackColliderSize);
-		colliderRect.bottom = static_cast<LONG>(pos.y + PLAYER_PIVOT_POS.y);
+		colliderRect.left = static_cast<LONG>(pos.x + pivotPos.x - attackColliderSize);
+		colliderRect.top = static_cast<LONG>(pos.y + pivotPos.y - (static_cast<double>(attackColliderSize) * 2));
+		colliderRect.right = static_cast<LONG>(pos.x + pivotPos.x + attackColliderSize);
+		colliderRect.bottom = static_cast<LONG>(pos.y + pivotPos.y);
 
 		pushOutPos = { 0, -pushedOutSize };	// 밀려날 크기 설정
 		pushCorrectionPos = { 0 , 1 };
 		break;
 	case CharacterInfo::LEFT:
-		colliderRect.left = static_cast<LONG>(pos.x + PLAYER_PIVOT_POS.x - (static_cast<double>(attackColliderSize) * 2));
-		colliderRect.top = static_cast<LONG>(pos.y + PLAYER_PIVOT_POS.y - attackColliderSize);
-		colliderRect.right = static_cast<LONG>(pos.x + PLAYER_PIVOT_POS.x);
-		colliderRect.bottom = static_cast<LONG>(pos.y + PLAYER_PIVOT_POS.y + attackColliderSize);
+		colliderRect.left = static_cast<LONG>(pos.x + pivotPos.x - (static_cast<double>(attackColliderSize) * 2));
+		colliderRect.top = static_cast<LONG>(pos.y + pivotPos.y - attackColliderSize);
+		colliderRect.right = static_cast<LONG>(pos.x + pivotPos.x);
+		colliderRect.bottom = static_cast<LONG>(pos.y + pivotPos.y + attackColliderSize);
 
 		pushOutPos = { -pushedOutSize,0 };	// 밀려날 크기 설정
 		pushCorrectionPos = { 1 ,0 };

@@ -531,8 +531,8 @@ void RenderManager::DrawNpcOrderPos()
 {
     for (const auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetNPCData()))
     {
-        if (!(((iterator.pos.y)*static_cast<long>(TILE_SIZE) + PLAYER_PIVOT_POS.y) > static_cast<long>(
-            (GameManager::GetInstance()->GetPlayer()->GetPos().y) + PLAYER_PIVOT_POS.y)))
+        if (!(((iterator.pos.y)*static_cast<long>(TILE_SIZE) + GameManager::GetInstance()->GetPlayer()->GetPivotPos().y) > static_cast<long>(
+            (GameManager::GetInstance()->GetPlayer()->GetPos().y) + GameManager::GetInstance()->GetPlayer()->GetPivotPos().y)))
             continue;
 
         HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::NPC, iterator.imageIndex);
@@ -553,7 +553,7 @@ void RenderManager::DrawMonsterOrderPos()
         ->GetWorldMap()->GetMonsterData()).size()); i++)
     {
         if (!((*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetPos().y + MONSTER1_PIVOT_POS.y > static_cast<long>(
-            (GameManager::GetInstance()->GetPlayer()->GetPos().y) + PLAYER_PIVOT_POS.y)))
+            (GameManager::GetInstance()->GetPlayer()->GetPos().y) + GameManager::GetInstance()->GetPlayer()->GetPivotPos().y)))
             continue;
 
         DrawMonsterAnimation(i);
