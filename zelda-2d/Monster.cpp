@@ -69,8 +69,8 @@ void Monster::InitStartEndNode(Character * character)
 	// startNode : 본인 위치
 	startNode = new ASNode(GetPivotMapPoint().x, GetPivotMapPoint().y);
 	// endNode : 상대방 위치
-	endNode = new ASNode(static_cast<int>((character->GetPos().x + character->GetPivotPos().x)) / TILE_SIZE,
-		static_cast<int>((character->GetPos().y + character->GetPivotPos().y)) / TILE_SIZE);
+	endNode = new ASNode(static_cast<int>((character->GetPos().x + PLAYER_PIVOT_POS.x)) / TILE_SIZE,
+		static_cast<int>((character->GetPos().y + PLAYER_PIVOT_POS.y)) / TILE_SIZE);
 
 	// startNode setting
 	startNode->g = 0;
@@ -102,10 +102,10 @@ void Monster::InitAstarVector()
 bool Monster::AttackCharacter(Character * character)
 {
 	// 공격 범위 안에 플레이어 접촉 상태
-	if (pos.x + MONSTER1_PIVOT_POS.x - 16 <= character->GetPos().x + character->GetPivotPos().x &&
-		pos.x + MONSTER1_PIVOT_POS.x + 16 >= character->GetPos().x + character->GetPivotPos().x &&
-		pos.y + MONSTER1_PIVOT_POS.y - 16 <= character->GetPos().y + character->GetPivotPos().y &&
-		pos.y + MONSTER1_PIVOT_POS.y + 16 >= character->GetPos().y + character->GetPivotPos().y)
+	if (pos.x + MONSTER1_PIVOT_POS.x - 16 <= character->GetPos().x + PLAYER_PIVOT_POS.x &&
+		pos.x + MONSTER1_PIVOT_POS.x + 16 >= character->GetPos().x + PLAYER_PIVOT_POS.x &&
+		pos.y + MONSTER1_PIVOT_POS.y - 16 <= character->GetPos().y + PLAYER_PIVOT_POS.y &&
+		pos.y + MONSTER1_PIVOT_POS.y + 16 >= character->GetPos().y + PLAYER_PIVOT_POS.y)
 	{
 		if (GetTickCount64() > character->GetHitTick() + 1000)
 		{
@@ -149,8 +149,8 @@ void Monster::ChaseCharacter(Character* character)
 			POINT diffDir[4] = { {0,1},{1,0},{0,-1},{-1,0} };
 			tileMap[GetPivotMapPoint().y + diffDir[iterator.dir].y][GetPivotMapPoint().x + diffDir[iterator.dir].x] = WALL;
 			// player pos init
-			tileMap[(static_cast<int>(character->GetPos().y) + character->GetPivotPos().y) / TILE_SIZE]
-				[(static_cast<int>(character->GetPos().x) + character->GetPivotPos().x) / TILE_SIZE] = END_LOCATION;
+			tileMap[(static_cast<int>(character->GetPos().y) + PLAYER_PIVOT_POS.y) / TILE_SIZE]
+				[(static_cast<int>(character->GetPos().x) + PLAYER_PIVOT_POS.x) / TILE_SIZE] = END_LOCATION;
 
 			FindPath();
 			FollowAstarAlgorithm(character);	// 경로 따라서 이동
@@ -278,20 +278,20 @@ void Monster::FollowAstarAlgorithm(Character* character)
 	{
 		const int retouchPivotPos = 6;
 		// x 값 비교
-		if (static_cast<int>(character->GetPos().x) + character->GetPivotPos().x >
+		if (static_cast<int>(character->GetPos().x) + PLAYER_PIVOT_POS.x >
 			static_cast<int>(pos.x) + MONSTER1_PIVOT_POS.x)
 			diffPos.x = 1;
-		else if (static_cast<int>(character->GetPos().x) + character->GetPivotPos().x <
+		else if (static_cast<int>(character->GetPos().x) + PLAYER_PIVOT_POS.x <
 			static_cast<int>(pos.x) + MONSTER1_PIVOT_POS.x)
 			diffPos.x = -1;
 		else
 			diffPos.x = 0;
 
 		// y 값 비교
-		if (static_cast<int>(character->GetPos().y) + character->GetPivotPos().y + retouchPivotPos >
+		if (static_cast<int>(character->GetPos().y) + PLAYER_PIVOT_POS.y + retouchPivotPos >
 			static_cast<int>(pos.y) + MONSTER1_PIVOT_POS.y)
 			diffPos.y = 1;
-		else if (static_cast<int>(character->GetPos().y) + character->GetPivotPos().y + retouchPivotPos <
+		else if (static_cast<int>(character->GetPos().y) + PLAYER_PIVOT_POS.y + retouchPivotPos <
 			static_cast<int>(pos.y) + MONSTER1_PIVOT_POS.y)
 			diffPos.y = -1;
 		else
@@ -372,6 +372,6 @@ void Monster::SettingTileMap(Character * character)
 	}
 
 	// player pos init
-	tileMap[(static_cast<int>(character->GetPos().y) + character->GetPivotPos().y) / TILE_SIZE]
-		[(static_cast<int>(character->GetPos().x) + character->GetPivotPos().x) / TILE_SIZE] = END_LOCATION;
+	tileMap[(static_cast<int>(character->GetPos().y) + PLAYER_PIVOT_POS.y) / TILE_SIZE]
+		[(static_cast<int>(character->GetPos().x) + PLAYER_PIVOT_POS.x) / TILE_SIZE] = END_LOCATION;
 }

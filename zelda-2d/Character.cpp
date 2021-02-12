@@ -4,7 +4,6 @@
 Character::Character()
 {
 	pos = START_POS;
-	pivotPos = { 0,0 };
 
 	state = CharacterInfo::IDLE;
 	dir = CharacterInfo::DOWN;
@@ -25,7 +24,6 @@ Character::Character()
 Character::Character(const DPOINT pos, const int hp, const int speed, const int damage)
 {
 	this->pos = pos;
-	pivotPos = { 0,0 };
 
 	state = CharacterInfo::IDLE;
 	dir = CharacterInfo::DOWN;
@@ -55,11 +53,6 @@ const DPOINT Character::GetPos()
 void Character::SetPos(const DPOINT pos)
 {
 	this->pos = pos;
-}
-
-const POINT Character::GetPivotPos()
-{
-	return pivotPos;
 }
 
 const int Character::GetMaxHp()

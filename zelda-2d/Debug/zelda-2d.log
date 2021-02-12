@@ -1,10 +1,3 @@
-﻿  RenderManager.cpp
-  WorldMap.cpp
-  zelda-2d.cpp
-  코드를 생성하고 있습니다...
-  LINK : C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\zelda-2d.exe을(를) 찾을 수 없거나 마지막 증분 링크에 의해 빌드되지 않았습니다. 전체 링크를 수행하고 있습니다.
-pch.obj : warning LNK4204: 'C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\vc142.pdb'에 참조 모듈에 대한 디버깅 정보가 없습니다. 디버깅 정보가 없는 것처럼 개체를 링크합니다.
-Item.obj : warning LNK4204: 'C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\vc142.pdb'에 참조 모듈에 대한 디버깅 정보가 없습니다. 디버깅 정보가 없는 것처럼 개체를 링크합니다.
-Inventory.obj : warning LNK4204: 'C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\vc142.pdb'에 참조 모듈에 대한 디버깅 정보가 없습니다. 디버깅 정보가 없는 것처럼 개체를 링크합니다.
-AnimationObject.obj : warning LNK4204: 'C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\vc142.pdb'에 참조 모듈에 대한 디버깅 정보가 없습니다. 디버깅 정보가 없는 것처럼 개체를 링크합니다.
+﻿  GameManager.cpp
+C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\GameManager.cpp(110,27): warning C4390: ';': 제어된 빈 문이 있습니다. 이 문이 필요합니까?
   zelda-2d.vcxproj -> C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\zelda-2d.exe
