@@ -303,6 +303,8 @@ void Monster::FollowAstarAlgorithm(Character* character)
 		diffPos.y = ((resultVec[resultVec.size() - 1]->y - (resultVec[resultVec.size() - 2])->y)) * -1;
 	}
 
+
+
 	if (diffPos.x == 0 || diffPos.y == 0)
 	{
 		pos.x += (speed * Timmer::GetInstance()->deltaTime) * diffPos.x;
@@ -310,7 +312,6 @@ void Monster::FollowAstarAlgorithm(Character* character)
 	}
 	else  // 대각선 이동 보정
 	{
-
 		pos.x += (speed * Timmer::GetInstance()->deltaTime) * diffPos.x * sqrt(2) / 2;
 		pos.y += (speed * Timmer::GetInstance()->deltaTime) * diffPos.y * sqrt(2) / 2;
 	}
@@ -359,7 +360,7 @@ void Monster::SettingTileMap(Character * character)
 	{
 		for (int x = 0; x < MAP_MAX_X; x++)
 		{
-			tileMap[y][x] = WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::COLLIDER, { x,y });
+			tileMap[y][x] = WorldMapManager::GetInstance()->GetWorldMap()->GetData(SelectMapState::COLLIDER, { x,y });	// WALL 세팅
 		}
 	}
 

@@ -496,11 +496,8 @@ void RenderManager::DrawNPC()
 
 void RenderManager::DrawMonster()
 {
-    for (int i = 0; i < static_cast<int>(ImageManager::GetInstance()->GetMonsterAnimation()->size()); i++)
+    for (int i = 0; i < static_cast<int>(WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->size()); i++)
     {
-        if (i >= static_cast<int>(WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->size()) || i < 0)
-            return;
-
         AnimationObject* animationObject = &(*ImageManager::GetInstance()->GetMonsterAnimation())[
             (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetIndex()];
 
