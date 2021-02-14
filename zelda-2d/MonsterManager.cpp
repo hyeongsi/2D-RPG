@@ -112,21 +112,3 @@ const vector<string>* MonsterManager::GetbitmapPath()
 {
 	return &monsterBitmapPath;
 }
-
-void MonsterManager::FindPlayer(Monster* monster)
-{
-	const int detectSize = 100;
-	RECT findRect = { {static_cast<LONG>(monster->GetPos().x + MONSTER1_PIVOT_POS.x - detectSize)},
-		{static_cast<LONG>(monster->GetPos().y + MONSTER1_PIVOT_POS.y - detectSize)},
-		{static_cast<LONG>(monster->GetPos().x + MONSTER1_PIVOT_POS.x + detectSize)},
-		{static_cast<LONG>(monster->GetPos().y + MONSTER1_PIVOT_POS.y + detectSize)} };
-
-	// 플레이어의 위치가 감지범위 내에 왔을경우
-	if (findRect.left <= GameManager::GetInstance()->GetPlayer()->GetPos().x + PLAYER_PIVOT_POS.x &&
-		findRect.top <= GameManager::GetInstance()->GetPlayer()->GetPos().y + PLAYER_PIVOT_POS.y &&
-		findRect.right >= GameManager::GetInstance()->GetPlayer()->GetPos().x + PLAYER_PIVOT_POS.x &&
-		findRect.bottom >= GameManager::GetInstance()->GetPlayer()->GetPos().y + PLAYER_PIVOT_POS.y)
-	{
-		monster->SetState(CharacterInfo::ATTACK);	// 몬스터를 공격 상태로 변경
-	}
-}

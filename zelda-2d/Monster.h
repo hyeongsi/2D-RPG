@@ -46,6 +46,8 @@ public:
 	void InitAstarVector();	// 초기화
 
 	bool AttackCharacter(Character* character);	// 공격
+	void FindPlayer();			// 플레이어 감지
+
 	void ChaseCharacter(Character* character);	// 추격
 	void FindPath();			// astar findPath;;			// 플레이어 감지
 	void SettingTileMap(Character * character);		// setting tileMap;

@@ -32,6 +32,4 @@ public:
 	void LoadMonsterData();
 
 	const vector<string>* GetbitmapPath();
-public:
-	void FindPlayer(Monster* monster);			// 플레이어 감지
 };

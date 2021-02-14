@@ -120,6 +120,24 @@ bool Monster::AttackCharacter(Character * character)
 	return false;
 }
 
+void Monster::FindPlayer()
+{
+	const int detectSize = 100;
+	RECT findRect = { {static_cast<LONG>(pos.x + MONSTER1_PIVOT_POS.x - detectSize)},
+		{static_cast<LONG>(pos.y + MONSTER1_PIVOT_POS.y - detectSize)},
+		{static_cast<LONG>(pos.x + MONSTER1_PIVOT_POS.x + detectSize)},
+		{static_cast<LONG>(pos.y + MONSTER1_PIVOT_POS.y + detectSize)} };
+
+	// 플레이어의 위치가 감지범위 내에 왔을경우
+	if (findRect.left <= GameManager::GetInstance()->GetPlayer()->GetPos().x + PLAYER_PIVOT_POS.x &&
+		findRect.top <= GameManager::GetInstance()->GetPlayer()->GetPos().y + PLAYER_PIVOT_POS.y &&
+		findRect.right >= GameManager::GetInstance()->GetPlayer()->GetPos().x + PLAYER_PIVOT_POS.x &&
+		findRect.bottom >= GameManager::GetInstance()->GetPlayer()->GetPos().y + PLAYER_PIVOT_POS.y)
+	{
+		state = CharacterInfo::ATTACK;	// 몬스터를 공격 상태로 변경
+	}
+}
+
 void Monster::ChaseCharacter(Character* character)
 {
 	InitAstarVector();				// 초기화

@@ -118,10 +118,8 @@ void GameManager::Run()
 		switch (iterator.GetState())
 		{
 		case CharacterInfo::IDLE:
-			MonsterManager::GetInstance()->FindPlayer(&iterator);
-			break;
 		case CharacterInfo::WALK:
-			MonsterManager::GetInstance()->FindPlayer(&iterator);
+			iterator.FindPlayer();
 			break;
 		case CharacterInfo::ATTACK:
 			iterator.ChaseCharacter(player);
