@@ -159,6 +159,7 @@ void Monster::ChaseCharacter(Character* character)
 			pos.y + MONSTER1_PIVOT_POS.y + attackColliderSize >= iterator.GetPos().y + MONSTER1_PIVOT_POS.y)
 		{
 			pos = prevPos;		// 이동하기 전으로 돌리고,
+
 			InitAstarVector();				// 초기화
 			InitStartEndNode(character);
 			SettingTileMap(character);		// 타일맵 세팅
@@ -320,8 +321,6 @@ void Monster::FollowAstarAlgorithm(Character* character)
 		diffPos.x = ((resultVec[resultVec.size() - 1]->x - (resultVec[resultVec.size() - 2])->x)) * -1;
 		diffPos.y = ((resultVec[resultVec.size() - 1]->y - (resultVec[resultVec.size() - 2])->y)) * -1;
 	}
-
-
 
 	if (diffPos.x == 0 || diffPos.y == 0)
 	{

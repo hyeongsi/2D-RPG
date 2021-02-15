@@ -54,6 +54,7 @@ public:
 	void AddChildNode(const int childX, const int childY, ASNode* parentNode, const int value);
 
 	void FollowAstarAlgorithm(Character* character);
+	void FollowAstarAlgorithm();
 
 	bool Die(Character* character);
 };

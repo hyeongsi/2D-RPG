@@ -160,9 +160,7 @@ void RenderManager::InGameDataRender()
     DrawWorldMapData(GameState::INGAME);     // 맵 출력
     DrawFieldItem();                         // 필드 아이템 출력
 
-    DrawPlayer();           // 캐릭터 출력
-    DrawNpcOrderPos();      // NPC와 캐릭터의 출력 순서 보정
-    DrawMonsterOrderPos();  // Monster와 캐릭터의 출력 순서 보정
+    DrawCharacter();        
 
     DrawHudVector();    // hudData 출력 부분
 
@@ -274,11 +272,6 @@ void RenderManager::DrawWorldMapData(const GameState gameState)
             }
         }
     }
-
-    // NPC 위치 출력
-    DrawNPC();
-    // monster 출력
-    DrawMonster();
 
     // 포탈 위치 출력
     for (const auto& iterator : WorldMapManager::GetInstance()->GetProtalData())
@@ -477,6 +470,34 @@ void RenderManager::DrawPlayer()
     }
 }
 
+void RenderManager::DrawCharacter()
+{
+    map<double, int> printSequence;
+    // 양수 : Monster 위치 저장
+    for (int i = 0; i < static_cast<int>(WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->size()); i++)
+    {
+        printSequence[(*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetPos().y] = i + 1;
+    }
+    // 음수 : NPC 위치 저장
+    for (int i = 0; i < static_cast<int>(WorldMapManager::GetInstance()->GetWorldMap()->GetNPCData()->size()); i++)
+    {
+        printSequence[(*WorldMapManager::GetInstance()->GetWorldMap()->GetNPCData())[i].pos.y] =  - (i + 1);
+    }
+
+    printSequence[GameManager::GetInstance()->GetPlayer()->GetPos().y] = 0;
+
+    
+    for (auto iterator =  printSequence.begin(); iterator != printSequence.end(); iterator++)
+    {
+        if (iterator->second == 0)
+            DrawPlayer();
+        else if (iterator->second > 0)
+            DrawMonster(iterator->second - 1);
+        else if (iterator->second < 0)
+            DrawNPC(-(iterator->second - 1));
+    }
+}
+
 void RenderManager::DrawNPC()
 {
     // NPC 출력
@@ -494,10 +515,46 @@ void RenderManager::DrawNPC()
     }
 }
 
-void RenderManager::DrawMonster()
+void RenderManager::DrawNPC(const int i)
 {
+    if (i < 0)
+        return;
+    if (i >= static_cast<int>(WorldMapManager::GetInstance()->GetWorldMap()->GetNPCData()->size()))
+        return;
+
+    int count = 0;
+    for (const auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetNPCData()))
+    {
+        if (count != i)
+        {
+            count++;
+            continue;
+        }
+
+        HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::NPC, iterator.imageIndex);
+
+        BITMAP bit;
+        SelectObject(backMemDC, bitmap);
+        GetObject(bitmap, sizeof(bit), &bit);
+        TransparentBlt(memDC,
+            iterator.pos.x * TILE_SIZE, iterator.pos.y * TILE_SIZE,
+            bit.bmWidth, bit.bmHeight,
+            backMemDC, 0, 0, bit.bmWidth, bit.bmHeight, RGB(215, 123, 186));
+    }
+}
+
+void RenderManager::DrawMonster(const int index)
+{
+    if (index < 0)
+        return;
+    if (index >= static_cast<int>(WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->size()))
+        return;
+
     for (int i = 0; i < static_cast<int>(WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()->size()); i++)
     {
+        if (index != i)
+            continue;
+
         AnimationObject* animationObject = &(*ImageManager::GetInstance()->GetMonsterAnimation())[
             (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetIndex()];
 
@@ -522,39 +579,6 @@ void RenderManager::DrawMonster()
             break;
         }
     } 
-}
-
-void RenderManager::DrawNpcOrderPos()
-{
-    for (const auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetNPCData()))
-    {
-        if (!(((iterator.pos.y)*static_cast<long>(TILE_SIZE) + PLAYER_PIVOT_POS.y) > static_cast<long>(
-            (GameManager::GetInstance()->GetPlayer()->GetPos().y) + PLAYER_PIVOT_POS.y)))
-            continue;
-
-        HBITMAP bitmap = ImageManager::GetInstance()->GetBitmapData(BitmapKind::NPC, iterator.imageIndex);
-
-        BITMAP bit;
-        SelectObject(backMemDC, bitmap);
-        GetObject(bitmap, sizeof(bit), &bit);
-        TransparentBlt(memDC,
-            iterator.pos.x * TILE_SIZE, iterator.pos.y * TILE_SIZE,
-            bit.bmWidth, bit.bmHeight,
-            backMemDC, 0, 0, bit.bmWidth, bit.bmHeight, RGB(215, 123, 186));
-    }
-}
-
-void RenderManager::DrawMonsterOrderPos()
-{
-    for (int i = 0; i < static_cast<int>((*WorldMapManager::GetInstance()
-        ->GetWorldMap()->GetMonsterData()).size()); i++)
-    {
-        if (!((*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData())[i].GetPos().y + MONSTER1_PIVOT_POS.y > static_cast<long>(
-            (GameManager::GetInstance()->GetPlayer()->GetPos().y) + PLAYER_PIVOT_POS.y)))
-            continue;
-
-        DrawMonsterAnimation(i);
-    }
 }
 
 void RenderManager::DrawShop()

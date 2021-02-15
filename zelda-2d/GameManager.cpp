@@ -107,7 +107,7 @@ void GameManager::Run()
 
 	for (auto& iterator : (*WorldMapManager::GetInstance()->GetWorldMap()->GetMonsterData()))
 	{
-		if(iterator.Die(player));	// hp <= 0 이면 죽음 처리
+		if(iterator.Die(player))	// hp <= 0 이면 죽음 처리
 			break;
 	}
 

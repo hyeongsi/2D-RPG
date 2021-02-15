@@ -78,10 +78,10 @@ public:
 	void DrawESCMenu();				// Esc 메뉴 그리기
 
 	void DrawPlayer();			
+	void DrawCharacter();
 	void DrawNPC();				// NPC 출력
-	void DrawMonster();			// 적 출력
-	void DrawNpcOrderPos();		// 출력 순서에 따른 NPC 출력
-	void DrawMonsterOrderPos();	// 출력 순서에 따른 NPC 출력
+	void DrawNPC(const int i);		// 출력 순서에 따른 NPC 출력
+	void DrawMonster(const int i);			// 적 출력
 	void DrawShop();			// 상점 출력
 	void DrawCharUIData(const int uiName, const POINT pos);
 
