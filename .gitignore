@@ -31,5 +31,5 @@
 *.out
 *.app
 
-/.vs/
-/Debug/
+zelda-2d/.vs/
+zelda-2d/Debug/
