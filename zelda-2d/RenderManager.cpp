@@ -161,7 +161,6 @@ void RenderManager::InGameDataRender()
     DrawFieldItem();                         // 필드 아이템 출력
 
     DrawCharacter();        
-
     DrawHudVector();    // hudData 출력 부분
 
     switch (NPCManager::GetInstance()->GetInteractNPCData().state)
@@ -481,7 +480,7 @@ void RenderManager::DrawCharacter()
     // 음수 : NPC 위치 저장
     for (int i = 0; i < static_cast<int>(WorldMapManager::GetInstance()->GetWorldMap()->GetNPCData()->size()); i++)
     {
-        printSequence[(*WorldMapManager::GetInstance()->GetWorldMap()->GetNPCData())[i].pos.y] =  - (i + 1);
+        printSequence[(*WorldMapManager::GetInstance()->GetWorldMap()->GetNPCData())[i].pos.y] =  ((i + 1) * -1);
     }
 
     printSequence[GameManager::GetInstance()->GetPlayer()->GetPos().y] = 0;
@@ -494,7 +493,7 @@ void RenderManager::DrawCharacter()
         else if (iterator->second > 0)
             DrawMonster(iterator->second - 1);
         else if (iterator->second < 0)
-            DrawNPC(-(iterator->second - 1));
+            DrawNPC((iterator->second + 1) * -1);
     }
 }
 
