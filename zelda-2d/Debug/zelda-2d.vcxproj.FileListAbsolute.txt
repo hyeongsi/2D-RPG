@@ -1,2 +1,3 @@
 C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\zelda-2d.exe
 C:\Users\parks\Desktop\GitHub\winapi-zelda-2d\zelda-2d\Debug\zelda-2d.pdb
+C:\Users\parks\Desktop\GitHub\winapi-rpg-2d\zelda-2d\Debug\zelda-2d.exe

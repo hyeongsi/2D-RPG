@@ -12,8 +12,8 @@
 #include <time.h>
 #include "SoundManager.h"
 
-constexpr const POINT RETOUCH_WOOD_DOOR_POS{ 2,4 };
-constexpr const POINT SPAWN_PLAYER_STAGE1_POS{ 12,13 };
+const POINT RETOUCH_WOOD_DOOR_POS{ 2,4 };
+const POINT SPAWN_PLAYER_STAGE1_POS{ 12,13 };
 
 InteractionManager* InteractionManager::instance = nullptr;
 

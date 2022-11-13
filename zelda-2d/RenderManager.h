@@ -15,13 +15,13 @@ using namespace std;
 
 #pragma comment (lib, "Msimg32.lib")
 
-constexpr const POINT INVENTORY_SPAWN_POS = { 600,170 };
+const POINT INVENTORY_SPAWN_POS = { 600,170 };
 constexpr const SIZE INVENTORY_interval_SIZE = { 8,8 };
 
-constexpr const POINT DRAW_PLAYERINFO_UI_POS = { 10,10 };
-constexpr const POINT DRAW_MONEYINFO_UI_POS = { 11,110 };
+const POINT DRAW_PLAYERINFO_UI_POS = { 10,10 };
+const POINT DRAW_MONEYINFO_UI_POS = { 11,110 };
 
-constexpr const POINT SHOP_SPAWN_POS = { 200,170 };
+const POINT SHOP_SPAWN_POS = { 200,170 };
 constexpr const SIZE SHOP_SIZE = { 230,260 };
 constexpr const SIZE SHOP_ITEMBOX_SIZE = { 200,42 };
 constexpr const SIZE SHOP_INTERVAL_SIZE = { 15,5 };

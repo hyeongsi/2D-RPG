@@ -1,21 +1,21 @@
 ﻿#pragma once
 
-constexpr const POINT HWND_SPAWN_POS = { 500,200 };	// 메인 프레임 출력 위치
+const POINT HWND_SPAWN_POS = { 500,200 };	// 메인 프레임 출력 위치
 
 constexpr const int TILE_SIZE = 32;	// 맵 한 칸의 크기 ( 32 x 32)
 
 constexpr const int MAP_MAX_X = 25;	// 행의 개수
 constexpr const int MAP_MAX_Y = 19;	// 열의 개수
 
-constexpr const POINT PLAYER_PIVOT_POS = { 16,47 };	// 캐릭터 콜라이더 기준 좌표 
-constexpr const POINT MONSTER1_PIVOT_POS = { 32,53 };	// 몬스터1 콜라이더 기준 좌표 
+const POINT PLAYER_PIVOT_POS = { 16,47 };	// 캐릭터 콜라이더 기준 좌표 
+const POINT MONSTER1_PIVOT_POS = { 32,53 };	// 몬스터1 콜라이더 기준 좌표 
 
-constexpr const POINT STAGE2_SPAWN_POS = { 642, 115 };	// 오두막 집 문의 위치, 기준 위치로 부터 + alpah 값
-constexpr const POINT WOOD_HOUSE_DOOR_POS = {2, 4};	// 오두막 집 문의 위치, 기준 위치로 부터 + alpah 값
+const POINT STAGE2_SPAWN_POS = { 642, 115 };	// 오두막 집 문의 위치, 기준 위치로 부터 + alpah 값
+const POINT WOOD_HOUSE_DOOR_POS = {2, 4};	// 오두막 집 문의 위치, 기준 위치로 부터 + alpah 값
 
-constexpr const POINT START_BUTTON_POINT = { 370,430 };
-constexpr const POINT MAPEDITTOR_BUTTON_POINT = { 370,480 };
-constexpr const SIZE BUTTON_SIZE = { 100,30 };
+const POINT START_BUTTON_POINT = { 370,430 };
+const POINT MAPEDITTOR_BUTTON_POINT = { 370,480 };
+const SIZE BUTTON_SIZE = { 100,30 };
 
 constexpr const char BACKGROUND_BITMAP_PATH[] = { "data/bitmapinfo/BackgroundBitmapInfo.txt" };
 constexpr const char OBJECT_BITMAP_PATH[] = { "data/bitmapinfo/ObjectBitmapInfo.txt" };

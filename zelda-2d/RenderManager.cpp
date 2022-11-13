@@ -368,9 +368,9 @@ void RenderManager::DrawInventoryItem()
 
 void RenderManager::DrawInvenItemExplain()
 {
-    constexpr const SIZE EXPLAIN_ITEM_PANEL_SIZE = {150,80};
-    constexpr const POINT ITEM_TITLE_TEXT_RETOUCH_POS = { 10,5 };
-    constexpr const POINT ITEM_EXPLAIN_TEXT_RETOUCH_POS = { 10,40 };
+    const SIZE EXPLAIN_ITEM_PANEL_SIZE = {150,80};
+    const POINT ITEM_TITLE_TEXT_RETOUCH_POS = { 10,5 };
+    const POINT ITEM_EXPLAIN_TEXT_RETOUCH_POS = { 10,40 };
 
     POINT mousePos;
     GetCursorPos(&mousePos);

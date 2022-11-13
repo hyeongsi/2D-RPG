@@ -145,8 +145,8 @@ void GameManager::LimitMoveMent(const DPOINT prevDPos)
 	constexpr const int LIMIT_MAP_X_CORRECTION = 32;	// 맵 밖으로 나가는 경우 보정 크기
 	constexpr const int LIMIT_MAP_Y_CORRECTION = 46;	// 맵 밖으로 나가는 경우 보정 크기
 
-	constexpr const POINT PLAYER_COLLIDER_BOX_LEFT_TOP = { 10,47 };	// 캐릭터 콜라이더 기준 좌표 
-	constexpr const POINT PLAYER_COLLIDER_BOX_RIGHT_BOTTOM = { 23,51 };	// 캐릭터 콜라이더 기준 좌표
+	const POINT PLAYER_COLLIDER_BOX_LEFT_TOP = { 10,47 };	// 캐릭터 콜라이더 기준 좌표 
+	const POINT PLAYER_COLLIDER_BOX_RIGHT_BOTTOM = { 23,51 };	// 캐릭터 콜라이더 기준 좌표
 
 	POINT pos = { static_cast<LONG>(player->GetPos().x),  static_cast<LONG>(player->GetPos().y) };
 	if (0 > pos.x || ClientSize::width- LIMIT_MAP_X_CORRECTION < pos.x)
