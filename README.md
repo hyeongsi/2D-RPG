@@ -30,9 +30,31 @@ winapi 학습
 
 ## 시연 영상
 <details>
-  <summary>메인 화면</summary>
-  <img width="976" src=""/>
+  <summary>게임 시작</summary>
+  <img width="976" src="https://user-images.githubusercontent.com/71202869/201511389-b1c7a0f4-9406-46a7-9bf8-58ff9d67c711.gif"/>
 </details>
+<details>
+  <summary>전투</summary>
+  <img width="976" src="https://user-images.githubusercontent.com/71202869/201511454-85c5eacc-7376-4fc8-96fe-f9976ffb29b0.gif"/>
+</details>
+<details>
+  <summary>상호작용 및 씬이동</summary>
+  <img width="976" src="https://user-images.githubusercontent.com/71202869/201511444-6a5215c9-a0cb-455d-96ce-da17d75fbeb3.gif"/>
+</details>
+<details>
+  <summary>상점 및 인벤토리</summary>
+  <img width="976" src="https://user-images.githubusercontent.com/71202869/201511423-6ec2bbd7-6509-4a36-a1a7-30c7cce7a32f.gif"/>
+</details>
+<details>
+  <summary>맵에디터 사용</summary>
+  <img width="976" src="https://user-images.githubusercontent.com/71202869/201511413-0af93a54-6c2b-46fd-bfb2-948757383d6d.gif"/>
+</details>
+<details>
+  <summary>맵에디터 불러오기</summary>
+  <img width="976" src="https://user-images.githubusercontent.com/71202869/201511395-7c268e0b-1d34-4a03-ab72-8685fa94cce6.gif"/>
+</details>
+
+
 <br>
 
 ## 기타 / 조작법
