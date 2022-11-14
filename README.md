@@ -1,4 +1,4 @@
-# WIN - 2D RPG
+2D RPG
 <br>
 
 ## 프로젝트 소개
