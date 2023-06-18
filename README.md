@@ -59,24 +59,28 @@ winapi 학습
 <br>
 
 ## 기타 / 조작법
-<details>
-  <summary>조작법</summary>
-  <table>
-    <tr>
-      <td><b>방향키</b></td>
-      <td><b>space</b></td>
-      <td><b>ctrl</b></td>
-      <td><b>i</b></td>
-      <td><b>esc</b></td>
-    </tr>
-    <tr>
-      <td>이동</td>
-      <td>상호작용</td>
-      <td>공격</td>
-      <td>인벤토리</td>
-      <td>게임 옵션</td>
-    </tr>
-  </table>
+<ui>
+  <li>
+    <table>
+      <tr>
+        <td><b>방향키</b></td>
+        <td><b>space</b></td>
+        <td><b>ctrl</b></td>
+        <td><b>i</b></td>
+        <td><b>esc</b></td>
+      </tr>
+      <tr>
+        <td>이동</td>
+        <td>상호작용</td>
+        <td>공격</td>
+        <td>인벤토리</td>
+        <td>게임 옵션</td>
+      </tr>
+    </table>
+  </li>
+  <li></li>
+</ui>
+  
 </details>
 
 ```
